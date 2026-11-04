@@ -173,7 +173,7 @@ static int load_page(Gui *g, int i)
     g->editing = 0;
     fit_page(g);
     snprintf(g->status, sizeof g->status, "Página %d cargada: %d renglones, %d signos.",
-             i + 1, p->nlines, p->ng);
+             p->pageno, p->nlines, p->ng);
     return 0;
 }
 
@@ -260,7 +260,7 @@ static void save_mdc(Gui *g)
             continue;
         if (g->np > 1) {
             char hdr[64];
-            snprintf(hdr, sizeof hdr, "++página %d+s-!\n", i + 1);
+            snprintf(hdr, sizeof hdr, "++página %d+s-!\n", g->pages[i].pageno);
             str_puts(&out, hdr);
         }
         page_to_mdc(&g->pages[i], g->o, &out, i == g->np - 1);
@@ -499,15 +499,20 @@ static void render(Gui *g)
     const SDL_Color black = {20, 20, 20, 255}, grey = {90, 90, 90, 255}, blue = {30, 70, 200, 255};
     char line[512];
     int y = wh - PANEL_H + 6;
-    snprintf(line, sizeof line, "Página %d/%d  ·  %d signos  ·  aprendizaje %s  ·  %s",
-             g->cur + 1, g->np, p->ng, g->learn ? "sí" : "no", g->status);
+    snprintf(line, sizeof line, "Página %d (%d/%d)  ·  %d signos  ·  aprendizaje %s  ·  %s",
+             p->pageno, g->cur + 1, g->np, p->ng, g->learn ? "sí" : "no", g->status);
     draw_text(g, g->small, 10, y, line, grey, ww - 20);
     y += 22;
 
     if (g->sel >= 0) {
         Glyph *gl = &p->g[g->sel];
-        snprintf(line, sizeof line, "Signo %d · renglón %d · código %s · puntuación %.3f%s%s",
-                 g->sel, gl->line + 1, gl->code[0] ? gl->code : "?", gl->score,
+        const SignInfo *si = gl->code[0] ? sign_find(gl->code) : NULL;
+        char info[220] = "";
+        if (si && (si->phon[0] || si->desc[0]))
+            snprintf(info, sizeof info, " · %s%s%s%s", si->desc,
+                     si->phon[0] ? " [" : "", si->phon, si->phon[0] ? "]" : "");
+        snprintf(line, sizeof line, "Signo %d · renglón %d · %s%s · puntuación %.3f%s%s",
+                 g->sel, gl->line + 1, gl->code[0] ? gl->code : "?", info, gl->score,
                  gl->manual ? " · corregido" : "", gl->underlined ? " · subrayado" : "");
         draw_text(g, g->ui, 10, y, line, black, ww - 20);
         y += 26;
@@ -523,7 +528,16 @@ static void render(Gui *g)
                 SDL_RenderCopy(g->ren, h->t, NULL, &d);
                 x += hw + 4;
             }
-            snprintf(line, sizeof line, "%s (%.3f)", code, gl->cand_score[k]);
+            const SignInfo *ci = sign_find(code);
+            if (ci && ci->phon[0]) {
+                char ph[24];
+                snprintf(ph, sizeof ph, "%.23s", ci->phon);
+                char *semi = strchr(ph, ';');
+                if (semi) *semi = 0;   /* sólo el primer valor fonético */
+                snprintf(line, sizeof line, "%s [%s] (%.3f)", code, ph, gl->cand_score[k]);
+            } else {
+                snprintf(line, sizeof line, "%s (%.3f)", code, gl->cand_score[k]);
+            }
             x += draw_text(g, g->small, x, y + 16, line, black, 0) + 22;
         }
         y += 50;

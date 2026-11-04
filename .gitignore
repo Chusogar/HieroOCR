@@ -1,0 +1,7 @@
+# Objetos y ejecutable
+src/*.o
+hieroocr
+# Plantillas aprendidas y salidas locales
+plantillas/
+*.mdc
+datos/*.tmp

@@ -39,6 +39,7 @@ typedef struct {
 
 typedef struct {
     char      path[1024];       /* imagen de la página */
+    int       pageno;           /* número de página en el documento original */
     int       processed;
     Gray      gray;
     Bin       bin;
@@ -58,20 +59,31 @@ typedef struct {
     char     code[CODE_LEN];
     uint32_t cp;                /* punto de código Unicode (0 si no se conoce) */
     int      user;              /* 1 si procede de una plantilla aprendida */
-    int      common;            /* 1 si es un signo frecuente (lista de Gardiner usual) */
+    int      common;            /* 1 si es un signo frecuente o con valor fonético */
+    int      variant;           /* variante de entrenamiento (0 = dibujo original) */
     float    aspect;            /* ancho / alto */
     float    relh;              /* altura relativa al cuadrado (<=0 si se desconoce) */
-    float    dt[NORM * NORM];   /* transformada de distancia */
-    float    blur[NORM * NORM]; /* imagen suavizada normalizada (correlación) */
-    uint16_t ink[NORM * NORM];  /* posiciones con tinta */
+    uint8_t  dt[NORM * NORM];   /* transformada de distancia x4, saturada en 255 */
+    int16_t  blur[NORM * NORM]; /* imagen suavizada de norma 1, x32767 (correlación) */
+    float    coarse[64];        /* resumen 8x8 para el filtro rápido */
+    uint16_t *ink;              /* posiciones con tinta */
     int      nink;
 } Template;
 
-typedef struct { Template *t; int n, cap; } TemplateSet;
+typedef struct { Template *t; int n, cap; int view; } TemplateSet;   /* view: no posee las tintas */
+
+/* Ficha de un signo de la lista de Gardiner (datos/gardiner.tsv). */
+typedef struct {
+    char     code[CODE_LEN];
+    uint32_t cp;
+    char     section[4];
+    char     phon[96];          /* valores fonéticos */
+    char     desc[96];          /* descripción */
+} SignInfo;
 
 typedef struct {
     int         dpi;            /* resolución al rasterizar PDF */
-    int         page;           /* página concreta del PDF (0 = todas) */
+    const char *pages;          /* rango de páginas del PDF, p. ej. "71-92" (NULL = todas) */
     int         join;           /* radio de unión de componentes (0 = automático) */
     int         min_area;       /* área mínima de un signo (0 = automática) */
     int         rtl;            /* lectura de derecha a izquierda */
@@ -85,6 +97,10 @@ typedef struct {
     const char *tmpl_dir;
     const char *output;
     const char *screenshot;     /* sólo para pruebas: guarda un fotograma de la GUI y sale */
+    const char *model;          /* modelo entrenado (.hmod) */
+    const char *list;           /* lista de signos de Gardiner (gardiner.tsv) */
+    int         train;          /* --entrenar */
+    int         evaluate;       /* --evaluar */
 } Options;
 
 typedef struct { char *s; size_t n, cap; } Str;
@@ -93,7 +109,9 @@ typedef struct { char *s; size_t n, cap; } Str;
 int  gray_load(const char *path, Gray *g);
 void gray_free(Gray *g);
 void binarize_otsu(const Gray *g, Bin *b);
-int  pdf_render(const char *pdf, int dpi, int page, char tmpdir[512], char ***files, int *nfiles);
+int  pdf_render(const char *pdf, int dpi, const char *pages, char tmpdir[512], char ***files, int *nfiles);
+int  parse_page_ranges(const char *spec, int (*ranges)[2], int max);
+int  page_number_from_path(const char *path);
 void tmpdir_remove(const char *dir);
 
 /* segment.c */
@@ -113,6 +131,25 @@ uint32_t ts_codepoint(const TemplateSet *ts, const char *code);
 void     classify_glyph(Page *p, int gi, const TemplateSet *ts);
 void     classify_set_options(const Options *o);
 void     classify_page(Page *p, const TemplateSet *ts);
+void     classify_mask(const uint8_t *mask, int w, int h, float relh,
+                       const TemplateSet *ts, Glyph *g);
+uint8_t *crop_mask(const uint8_t *m, int w, int h, int *cw, int *ch);
+void     normalize_mask(const uint8_t *src, int w, int h, uint8_t *dst);
+void     template_from_norm(Template *t, const uint8_t *norm0, float aspect);
+Template *ts_add(TemplateSet *ts);
+uint8_t *render_glyph(void *ttf_font, uint32_t cp, int *w, int *h);
+int      is_common_code(const char *code);
+
+/* Lista de signos y su información (classify.c) */
+int             signs_load(const char *path);
+int             signs_count(void);
+const SignInfo *sign_at(int i);
+const SignInfo *sign_find(const char *code);
+
+/* train.c: entrenamiento con variantes y evaluación */
+int ts_load_model(TemplateSet *ts, const char *path);
+int train_model(const Options *o);
+int evaluate_model(const Options *o, TemplateSet *ts);
 int      valid_code(const char *s);
 
 /* mdc.c */

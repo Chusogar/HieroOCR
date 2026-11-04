@@ -26,7 +26,7 @@
 #include <time.h>
 
 /* Ajusta la máscara w x h a la rejilla NORM x NORM conservando la proporción. */
-static void normalize_mask(const uint8_t *src, int w, int h, uint8_t *dst)
+void normalize_mask(const uint8_t *src, int w, int h, uint8_t *dst)
 {
     memset(dst, 0, NORM * NORM);
     float s = (NORM - 4) / (float)(w > h ? w : h);
@@ -147,22 +147,60 @@ static void blur_vector(const uint8_t *m, float *b)
         b[i] = norm > 0 ? (float)(b[i] / norm) : 0;
 }
 
-static void make_template(Template *t, const uint8_t *mask, int w, int h)
+/* Construye una plantilla a partir de una máscara ya normalizada a NORM x NORM. */
+void template_from_norm(Template *t, const uint8_t *norm0, float aspect)
 {
-    uint8_t m0[NORM * NORM], m[NORM * NORM];
-    normalize_mask(mask, w, h, m0);
-    dilate(m0, m);
-    blur_vector(m, t->blur);
-    dist_transform(m, t->dt);
+    uint8_t m[NORM * NORM];
+    float d[NORM * NORM], b[NORM * NORM];
+    dilate(norm0, m);
+    blur_vector(m, b);
+    dist_transform(m, d);
+    for (int i = 0; i < NORM * NORM; i++) {
+        float v = d[i] * 4.0f + 0.5f;
+        t->dt[i] = (uint8_t)(v > 255 ? 255 : v);
+        t->blur[i] = (int16_t)lrintf(b[i] * 32767.0f);
+    }
+    /* resumen 8x8 (bloques de 5x5), de media 0 y norma 1 */
+    double mean = 0, nrm = 0;
+    for (int by = 0; by < 8; by++)
+        for (int bx = 0; bx < 8; bx++) {
+            float acc = 0;
+            for (int y = 0; y < 5; y++)
+                for (int x = 0; x < 5; x++)
+                    acc += b[(by * 5 + y) * NORM + bx * 5 + x];
+            t->coarse[by * 8 + bx] = acc;
+            mean += acc;
+        }
+    mean /= 64;
+    for (int i = 0; i < 64; i++) {
+        t->coarse[i] -= (float)mean;
+        nrm += (double)t->coarse[i] * t->coarse[i];
+    }
+    nrm = sqrt(nrm);
+    for (int i = 0; i < 64; i++)
+        t->coarse[i] = nrm > 0 ? (float)(t->coarse[i] / nrm) : 0;
+
+    int n = 0;
+    for (int i = 0; i < NORM * NORM; i++)
+        n += m[i] != 0;
+    free(t->ink);
+    t->ink = malloc(sizeof(uint16_t) * (size_t)(n ? n : 1));
     t->nink = 0;
     for (int i = 0; i < NORM * NORM; i++)
         if (m[i])
             t->ink[t->nink++] = (uint16_t)i;
-    t->aspect = (float)w / (float)h;
+    t->aspect = aspect;
+}
+
+static void make_template(Template *t, const uint8_t *mask, int w, int h)
+{
+    uint8_t m0[NORM * NORM];
+    normalize_mask(mask, w, h, m0);
+    template_from_norm(t, m0, (float)w / (float)h);
 }
 
 /* Recorta la máscara a su caja de tinta. Devuelve una copia nueva o NULL si está vacía. */
-static uint8_t *crop_mask(const uint8_t *m, int w, int h, int *cw, int *ch)
+uint8_t *crop_mask(const uint8_t *m, int w, int h, int *cw, int *ch)
 {
     int x0 = w, y0 = h, x1 = -1, y1 = -1;
     for (int y = 0; y < h; y++)
@@ -190,11 +228,14 @@ void ts_init(TemplateSet *ts)
 
 void ts_free(TemplateSet *ts)
 {
+    if (!ts->view)
+        for (int i = 0; i < ts->n; i++)
+            free(ts->t[i].ink);
     free(ts->t);
     memset(ts, 0, sizeof *ts);
 }
 
-static Template *ts_add(TemplateSet *ts)
+Template *ts_add(TemplateSet *ts)
 {
     if (ts->n == ts->cap) {
         ts->cap = ts->cap ? ts->cap * 2 : 256;
@@ -274,16 +315,112 @@ static const char *common_signs[] = {
     NULL
 };
 
-static int is_common(const char *code)
+/* ---------- lista de signos de Gardiner (datos/gardiner.tsv) ---------- */
+
+static SignInfo *g_signs;
+static int g_nsigns;
+
+static void copy_field(char *dst, size_t n, const char *src)
+{
+    snprintf(dst, n, "%s", src ? src : "");
+}
+
+int signs_load(const char *path)
+{
+    FILE *f = fopen(path, "r");
+    if (!f)
+        return -1;
+    char line[1024];
+    int cap = 0;
+    while (fgets(line, sizeof line, f)) {
+        if (line[0] == '#' || line[0] == '\n')
+            continue;
+        line[strcspn(line, "\r\n")] = 0;
+        char *fld[6] = {0};
+        int nf = 0;
+        char *s = line;
+        while (nf < 6) {
+            fld[nf++] = s;
+            char *tab = strchr(s, '\t');
+            if (!tab)
+                break;
+            *tab = 0;
+            s = tab + 1;
+        }
+        if (nf < 2 || !valid_code(fld[0]))
+            continue;
+        if (g_nsigns == cap) {
+            cap = cap ? cap * 2 : 1024;
+            g_signs = realloc(g_signs, sizeof(SignInfo) * (size_t)cap);
+        }
+        SignInfo *si = &g_signs[g_nsigns++];
+        memset(si, 0, sizeof *si);
+        copy_field(si->code, sizeof si->code, fld[0]);
+        si->cp = (uint32_t)strtoul(fld[1] + (strncmp(fld[1], "U+", 2) == 0 ? 2 : 0), NULL, 16);
+        copy_field(si->section, sizeof si->section, nf > 2 ? fld[2] : "");
+        copy_field(si->phon, sizeof si->phon, nf > 3 ? fld[3] : "");
+        copy_field(si->desc, sizeof si->desc, nf > 4 ? fld[4] : "");
+    }
+    fclose(f);
+    return g_nsigns;
+}
+
+int signs_count(void) { return g_nsigns; }
+const SignInfo *sign_at(int i) { return (i >= 0 && i < g_nsigns) ? &g_signs[i] : NULL; }
+
+const SignInfo *sign_find(const char *code)
+{
+    for (int i = 0; i < g_nsigns; i++)
+        if (strcmp(g_signs[i].code, code) == 0)
+            return &g_signs[i];
+    return NULL;
+}
+
+/* Frecuente: está en la lista usual o tiene valor fonético según Wikipedia. */
+int is_common_code(const char *code)
 {
     for (const char **p = common_signs; *p; p++)
         if (strcmp(*p, code) == 0)
             return 1;
-    return 0;
+    const SignInfo *si = sign_find(code);
+    return si && si->phon[0];
+}
+
+/* Dibuja un signo de la fuente y devuelve su máscara recortada (1 = tinta). */
+uint8_t *render_glyph(void *ttf_font, uint32_t cp, int *w, int *h)
+{
+    TTF_Font *ft = ttf_font;
+    if (!TTF_GlyphIsProvided32(ft, cp))
+        return NULL;
+    SDL_Color fg = {0, 0, 0, 255}, bg = {255, 255, 255, 255};
+    SDL_Surface *s = TTF_RenderGlyph32_Shaded(ft, cp, fg, bg);
+    if (!s)
+        return NULL;
+    uint8_t *m = calloc((size_t)s->w * s->h, 1);
+    SDL_LockSurface(s);
+    SDL_Palette *pal = s->format->palette;
+    for (int y = 0; y < s->h; y++)
+        for (int x = 0; x < s->w; x++) {
+            uint8_t v = ((const uint8_t *)s->pixels)[(size_t)y * s->pitch + x];
+            int lum = pal ? pal->colors[v].r : v;
+            m[(size_t)y * s->w + x] = lum < 128;
+        }
+    SDL_UnlockSurface(s);
+    uint8_t *c = crop_mask(m, s->w, s->h, w, h);
+    free(m);
+    SDL_FreeSurface(s);
+    return c;
 }
 
 static int g_all_signs = 0;
-void classify_set_options(const Options *o) { g_all_signs = o->all_signs; }
+static float g_variant_penalty = 0.005f;
+void classify_set_options(const Options *o)
+{
+    g_all_signs = o->all_signs;
+    const char *vp = getenv("HIEROOCR_PENALIZACION_VARIANTE");
+    if (vp)
+        g_variant_penalty = (float)atof(vp);
+}
 
 static int cmp_float(const void *a, const void *b)
 {
@@ -304,7 +441,6 @@ int ts_load_font(TemplateSet *ts, const char *font, const char *unicode)
         fclose(f);
         return -1;
     }
-    SDL_Color fg = {0, 0, 0, 255}, bg = {255, 255, 255, 255};
     char line[512];
     int start = ts->n;
     while (fgets(line, sizeof line, f)) {
@@ -317,32 +453,15 @@ int ts_load_font(TemplateSet *ts, const char *font, const char *unicode)
         char code[CODE_LEN];
         if (gardiner_from_name(name + 20, code))
             continue;
-        if (!TTF_GlyphIsProvided32(ft, cp))
-            continue;
-        SDL_Surface *s = TTF_RenderGlyph32_Shaded(ft, cp, fg, bg);
-        if (!s)
-            continue;
-        uint8_t *m = calloc((size_t)s->w * s->h, 1);
-        SDL_LockSurface(s);
-        SDL_Palette *pal = s->format->palette;
-        for (int y = 0; y < s->h; y++)
-            for (int x = 0; x < s->w; x++) {
-                uint8_t v = ((const uint8_t *)s->pixels)[(size_t)y * s->pitch + x];
-                int lum = pal ? pal->colors[v].r : v;
-                m[(size_t)y * s->w + x] = lum < 128;
-            }
-        SDL_UnlockSurface(s);
         int cw, ch;
-        uint8_t *c = crop_mask(m, s->w, s->h, &cw, &ch);
-        free(m);
-        SDL_FreeSurface(s);
+        uint8_t *c = render_glyph(ft, cp, &cw, &ch);
         if (!c)
             continue;
         Template *t = ts_add(ts);
         make_template(t, c, cw, ch);
         snprintf(t->code, CODE_LEN, "%s", code);
         t->cp = cp;
-        t->common = is_common(code);
+        t->common = is_common_code(code);
         t->relh = (float)ch;   /* se normaliza abajo */
         free(c);
     }
@@ -504,46 +623,75 @@ static void insert_candidate(Glyph *g, const TemplateSet *ts, int ti, float sc)
         g->ncand++;
 }
 
-void classify_glyph(Page *p, int gi, const TemplateSet *ts)
+static float score_pair(const Template *q, const Template *t, float la)
 {
-    Glyph *g = &p->g[gi];
-    uint8_t *mask;
-    int w, h;
-    if (glyph_mask(p, gi, &mask, &w, &h))
-        return;
-    static Template q;   /* grande: fuera de la pila */
-    make_template(&q, mask, w, h);
-    free(mask);
-    q.relh = p->line_h > 0 ? h / p->line_h : -1.0f;
+    int sa = 0, sb = 0;
+    for (int k = 0; k < q->nink; k++)
+        sa += t->dt[q->ink[k]];
+    for (int k = 0; k < t->nink; k++)
+        sb += q->dt[t->ink[k]];
+    int64_t ncc = 0;
+    for (int k = 0; k < NORM * NORM; k++)
+        ncc += (int32_t)q->blur[k] * t->blur[k];
+    float fncc = (float)((double)ncc / (32767.0 * 32767.0));
+    float cham = ((float)sa / q->nink + (float)sb / t->nink) / 4.0f;   /* dt guardada x4 */
+    float sc = 0.5f * cham / (2.0f * NORM) + 0.25f * (1.0f - fncc);
+    if (t->user)
+        sc *= 0.6f;   /* misma edición y tipografía: la forma es mucho más fiable */
+    else if (!t->common && !g_all_signs)
+        sc += 0.03f;
+    if (t->variant > 0)
+        sc += g_variant_penalty;   /* el dibujo original manda; las variantes desempatan */
+    sc += 0.2f * fabsf(la);
+    if (t->relh > 0 && q->relh > 0)
+        sc += (t->user ? 0.35f : 0.12f) * fabsf(logf(q->relh / t->relh));
+    return sc;
+}
 
+typedef struct { int i; float c; } Coarse;
+
+static int cmp_coarse(const void *a, const void *b)
+{
+    float x = ((const Coarse *)a)->c, y = ((const Coarse *)b)->c;
+    return (x < y) - (x > y);   /* de mayor a menor */
+}
+
+#define KEEP 400   /* plantillas que pasan el filtro rápido */
+
+void classify_mask(const uint8_t *mask, int w, int h, float relh, const TemplateSet *ts, Glyph *g)
+{
+    Template q;
+    memset(&q, 0, sizeof q);
+    make_template(&q, mask, w, h);
+    q.relh = relh;
     g->ncand = 0;
-    for (int pass = 0; pass < 2 && g->ncand == 0; pass++)   /* 2ª pasada sin filtro de proporción */
-    for (int i = 0; i < ts->n; i++) {
-        const Template *t = &ts->t[i];
-        if (t->nink == 0 || q.nink == 0)
-            continue;
-        float la = logf(q.aspect / t->aspect);
-        if (pass == 0 && fabsf(la) > 1.0f)
-            continue;
-        float sa = 0, sb = 0;
-        for (int k = 0; k < q.nink; k++)
-            sa += t->dt[q.ink[k]];
-        for (int k = 0; k < t->nink; k++)
-            sb += q.dt[t->ink[k]];
-        float ncc = 0;
-        for (int k = 0; k < NORM * NORM; k++)
-            ncc += q.blur[k] * t->blur[k];
-        float sc = 0.5f * (sa / q.nink + sb / t->nink) / (2.0f * NORM) + 0.25f * (1.0f - ncc);
-        if (t->user)
-            sc *= 0.6f;   /* misma edición y tipografía: la forma es mucho más fiable */
-        else if (!t->common && !g_all_signs)
-            sc += 0.03f;
-        sc += 0.2f * fabsf(la);
-        /* En las plantillas aprendidas el tamaño relativo también es fiable. */
-        if (t->relh > 0 && q.relh > 0)
-            sc += (t->user ? 0.35f : 0.12f) * fabsf(logf(q.relh / t->relh));
-        insert_candidate(g, ts, i, sc);
+
+    Coarse *cs = malloc(sizeof(Coarse) * (size_t)(ts->n ? ts->n : 1));
+    for (int pass = 0; pass < 2 && g->ncand == 0; pass++) {   /* 2ª pasada sin filtro de proporción */
+        int m = 0;
+        for (int i = 0; i < ts->n; i++) {
+            const Template *t = &ts->t[i];
+            if (t->nink == 0 || q.nink == 0)
+                continue;
+            float la = logf(q.aspect / t->aspect);
+            if (pass == 0 && fabsf(la) > 1.0f)
+                continue;
+            float c = 0;
+            for (int k = 0; k < 64; k++)
+                c += q.coarse[k] * t->coarse[k];
+            cs[m++] = (Coarse){i, t->user ? 2.0f + c : c};   /* las aprendidas siempre pasan */
+        }
+        if (m > KEEP) {
+            qsort(cs, (size_t)m, sizeof(Coarse), cmp_coarse);
+            m = KEEP;
+        }
+        for (int k = 0; k < m; k++) {
+            const Template *t = &ts->t[cs[k].i];
+            insert_candidate(g, ts, cs[k].i, score_pair(&q, t, logf(q.aspect / t->aspect)));
+        }
     }
+    free(cs);
+    free(q.ink);
     g->score = g->ncand ? g->cand_score[0] : 1.0f;
     if (!g->manual) {
         if (g->ncand)
@@ -551,6 +699,16 @@ void classify_glyph(Page *p, int gi, const TemplateSet *ts)
         else
             g->code[0] = 0;
     }
+}
+
+void classify_glyph(Page *p, int gi, const TemplateSet *ts)
+{
+    uint8_t *mask;
+    int w, h;
+    if (glyph_mask(p, gi, &mask, &w, &h))
+        return;
+    classify_mask(mask, w, h, p->line_h > 0 ? h / p->line_h : -1.0f, ts, &p->g[gi]);
+    free(mask);
 }
 
 void classify_page(Page *p, const TemplateSet *ts)
