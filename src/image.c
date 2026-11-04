@@ -115,8 +115,87 @@ static int is_png(const struct dirent *d)
     return l > 4 && strcmp(d->d_name + l - 4, ".png") == 0;
 }
 
-int pdf_render(const char *pdf, int dpi, int page, char tmpdir[512], char ***files, int *nfiles)
+/*
+ * Analiza una especificación de páginas: "71", "71-92", "71-" (hasta el final),
+ * "-10" (desde el principio) o listas separadas por comas: "3,5,7-9".
+ * Devuelve el número de rangos (0 si la especificación no es válida).
+ * Un extremo 0 significa "sin límite" (principio o final del documento).
+ */
+int parse_page_ranges(const char *spec, int (*ranges)[2], int max)
 {
+    int n = 0;
+    const char *s = spec;
+    while (*s) {
+        while (*s == ' ' || *s == ',')
+            s++;
+        if (!*s)
+            break;
+        if (n >= max)
+            return 0;
+        char *end;
+        long a = 0, b = 0;
+        if (*s == '-') {                      /* "-N" */
+            a = 1;
+            b = strtol(s + 1, &end, 10);
+            if (end == s + 1 || b < 1)
+                return 0;
+        } else {
+            a = strtol(s, &end, 10);
+            if (end == s || a < 1)
+                return 0;
+            if (*end == '-') {
+                const char *t = end + 1;
+                if (*t == 0 || *t == ',' || *t == ' ') {
+                    b = 0;                    /* "N-": hasta el final */
+                    end = (char *)t;
+                } else {
+                    b = strtol(t, &end, 10);
+                    if (end == t || b < a)
+                        return 0;
+                }
+            } else {
+                b = a;
+            }
+        }
+        if (*end && *end != ',' && *end != ' ')
+            return 0;
+        ranges[n][0] = (int)a;
+        ranges[n][1] = (int)b;
+        n++;
+        s = end;
+    }
+    return n;
+}
+
+/* pdftoppm nombra las páginas "p-071.png": devuelve 71 (0 si no hay número). */
+int page_number_from_path(const char *path)
+{
+    const char *dot = strrchr(path, '.');
+    if (!dot)
+        return 0;
+    const char *d = dot;
+    while (d > path && d[-1] >= '0' && d[-1] <= '9')
+        d--;
+    if (d == dot || d == path || d[-1] != '-')
+        return 0;
+    return atoi(d);
+}
+
+int pdf_render(const char *pdf, int dpi, const char *pages, char tmpdir[512], char ***files, int *nfiles)
+{
+    int ranges[64][2];
+    int nr = 1;
+    ranges[0][0] = 0;
+    ranges[0][1] = 0;
+    if (pages && *pages) {
+        nr = parse_page_ranges(pages, ranges, 64);
+        if (nr == 0) {
+            fprintf(stderr, "Rango de páginas no válido: «%s» (ejemplos: 71, 71-92, 71-, 3,5,7-9)\n", pages);
+            tmpdir[0] = 0;
+            return -1;
+        }
+    }
+
     const char *t = getenv("TMPDIR");
     if (!t || !*t)
         t = "/tmp";
@@ -127,27 +206,43 @@ int pdf_render(const char *pdf, int dpi, int page, char tmpdir[512], char ***fil
         return -1;
     }
 
-    char qpdf[2200], qprefix[1200], prefix[600], cmd[4096];
+    char qpdf[2200], qprefix[1200], prefix[600], cmd[4096], fl[48];
     snprintf(prefix, sizeof prefix, "%s/p", tmpdir);
     shell_quote(pdf, qpdf, sizeof qpdf);
     shell_quote(prefix, qprefix, sizeof qprefix);
-    if (page > 0)
-        snprintf(cmd, sizeof cmd, "pdftoppm -r %d -f %d -l %d -png %s %s",
-                 dpi, page, page, qpdf, qprefix);
-    else
-        snprintf(cmd, sizeof cmd, "pdftoppm -r %d -png %s %s", dpi, qpdf, qprefix);
 
-    fprintf(stderr, "Rasterizando %s a %d ppp...\n", pdf, dpi);
-    if (system(cmd) != 0) {
-        fprintf(stderr, "pdftoppm ha fallado (¿está instalado poppler-utils?)\n");
-        tmpdir_remove(tmpdir);
-        tmpdir[0] = 0;
-        return -1;
+    int ok = 0;
+    for (int i = 0; i < nr; i++) {
+        int f = ranges[i][0], l = ranges[i][1];
+        fl[0] = 0;
+        if (f > 0 && l > 0)
+            snprintf(fl, sizeof fl, "-f %d -l %d ", f, l);
+        else if (f > 0)
+            snprintf(fl, sizeof fl, "-f %d ", f);
+        if (f > 0 && l == f)
+            fprintf(stderr, "Rasterizando la página %d de %s a %d ppp...\n", f, pdf, dpi);
+        else if (f > 0 && l > 0)
+            fprintf(stderr, "Rasterizando páginas %d-%d de %s a %d ppp...\n", f, l, pdf, dpi);
+        else if (f > 0)
+            fprintf(stderr, "Rasterizando desde la página %d de %s a %d ppp...\n", f, pdf, dpi);
+        else
+            fprintf(stderr, "Rasterizando %s entero a %d ppp...\n", pdf, dpi);
+        snprintf(cmd, sizeof cmd, "pdftoppm -r %d %s-png %s %s", dpi, fl, qpdf, qprefix);
+        if (system(cmd) == 0)
+            ok++;
+        else
+            fprintf(stderr, "Aviso: pdftoppm ha fallado con el rango %d-%d "
+                            "(¿fuera del documento? ¿está instalado poppler-utils?)\n", f, l);
     }
 
     struct dirent **nl;
     int n = scandir(tmpdir, &nl, is_png, alphasort);
-    if (n <= 0) {
+    if (!ok || n <= 0) {
+        if (n > 0) {
+            for (int i = 0; i < n; i++)
+                free(nl[i]);
+            free(nl);
+        }
         fprintf(stderr, "El PDF no ha producido ninguna página.\n");
         tmpdir_remove(tmpdir);
         tmpdir[0] = 0;
@@ -162,6 +257,7 @@ int pdf_render(const char *pdf, int dpi, int page, char tmpdir[512], char ***fil
     }
     free(nl);
     *nfiles = n;
+    fprintf(stderr, "%d página(s) preparadas.\n", n);
     return 0;
 }
 

@@ -1,0 +1,1076 @@
+# Lista de signos de Gardiner para hieroocr.
+# Fuentes: Wikipedia, List of Egyptian hieroglyphs (A-NU9: código, Unicode, fonogramas, descripción);
+# Wikipedia, Egyptian uniliteral/biliteral/triliteral signs (valores fonéticos); UnicodeData.txt (códigos O-Aa).
+#codigo	unicode	seccion	fonetica	descripcion	origen
+A1	U+13000	A		seated man	wikipedia
+A2	U+13001	A		man with hand to mouth	wikipedia
+A3	U+13002	A		man sitting on heel	wikipedia
+A4	U+13003	A		seated man with hands raised	wikipedia
+A5	U+13004	A		crouching man hiding behind wall	wikipedia
+A5A	U+13005	A		seated man hiding behind wall	wikipedia
+A6	U+13006	A		seated man under water vase	wikipedia
+A6A	U+13007	A		man reaching for libation stone	wikipedia
+A6B	U+13008	A		man reaching down under water vase	wikipedia
+A7	U+13009	A		fatigued man	wikipedia
+A8	U+1300A	A		man performing hnw-rite	wikipedia
+A9	U+1300B	A	f; .f	man steadying basket on head	wikipedia
+A10	U+1300C	A		seated man holding oar	wikipedia
+A11	U+1300D	A		seated man with scepter and crook	wikipedia
+A12	U+1300E	A		soldier with bow and quiver	wikipedia
+A13	U+1300F	A		man with arms tied behind back	wikipedia
+A14	U+13010	A		falling man, blood from head	wikipedia
+A14A	U+13011	A		man whose head is hit with axe	wikipedia
+A15	U+13012	A		man falling	wikipedia
+A16	U+13013	A		man bowing down	wikipedia
+A17	U+13014	A	ms; nn; nnj	child sitting, hand to mouth	wikipedia
+A17A	U+13015	A		child sitting, arms hanging down	wikipedia
+A18	U+13016	A		child wearing red crown	wikipedia
+A19	U+13017	A	jk	bent man leaning on staff	wikipedia
+A20	U+13018	A		man leaning on forked staff	wikipedia
+A21	U+13019	A		man holding staff with handkerchief	wikipedia
+A22	U+1301A	A		statue of man with staff	wikipedia
+A23	U+1301B	A		king with staff and mace	wikipedia
+A24	U+1301C	A		man striking with both hands	wikipedia
+A25	U+1301D	A		man striking, left arm behind back	wikipedia
+A26	U+1301E	A		man with one arm pointing forward	wikipedia
+A27	U+1301F	A	jn	hastening man	wikipedia
+A28	U+13020	A		man with hands raised on either side	wikipedia
+A29	U+13021	A		man upside down	wikipedia
+A30	U+13022	A		man with hands raised in front	wikipedia
+A31	U+13023	A		man with hands raised behind him	wikipedia
+A32	U+13024	A		man dancing, arms to back	wikipedia
+A32A	U+13025	A		man dancing, arms to front	wikipedia
+A33	U+13026	A		man with stick and bundle on shoulder	wikipedia
+A34	U+13027	A		man pounding in mortar	wikipedia
+A35	U+13028	A		man building wall	wikipedia
+A36	U+13029	A		man kneading into vessel	wikipedia
+A37	U+1302A	A		man in vessel	wikipedia
+A38	U+1302B	A		man holding necks of two animals	wikipedia
+A39	U+1302C	A		man on two giraffes	wikipedia
+A40	U+1302D	A		seated god	wikipedia
+A40A	U+1302E	A		seated god with Was-sceptre	wikipedia
+A41	U+1302F	A		king with uraeus	wikipedia
+A42	U+13030	A		king with uraeus and flagellum	wikipedia
+A42A	U+13031	A		king with uraeus and flagellum	wikipedia
+A43	U+13032	A		king wearing white crown	wikipedia
+A43A	U+13033	A		king in white crown with sceptre	wikipedia
+A44	U+13034	A		king in white crown with flagellum	wikipedia
+A45	U+13035	A	n	king wearing red crown	wikipedia
+A45A	U+13036	A	n	king in red crown with sceptre	wikipedia
+A46	U+13037	A		king in red crown with flagellum	wikipedia
+A47	U+13038	A		seated shepherd wrapped in mantle	wikipedia
+A48	U+13039	A	jr	beardless man seated with knife	wikipedia
+A49	U+1303A	A		seated Syrian holding stick	wikipedia
+A50	U+1303B	A	šps	noble on chair	wikipedia
+A51	U+1303C	A		noble on chair with flagellum	wikipedia
+A52	U+1303D	A		noble squatting with flagellum	wikipedia
+A53	U+1303E	A		standing mummy	wikipedia
+A54	U+1303F	A		lying mummy	wikipedia
+A55	U+13040	A		mummy on bed	wikipedia
+A56	U+13041	A		seated man holding stick	wikipedia
+A57	U+13042	A		man holding loaf on mat	wikipedia
+A58	U+13043	A		man applying hoe to ground	wikipedia
+A59	U+13044	A		man threatening with stick	wikipedia
+A60	U+13045	A		man sowing seeds	wikipedia
+A61	U+13046	A		man looking over shoulder	wikipedia
+A62	U+13047	A		Asiatic	wikipedia
+A63	U+13048	A		king on throne holding staff	wikipedia
+A64	U+13049	A		man sitting on heels, forward cup	wikipedia
+A65	U+1304A	A		man in fringed tunic holding mace	wikipedia
+A66	U+1304B	A		man holding sistrum	wikipedia
+A67	U+1304C	A		dwarf	wikipedia
+A68	U+1304D	A		man holding up knife	wikipedia
+A69	U+1304E	A		seated man, right arm raised	wikipedia
+A70	U+1304F	A		seated man with raised arms	wikipedia
+B1	U+13050	B		seated woman	wikipedia
+B2	U+13051	B		pregnant woman	wikipedia
+B3	U+13052	B		woman giving birth	wikipedia
+B4	U+13053	B		woman giving birth, three skins	wikipedia
+B5	U+13054	B		woman suckling child	wikipedia
+B5A	U+13055	B		woman suckling child (simplified)	wikipedia
+B6	U+13056	B		woman on chair with child on lap	wikipedia
+B7	U+13057	B		queen with diadem holding flower	wikipedia
+B8	U+13058	B		woman holding lotus flower	wikipedia
+B9	U+13059	B		woman holding sistrum	wikipedia
+C1	U+1305A	C		God with sun-disk and uraeus	wikipedia
+C2	U+1305B	C		Falcon-headed god holding ankh	wikipedia
+C2A	U+1305C	C		Falcon-headed god with sun-disk	wikipedia
+C2B	U+1305D	C		Reversed C2A variant	wikipedia
+C2C	U+1305E	C		Reversed C2 variant	wikipedia
+C3	U+1305F	C		Ibis-headed god (Thoth)	wikipedia
+C4	U+13060	C		Ram-headed god (Khnum)	wikipedia
+C5	U+13061	C		Ram-headed god holding ankh	wikipedia
+C6	U+13062	C		Jackal-headed god	wikipedia
+C7	U+13063	C		Seth-animal-headed god	wikipedia
+C8	U+13064	C		Ithyphallic god with plumes	wikipedia
+C9	U+13065	C		Hathor, goddess with horned sun-disk	wikipedia
+C10	U+13066	C		Maat, goddess with feather	wikipedia
+C10A	U+13067	C		Maat, goddess with feather and ankh	wikipedia
+C11	U+13068	C		Heh, god supporting sky	wikipedia
+C12	U+13069	C		Amun, god with plumes and scepter	wikipedia
+C13	U+1306A	C		Reversed C12 Amun	wikipedia
+C14	U+1306B	C		Amun with scimitar	wikipedia
+C15	U+1306C	C		Reversed C14 Amun	wikipedia
+C16	U+1306D	C		Atum, god in red crown	wikipedia
+C17	U+1306E	C		Montu, falcon-headed god	wikipedia
+C18	U+1306F	C		Tatenen, squatting god	wikipedia
+C19	U+13070	C		Ptah, mummy-shaped god	wikipedia
+C20	U+13071	C		Ptah, mummy-shaped god in shrine	wikipedia
+C21	U+13072	C		Bes	wikipedia
+C22	U+13073	C		Khonsu, falcon-headed moon god	wikipedia
+C23	U+13074	C		Feline-headed goddess with sun-disk	wikipedia
+C24	U+13075	C		Atum, god with red crown and scepter	wikipedia
+D1	U+13076	D	tp	Head	wikipedia
+D2	U+13077	D	ḥr	Face	wikipedia
+D3	U+13078	D		Hair	wikipedia
+D4	U+13079	D	jr	Eye	wikipedia
+D5	U+1307A	D		Eye touched up with paint	wikipedia
+D6	U+1307B	D		Eye with painted upper lid	wikipedia
+D7	U+1307C	D		Eye with painted lower lid	wikipedia
+D8	U+1307D	D		Eye enclosed in sandy tract	wikipedia
+D8A	U+1307E	D		Eye with painted lower lid in sandy tract	wikipedia
+D9	U+1307F	D		Eye with flowing tears	wikipedia
+D10	U+13080	D		Eye of Horus	wikipedia
+D11	U+13081	D		Left part of Eye of Horus	wikipedia
+D12	U+13082	D		Pupil	wikipedia
+D13	U+13083	D	smd	Eyebrow	wikipedia
+D14	U+13084	D		Right part of Eye of Horus	wikipedia
+D15	U+13085	D		Diagonal marking of Eye of Horus	wikipedia
+D16	U+13086	D		Vertical marking of Eye of Horus	wikipedia
+D17	U+13087	D		Diagonal and vertical Eye markings	wikipedia
+D18	U+13088	D		Ear	wikipedia
+D19	U+13089	D	ḫnt	Nose, eye and cheek	wikipedia
+D20	U+1308A	D		Nose, eye and cheek (cursive)	wikipedia
+D21	U+1308B	D	r; jw (Ptolemaic)	Mouth	wikipedia
+D22	U+1308C	D		Mouth with two strokes	wikipedia
+D23	U+1308D	D		Mouth with three strokes	wikipedia
+D24	U+1308E	D		Upper lip with teeth	wikipedia
+D25	U+1308F	D		Lips	wikipedia
+D26	U+13090	D	p (Ptolemaic)	Liquid issuing from lips	wikipedia
+D27	U+13091	D		Small breast	wikipedia
+D27A	U+13092	D		Large breast	wikipedia
+D28	U+13093	D	kꜣ	Two arms upraised	wikipedia
+D29	U+13094	D		Combination of D28 and R12	wikipedia
+D30	U+13095	D		Two arms upraised with tail	wikipedia
+D31	U+13096	D		Arms embracing club	wikipedia
+D31A	U+13097	D		Two arms upraised and club	wikipedia
+D32	U+13098	D		Arms embracing	wikipedia
+D33	U+13099	D	ẖn	Arms rowing	wikipedia
+D34	U+1309A	D	ꜥḥꜣ	Arms with shield and battle axe	wikipedia
+D34A	U+1309B	D		Arms with shield and mace	wikipedia
+D35	U+1309C	D	n; nj	Arms in gesture of negation	wikipedia
+D36	U+1309D	D	ꜥ; mj	Forearm, palm upwards	wikipedia
+D37	U+1309E	D	ḏ (only in ḏdw busiris); d; mj; m; dj	Forearm with bread cone	wikipedia
+D38	U+1309F	D	mj; m; mwt (mother)	Forearm with rounded loaf	wikipedia
+D39	U+130A0	D	m; mwt (Mother)	Forearm with bowl	wikipedia
+D40	U+130A1	D		Forearm with stick	wikipedia
+D41	U+130A2	D	nj	Forearm, palm down, bent upper arm	wikipedia
+D42	U+130A3	D		Forearm, palm down, straight upper arm	wikipedia
+D43	U+130A4	D	ḫw	Forearm with flail	wikipedia
+D44	U+130A5	D		Arm with sekhem scepter	wikipedia
+D45	U+130A6	D		Arm with wand	wikipedia
+D46	U+130A7	D	d; rarely t	Hand	wikipedia
+D46A	U+130A8	D		Liquid falling from hand	wikipedia
+D47	U+130A9	D		Hand with palm up	wikipedia
+D48	U+130AA	D		Hand without thumb	wikipedia
+D48A	U+130AB	D		Hand holding egg	wikipedia
+D49	U+130AC	D		Fist	wikipedia
+D50	U+130AD	D		One finger	wikipedia
+D50A	U+130AE	D		Two fingers	wikipedia
+D50B	U+130AF	D		Three fingers	wikipedia
+D50C	U+130B0	D		Four fingers	wikipedia
+D50D	U+130B1	D		Five fingers	wikipedia
+D50E	U+130B2	D		Six fingers	wikipedia
+D50F	U+130B3	D		Seven fingers	wikipedia
+D50G	U+130B4	D		Eight fingers	wikipedia
+D50H	U+130B5	D		Nine fingers	wikipedia
+D50I	U+130B6	D		Five fingers (row)	wikipedia
+D51	U+130B7	D		One finger (horizontal)	wikipedia
+D52	U+130B8	D	mt	Phallus	wikipedia
+D52A	U+130B9	D		Phallus with folded cloth	wikipedia
+D53	U+130BA	D		Phallus with emission	wikipedia
+D54	U+130BB	D	jw	Legs walking	wikipedia
+D54A	U+130BC	D		Hieratic legs walking	wikipedia
+D55	U+130BD	D		Legs walking backwards	wikipedia
+D56	U+130BE	D	pd	Leg	wikipedia
+D57	U+130BF	D		Leg with knife	wikipedia
+D58	U+130C0	D	b	Foot	wikipedia
+D59	U+130C1	D	ꜥb; bꜥ	Foot and forearm	wikipedia
+D60	U+130C2	D	wꜥb	Foot under vase	wikipedia
+D61	U+130C3	D		Three toes leftward	wikipedia
+D62	U+130C4	D		Three toes rightward	wikipedia
+D63	U+130C5	D		Two toes leftward	wikipedia
+D64	U+130C6	D		Hand with palm down	wikipedia
+D65	U+130C7	D		Sidelock of hair	wikipedia
+D66	U+130C8	D		Arm with reed pen	wikipedia
+D67	U+130C9	D		One dot	wikipedia
+D67A	U+130CA	D		Two dots	wikipedia
+D67B	U+130CB	D		Three dots	wikipedia
+D67C	U+130CC	D		Four dots	wikipedia
+D67D	U+130CD	D		Five dots	wikipedia
+D67E	U+130CE	D		Six dots	wikipedia
+D67F	U+130CF	D		Seven dots	wikipedia
+D67G	U+130D0	D		Eight dots	wikipedia
+D67H	U+130D1	D		Nine dots	wikipedia
+E1	U+130D2	E		Bull	wikipedia
+E2	U+130D3	E		Charging bull	wikipedia
+E3	U+130D4	E		Calf	wikipedia
+E4	U+130D5	E		Sacred cow	wikipedia
+E5	U+130D6	E		Cow suckling calf	wikipedia
+E6	U+130D7	E		Horse	wikipedia
+E7	U+130D8	E		Donkey	wikipedia
+E8	U+130D9	E	jb	Kid (goat)	wikipedia
+E8A	U+130DA	E	jb	Kid jumping	wikipedia
+E9	U+130DB	E	jw	Newborn hartebeest	wikipedia
+E9A	U+130DC	E		Mature bovine lying down	wikipedia
+E10	U+130DD	E		Ram	wikipedia
+E11	U+130DE	E		Ram	wikipedia
+E12	U+130DF	E		Pig	wikipedia
+E13	U+130E0	E	mj	Cat	wikipedia
+E14	U+130E1	E		Dog	wikipedia
+E15	U+130E2	E		Lying canine	wikipedia
+E16	U+130E3	E		Lying canine on shrine	wikipedia
+E16A	U+130E4	E		Lying canine on shrine, flagellum	wikipedia
+E17	U+130E5	E		Jackal	wikipedia
+E17A	U+130E6	E		Jackal looking back	wikipedia
+E18	U+130E7	E		Wolf on standard	wikipedia
+E19	U+130E8	E		Wolf on standard with mace	wikipedia
+E20	U+130E9	E		Set-animal	wikipedia
+E20A	U+130EA	E		Set-animal on basket	wikipedia
+E21	U+130EB	E		Lying Set-animal	wikipedia
+E22	U+130EC	E		Lion	wikipedia
+E23	U+130ED	E	rw; r; later l	Lying lion	wikipedia
+E24	U+130EE	E		Panther	wikipedia
+E25	U+130EF	E	db	Hippopotamus	wikipedia
+E26	U+130F0	E	ꜣbw	Elephant	wikipedia
+E27	U+130F1	E		Giraffe	wikipedia
+E28	U+130F2	E		Oryx	wikipedia
+E28A	U+130F3	E		Oryx with irrigation system	wikipedia
+E29	U+130F4	E		Gazelle	wikipedia
+E30	U+130F5	E		Ibex	wikipedia
+E31	U+130F6	E		Goat with collar	wikipedia
+E32	U+130F7	E		Baboon	wikipedia
+E33	U+130F8	E		Monkey	wikipedia
+E34	U+130F9	E	wn	Hare	wikipedia
+E34A	U+130FA	E		Hare (low)	wikipedia
+E36	U+130FB	E		Baboon (Thoth)	wikipedia
+E37	U+130FC	E		Baboon with receptacle and basket	wikipedia
+E38	U+130FD	E		Long-horned bull	wikipedia
+F1	U+130FE	F	kꜣ	ox head	wikipedia
+F1A	U+130FF	F		bovine head	wikipedia
+F2	U+13100	F		charging ox head	wikipedia
+F3	U+13101	F		hippopotamus head	wikipedia
+F4	U+13102	F		forepart of lion	wikipedia
+F5	U+13103	F		hartebeest head	wikipedia
+F6	U+13104	F		forepart of hartebeest	wikipedia
+F7	U+13105	F		ram head	wikipedia
+F8	U+13106	F		forepart of ram	wikipedia
+F9	U+13107	F		leopard head	wikipedia
+F10	U+13108	F		animal head and neck	wikipedia
+F11	U+13109	F		animal head and neck	wikipedia
+F12	U+1310A	F	wsr	animal head and neck	wikipedia
+F13	U+1310B	F	wp; jp	horns	wikipedia
+F13A	U+1310C	F	wp	horns	wikipedia
+F14	U+1310D	F		horns with palm branch	wikipedia
+F15	U+1310E	F		horns, palm branch, sun	wikipedia
+F16	U+1310F	F	ꜥb	horn	wikipedia
+F17	U+13110	F		horn and water vase	wikipedia
+F18	U+13111	F	bḥ; ḥw; ḥ	tusk	wikipedia
+F19	U+13112	F		ox lower jawbone	wikipedia
+F20	U+13113	F	ns	tongue	wikipedia
+F21	U+13114	F	jdn; sḏm	bovine ear	wikipedia
+F21A	U+13115	F		hieratic bovine ear	wikipedia
+F22	U+13116	F	pḥ	lion hindquarters	wikipedia
+F23	U+13117	F		ox foreleg	wikipedia
+F24	U+13118	F	ḫpš	reversed ox foreleg	wikipedia
+F25	U+13119	F	wḥm	ox leg	wikipedia
+F26	U+1311A	F	ẖn	goat skin	wikipedia
+F27	U+1311B	F		cow skin, bent tail	wikipedia
+F28	U+1311C	F	k; sꜣb	cow skin, straight tail	wikipedia
+F29	U+1311D	F	st	pierced cow skin	wikipedia
+F30	U+1311E	F	šd	water skin	wikipedia
+F31	U+1311F	F	ms	three skins tied	wikipedia
+F31A	U+13120	F	ms	three skins tied	wikipedia
+F32	U+13121	F	ẖ	animal belly	wikipedia
+F33	U+13122	F	sd	tail	wikipedia
+F34	U+13123	F	jb	heart	wikipedia
+F35	U+13124	F	nf; nfr	heart and windpipe	wikipedia
+F36	U+13125	F	smꜣ; zmꜣ	lung and windpipe	wikipedia
+F37	U+13126	F		backbone, ribs, spinal cord	wikipedia
+F37A	U+13127	F		backbone and ribs	wikipedia
+F38	U+13128	F	psḏ	backbone and ribs	wikipedia
+F38A	U+13129	F		backbone, ribs, spinal cord	wikipedia
+F39	U+1312A	F	jmꜣḫ; psḏ	backbone and spinal cord	wikipedia
+F40	U+1312B	F	ꜣw	backbone and spinal cords	wikipedia
+F41	U+1312C	F	psḏ	vertebrae	wikipedia
+F42	U+1312D	F	spr	rib	wikipedia
+F43	U+1312E	F		ribs	wikipedia
+F44	U+1312F	F	jsw; jwꜥ	bone with meat	wikipedia
+F45	U+13130	F		uterus	wikipedia
+F45A	U+13131	F	m	uterus	wikipedia
+F46	U+13132	F	dbn; pẖr	intestine	wikipedia
+F46A	U+13133	F	dbn	intestine	wikipedia
+F47	U+13134	F	dbn	intestine	wikipedia
+F47A	U+13135	F	dbn	intestine	wikipedia
+F48	U+13136	F	dbn	intestine	wikipedia
+F49	U+13137	F	dbn	intestine	wikipedia
+F50	U+13138	F		F46 and S29 combination	wikipedia
+F51	U+13139	F	ꜣs; ws; f	piece of flesh	wikipedia
+F51A	U+1313A	F		three flesh pieces, horizontal	wikipedia
+F51B	U+1313B	F		three flesh pieces, vertical	wikipedia
+F51C	U+1313C	F	js; ws	reversed F51	wikipedia
+F52	U+1313D	F		excrement	wikipedia
+F53	U+1313E	F	mt	divine rod, ram head	wikipedia
+G1	U+1313F	G	ꜣ	Egyptian vulture	wikipedia
+G2	U+13140	G	ꜣꜣ	two Egyptian vultures	wikipedia
+G3	U+13141	G	mꜣ	vulture and sickle	wikipedia
+G4	U+13142	G	tjw	buzzard	wikipedia
+G5	U+13143	G		falcon	wikipedia
+G6	U+13144	G		falcon with flagellum	wikipedia
+G6A	U+13145	G		falcon on basket	wikipedia
+G7	U+13146	G		falcon on standard	wikipedia
+G7A	U+13147	G		falcon in boat	wikipedia
+G7B	U+13148	G		falcon in boat	wikipedia
+G8	U+13149	G		falcon on bead collar	wikipedia
+G9	U+1314A	G		falcon with sun disk	wikipedia
+G10	U+1314B	G		falcon in Sokar barque	wikipedia
+G11	U+1314C	G		falcon image	wikipedia
+G11A	U+1314D	G		falcon image on standard	wikipedia
+G12	U+1314E	G		falcon image with flagellum	wikipedia
+G13	U+1314F	G		falcon image, two plumes	wikipedia
+G14	U+13150	G	mt; mwt	vulture	wikipedia
+G15	U+13151	G		vulture with flagellum	wikipedia
+G16	U+13152	G		vulture and cobra on baskets	wikipedia
+G17	U+13153	G	m; jm; n (Ptolemaic)	owl	wikipedia
+G18	U+13154	G	mm; m; nm	two owls	wikipedia
+G19	U+13155	G	m; mj	owl and conical loaf	wikipedia
+G20	U+13156	G	m; mj; mꜥ; ꜥm; m-ꜥ	owl and forearm	wikipedia
+G20A	U+13157	G	mr	owl and mouth	wikipedia
+G21	U+13158	G	nḥ; nḥḥ	guineafowl	wikipedia
+G22	U+13159	G	ḏb	hoopoe	wikipedia
+G23	U+1315A	G		lapwing	wikipedia
+G24	U+1315B	G		lapwing, twisted wings	wikipedia
+G25	U+1315C	G	ꜣḫ	northern bald ibis	wikipedia
+G26	U+1315D	G		sacred ibis on standard	wikipedia
+G26A	U+1315E	G		sacred ibis	wikipedia
+G27	U+1315F	G	dšr	flamingo	wikipedia
+G28	U+13160	G	gm	glossy ibis	wikipedia
+G29	U+13161	G	bꜣ	saddle-billed stork	wikipedia
+G30	U+13162	G		three saddle-billed storks	wikipedia
+G31	U+13163	G		heron	wikipedia
+G32	U+13164	G		heron on perch	wikipedia
+G33	U+13165	G		cattle egret	wikipedia
+G34	U+13166	G		ostrich	wikipedia
+G35	U+13167	G	ꜥq	cormorant	wikipedia
+G36	U+13168	G	wr	swallow	wikipedia
+G36A	U+13169	G	wr	swallow, low variant	wikipedia
+G37	U+1316A	G		sparrow	wikipedia
+G37A	U+1316B	G		sparrow, low variant	wikipedia
+G38	U+1316C	G	gb	goose	wikipedia
+G39	U+1316D	G	zꜣ	pintail duck	wikipedia
+G40	U+1316E	G	pꜣ	pintail flying	wikipedia
+G41	U+1316F	G	pꜣ; qmꜣ	pintail alighting	wikipedia
+G42	U+13170	G		widgeon	wikipedia
+G43	U+13171	G	w	quail chick	wikipedia
+G43A	U+13172	G	tw	quail chick and loaf	wikipedia
+G44	U+13173	G	ww	two quail chicks	wikipedia
+G45	U+13174	G	wꜥ; ꜥw	quail chick and forearm	wikipedia
+G45A	U+13175	G		quail chick, forearm, loaf	wikipedia
+G46	U+13176	G	mꜣw	quail chick and sickle	wikipedia
+G47	U+13177	G	ṯꜣ	duckling	wikipedia
+G48	U+13178	G		three ducklings in nest	wikipedia
+G49	U+13179	G		three ducklings in pool	wikipedia
+G50	U+1317A	G		two plovers	wikipedia
+G51	U+1317B	G		bird pecking fish	wikipedia
+G52	U+1317C	G		goose picking grain	wikipedia
+G53	U+1317D	G		human-headed bird with bowl	wikipedia
+G54	U+1317E	G	snḏ	plucked bird	wikipedia
+H1	U+1317F	H	mꜣꜥ; wšm; pq (pꜣq)	head of pintail	wikipedia
+H2	U+13180	H	mꜣꜥ; wšm; pq (pꜣq); pꜣq	head of heron	wikipedia
+H3	U+13181	H	pꜣq; pq	head of spoonbill	wikipedia
+H4	U+13182	H	nr	head of vulture	wikipedia
+H5	U+13183	H		wing	wikipedia
+H6	U+13184	H	šw	feather	wikipedia
+H6A	U+13185	H		hieratic feather	wikipedia
+H7	U+13186	H	šꜣ (only in country šꜣt)	bird foot	wikipedia
+H8	U+13187	H		egg	wikipedia
+I1	U+13188	I	ꜥšꜣ	Gecko	wikipedia
+I2	U+13189	I		Turtle	wikipedia
+I3	U+1318A	I	jt	Crocodile	wikipedia
+I4	U+1318B	I		Crocodile on shrine	wikipedia
+I5	U+1318C	I		Crocodile with curved tail	wikipedia
+I5A	U+1318D	I		Image of crocodile	wikipedia
+I6	U+1318E	I	km	Crocodile scales	wikipedia
+I7	U+1318F	I		Frog	wikipedia
+I8	U+13190	I		Tadpole	wikipedia
+I9	U+13191	I	f	Horned viper	wikipedia
+I9A	U+13192	I		Viper emerging from enclosure	wikipedia
+I10	U+13193	I	ḏ	Cobra in repose	wikipedia
+I10A	U+13194	I		Cobra with feather	wikipedia
+I11	U+13195	I	ḏḏ	Two cobras	wikipedia
+I11A	U+13196	I		Cobra, loaf and sandy tract	wikipedia
+I12	U+13197	I	k	Erect cobra on royal forehead	wikipedia
+I13	U+13198	I		Erect cobra on basket	wikipedia
+I14	U+13199	I	r; f; ḏ	Snake	wikipedia
+I15	U+1319A	I		Snake	wikipedia
+K1	U+1319B	K	jn	Nile tilapia	wikipedia
+K2	U+1319C	K	bw; s	Barbel	wikipedia
+K3	U+1319D	K	ꜥḏ	Mullet	wikipedia
+K4	U+1319E	K	ẖꜣ	Elephant-snout fish	wikipedia
+K5	U+1319F	K	bs	Petrocephalus bane	wikipedia
+K6	U+131A0	K		Fish scale	wikipedia
+K7	U+131A1	K		Nile pufferfish	wikipedia
+K8	U+131A2	K		Catfish	wikipedia
+L1	U+131A3	L	ḫpr	Dung beetle	wikipedia
+L2	U+131A4	L	bjt	Bee	wikipedia
+L2A	U+131A5	L		Bee, sedge and loaves combination	wikipedia
+L3	U+131A6	L		Fly	wikipedia
+L4	U+131A7	L	r	Locust	wikipedia
+L5	U+131A8	L		Centipede	wikipedia
+L6	U+131A9	L	ḫꜣ	Shell	wikipedia
+L6A	U+131AA	L		Reversed shell	wikipedia
+L7	U+131AB	L		Scorpion	wikipedia
+L8	U+131AC	L			wikipedia
+M1	U+131AD	M	m; jmꜣ; jm	Tree	wikipedia
+M1A	U+131AE	M		Tree and branch combination	wikipedia
+M1B	U+131AF	M		Tree and viper combination	wikipedia
+M2	U+131B0	M	ḥn; js; j	Plant	wikipedia
+M3	U+131B1	M	ḫt	Branch	wikipedia
+M3A	U+131B2	M		Owl and branch combination	wikipedia
+M4	U+131B3	M	rnp; tr	Palm branch	wikipedia
+M5	U+131B4	M	tr	Palm branch and loaf combination	wikipedia
+M6	U+131B5	M	tr	Palm branch and mouth combination	wikipedia
+M7	U+131B6	M	rnp	Palm branch and stool combination	wikipedia
+M8	U+131B7	M	šꜣ	Pool with lotus flowers	wikipedia
+M9	U+131B8	M		Lotus flower	wikipedia
+M10	U+131B9	M		Lotus bud, straight stem	wikipedia
+M10A	U+131BA	M		Lotus bud, winding stem	wikipedia
+M11	U+131BB	M		Flower on twisted stalk	wikipedia
+M12	U+131BC	M	ḫꜣ	One lotus plant	wikipedia
+M12A	U+131BD	M		Two lotus plants	wikipedia
+M12B	U+131BE	M		Three lotus plants	wikipedia
+M12C	U+131BF	M		Four lotus plants	wikipedia
+M12D	U+131C0	M		Five lotus plants	wikipedia
+M12E	U+131C1	M		Six lotus plants	wikipedia
+M12F	U+131C2	M		Seven lotus plants	wikipedia
+M12G	U+131C3	M		Eight lotus plants	wikipedia
+M12H	U+131C4	M		Nine lotus plants	wikipedia
+M13	U+131C5	M	wḏ; wꜣḏ	Papyrus stem	wikipedia
+M14	U+131C6	M		Papyrus and cobra combination	wikipedia
+M15	U+131C7	M	ḥꜣ; ꜣḫ	Clump of papyrus with buds	wikipedia
+M15A	U+131C8	M		Papyrus clump and village	wikipedia
+M16	U+131C9	M	ḥꜣ; ꜣḫ	Clump of papyrus	wikipedia
+M16A	U+131CA	M		Papyrus clump and village	wikipedia
+M17	U+131CB	M	j	Reed	wikipedia
+M17A	U+131CC	M	y; j	Two reeds	wikipedia
+M18	U+131CD	M		Reed and walking legs	wikipedia
+M19	U+131CE	M		Cakes between reed and club	wikipedia
+M20	U+131CF	M	sm	Field of reeds	wikipedia
+M21	U+131D0	M	sm	Reeds with root	wikipedia
+M22	U+131D1	M	n; nḫb	Rush	wikipedia
+M22A	U+131D2	M	nn	Two rushes	wikipedia
+M23	U+131D3	M	sw	Sedge	wikipedia
+M24	U+131D4	M		Sedge and mouth combination	wikipedia
+M24A	U+131D5	M		Lily	wikipedia
+M25	U+131D6	M		Flowering sedge and mouth	wikipedia
+M26	U+131D7	M	šmꜥ	Flowering sedge	wikipedia
+M27	U+131D8	M	šmꜥ	Flowering sedge and forearm	wikipedia
+M28	U+131D9	M		Flowering sedge and hobble	wikipedia
+M28A	U+131DA	M		Three lilies on village	wikipedia
+M29	U+131DB	M	nḏm	Carob seed-pod	wikipedia
+M30	U+131DC	M		Root	wikipedia
+M31	U+131DD	M	rwḏ	Rhizome	wikipedia
+M31A	U+131DE	M		Tree in vase	wikipedia
+M32	U+131DF	M	rwḏ	Rhizome	wikipedia
+M33	U+131E0	M		Three grains, horizontal	wikipedia
+M33A	U+131E1	M		Three grains, vertical	wikipedia
+M33B	U+131E2	M		Three grains, triangular	wikipedia
+M34	U+131E3	M		Ear of emmer	wikipedia
+M35	U+131E4	M		Stack of grain	wikipedia
+M36	U+131E5	M	ḏr	Bundle of flax	wikipedia
+M37	U+131E6	M	ḏr	Bundle of flax	wikipedia
+M38	U+131E7	M		Wide bundle of flax	wikipedia
+M39	U+131E8	M	ḏr	Basket of fruit or grain	wikipedia
+M40	U+131E9	M	js; jz	Bundle of reeds	wikipedia
+M40A	U+131EA	M	js	Bundle of reeds	wikipedia
+M41	U+131EB	M		Piece of wood	wikipedia
+M42	U+131EC	M	wn	Flower	wikipedia
+M43	U+131ED	M		Vine on trellis	wikipedia
+M44	U+131EE	M		Thorn	wikipedia
+N1	U+131EF	N		sky	wikipedia
+N2	U+131F0	N		sky with sceptre	wikipedia
+N3	U+131F1	N		sky with sceptre	wikipedia
+N4	U+131F2	N		sky with rain	wikipedia
+N5	U+131F3	N		sun	wikipedia
+N6	U+131F4	N		sun with uraeus	wikipedia
+N7	U+131F5	N		sun and butcher's block	wikipedia
+N8	U+131F6	N	wbn	sunshine	wikipedia
+N9	U+131F7	N	psḏ	moon with lower half obscured	wikipedia
+N10	U+131F8	N	psḏ	moon with lower section obscured	wikipedia
+N11	U+131F9	N		crescent moon	wikipedia
+N12	U+131FA	N		crescent moon	wikipedia
+N13	U+131FB	N		crescent moon and star	wikipedia
+N14	U+131FC	N	sbꜣ; dwꜣ	star	wikipedia
+N15	U+131FD	N		star in circle	wikipedia
+N16	U+131FE	N	tꜣ	land with grains	wikipedia
+N17	U+131FF	N	tꜣ	land	wikipedia
+N18	U+13200	N		sandy tract	wikipedia
+N18A	U+13201	N		sandy tract and water ripple	wikipedia
+N18B	U+13202	N		bread roll and bolt	wikipedia
+N19	U+13203	N		two sandy tracts	wikipedia
+N20	U+13204	N	wḏb	tongue of land	wikipedia
+N21	U+13205	N		short tongue of land	wikipedia
+N22	U+13206	N		broad tongue of land	wikipedia
+N23	U+13207	N		irrigation canal	wikipedia
+N24	U+13208	N		irrigation canal system	wikipedia
+N25	U+13209	N		three hills	wikipedia
+N25A	U+1320A	N		three hills (low)	wikipedia
+N26	U+1320B	N	ḏw	two hills	wikipedia
+N27	U+1320C	N		sun over mountain	wikipedia
+N28	U+1320D	N	ḫꜥ	rays of sun over hill	wikipedia
+N29	U+1320E	N	q	slope of hill	wikipedia
+N30	U+1320F	N		mound of earth	wikipedia
+N31	U+13210	N	ḥr	road with shrubs	wikipedia
+N32	U+13211	N		lump of clay	wikipedia
+N33	U+13212	N		grain	wikipedia
+N33A	U+13213	N		three grains	wikipedia
+N34	U+13214	N		ingot of metal	wikipedia
+N34A	U+13215	N		ingot of metal	wikipedia
+N35	U+13216	N	n	ripple of water	wikipedia
+N35A	U+13217	N	mw	three ripples of water	wikipedia
+N36	U+13218	N	mr; mj	canal	wikipedia
+N37	U+13219	N	š; ẖ (Old kingdom)	pool	wikipedia
+N37A	U+1321A	N	š; ẖ (Old kingdom)	pool	wikipedia
+N38	U+1321B	N	š; ẖ (Old kingdom)	deep pool	wikipedia
+N39	U+1321C	N	š; ẖ (Old kingdom)	pool with water	wikipedia
+N40	U+1321D	N	šm	pool with legs	wikipedia
+N41	U+1321E	N	ḥm; bjꜣ	well with ripple of water	wikipedia
+N42	U+1321F	N	ḥm; bjꜣ	well with line of water	wikipedia
+NL1	U+13220	NL		Nome sign: wall and mace	wikipedia
+NL2	U+13221	NL		Nome sign: cow thigh	wikipedia
+NL3	U+13222	NL		Nome sign: falcon and feather	wikipedia
+NL4	U+13223	NL		Nome sign: shield, arrows, sedge	wikipedia
+NL5	U+13224	NL		Nome sign: shield, arrows, papyrus	wikipedia
+NL5A	U+13225	NL		Nome sign: shield, arrows, whip	wikipedia
+NL6	U+13226	NL		Nome sign: mountain and bull	wikipedia
+NL7	U+13227	NL		Nome sign: harpoon and West-emblem	wikipedia
+NL8	U+13228	NL		Nome sign: harpoon and East-emblem	wikipedia
+NL9	U+13229	NL		Nome sign: Andjety	wikipedia
+NL10	U+1322A	NL		Nome sign: bull and crocodile skin	wikipedia
+NL11	U+1322B	NL		Nome sign: bull and pustule	wikipedia
+NL12	U+1322C	NL		Nome sign: bull and calf	wikipedia
+NL13	U+1322D	NL		Nome sign: shuttle and crook	wikipedia
+NL14	U+1322E	NL		Nome sign: jars and East-emblem	wikipedia
+NL15	U+1322F	NL		Nome sign: ibis	wikipedia
+NL16	U+13230	NL		Nome sign: fish	wikipedia
+NL17	U+13231	NL		Nome sign: tusk, hand, bread, crossroads	wikipedia
+NL17A	U+13232	NL		Nome sign: lungs, tusk, hand, bread	wikipedia
+NL18	U+13233	NL		Nome sign: white crown, cow's head	wikipedia
+NL19	U+13234	NL		Nome sign: white crown, lion hindquarters	wikipedia
+NL20	U+13235	NL		Nome sign: thorn and Sopdu	wikipedia
+NU1	U+13236	NU		Nome sign: land, bow, bread loaf	wikipedia
+NU2	U+13237	NU		Nome sign: balance column, falcon	wikipedia
+NU3	U+13238	NU		Nome sign: emblem of Nekhen	wikipedia
+NU4	U+13239	NU		Nome sign: Was-scepter	wikipedia
+NU5	U+1323A	NU		Nome sign: two falcons	wikipedia
+NU6	U+1323B	NU		Nome sign: crocodile with feather	wikipedia
+NU7	U+1323C	NU		Nome sign: sistrum	wikipedia
+NU8	U+1323D	NU		Nome sign: Osiris fetish	wikipedia
+NU9	U+1323E	NU		Nome sign: emblem of Min	wikipedia
+NU10	U+1323F	NU			unicode
+NU10A	U+13240	NU			unicode
+NU11	U+13241	NU			unicode
+NU11A	U+13242	NU			unicode
+NU12	U+13243	NU			unicode
+NU13	U+13244	NU			unicode
+NU14	U+13245	NU			unicode
+NU15	U+13246	NU			unicode
+NU16	U+13247	NU			unicode
+NU17	U+13248	NU			unicode
+NU18	U+13249	NU			unicode
+NU18A	U+1324A	NU			unicode
+NU19	U+1324B	NU			unicode
+NU20	U+1324C	NU			unicode
+NU21	U+1324D	NU			unicode
+NU22	U+1324E	NU			unicode
+NU22A	U+1324F	NU			unicode
+O1	U+13250	O	pr		wikipedia-fonetica
+O1A	U+13251	O			unicode
+O2	U+13252	O			unicode
+O3	U+13253	O			unicode
+O4	U+13254	O	h		wikipedia-fonetica
+O5	U+13255	O	mr; nm		wikipedia-fonetica
+O5A	U+13256	O			unicode
+O6	U+13257	O			unicode
+O6A	U+13258	O			unicode
+O6B	U+13259	O			unicode
+O6C	U+1325A	O			unicode
+O6D	U+1325B	O			unicode
+O6E	U+1325C	O			unicode
+O6F	U+1325D	O			unicode
+O7	U+1325E	O			unicode
+O8	U+1325F	O			unicode
+O9	U+13260	O			unicode
+O10	U+13261	O			unicode
+O10A	U+13262	O			unicode
+O10B	U+13263	O			unicode
+O10C	U+13264	O			unicode
+O11	U+13265	O			unicode
+O12	U+13266	O			unicode
+O13	U+13267	O			unicode
+O14	U+13268	O			unicode
+O15	U+13269	O			unicode
+O16	U+1326A	O			unicode
+O17	U+1326B	O			unicode
+O18	U+1326C	O			unicode
+O19	U+1326D	O			unicode
+O19A	U+1326E	O			unicode
+O20	U+1326F	O			unicode
+O20A	U+13270	O			unicode
+O21	U+13271	O			unicode
+O22	U+13272	O			unicode
+O23	U+13273	O			unicode
+O24	U+13274	O			unicode
+O24A	U+13275	O			unicode
+O25	U+13276	O			unicode
+O25A	U+13277	O			unicode
+O26	U+13278	O			unicode
+O27	U+13279	O			unicode
+O28	U+1327A	O	jwn		wikipedia-fonetica
+O29	U+1327B	O	ꜥꜣ		wikipedia-fonetica
+O29A	U+1327C	O			unicode
+O30	U+1327D	O			unicode
+O30A	U+1327E	O			unicode
+O31	U+1327F	O			unicode
+O32	U+13280	O			unicode
+O33	U+13281	O			unicode
+O33A	U+13282	O			unicode
+O34	U+13283	O	z		wikipedia-fonetica
+O35	U+13284	O			unicode
+O36	U+13285	O			unicode
+O36A	U+13286	O			unicode
+O36B	U+13287	O			unicode
+O36C	U+13288	O			unicode
+O36D	U+13289	O			unicode
+O37	U+1328A	O			unicode
+O38	U+1328B	O			unicode
+O39	U+1328C	O			unicode
+O40	U+1328D	O			unicode
+O41	U+1328E	O			unicode
+O42	U+1328F	O	šzp		wikipedia-fonetica
+O43	U+13290	O	šzp		wikipedia-fonetica
+O44	U+13291	O			unicode
+O45	U+13292	O			unicode
+O46	U+13293	O			unicode
+O47	U+13294	O			unicode
+O48	U+13295	O			unicode
+O49	U+13296	O			unicode
+O50	U+13297	O	zp		wikipedia-fonetica
+O50A	U+13298	O			unicode
+O50B	U+13299	O			unicode
+O51	U+1329A	O			unicode
+P1	U+1329B	P			unicode
+P1A	U+1329C	P			unicode
+P2	U+1329D	P			unicode
+P3	U+1329E	P			unicode
+P3A	U+1329F	P			unicode
+P4	U+132A0	P	wḥꜥ		wikipedia-fonetica
+P5	U+132A1	P			unicode
+P6	U+132A2	P	ꜥḥꜥ		wikipedia-fonetica
+P7	U+132A3	P			unicode
+P8	U+132A4	P	ḫrw		wikipedia-fonetica
+P9	U+132A5	P			unicode
+P10	U+132A6	P			unicode
+P11	U+132A7	P			unicode
+Q1	U+132A8	Q	js; ws; st; ḥtm		wikipedia-fonetica
+Q2	U+132A9	Q	ws		wikipedia-fonetica
+Q3	U+132AA	Q	p		wikipedia-fonetica
+Q4	U+132AB	Q			unicode
+Q5	U+132AC	Q			unicode
+Q6	U+132AD	Q			unicode
+Q7	U+132AE	Q			unicode
+R1	U+132AF	R			unicode
+R2	U+132B0	R			unicode
+R2A	U+132B1	R			unicode
+R3	U+132B2	R			unicode
+R3A	U+132B3	R			unicode
+R3B	U+132B4	R			unicode
+R4	U+132B5	R	ḥtp		wikipedia-fonetica
+R5	U+132B6	R	kp; kꜣp		wikipedia-fonetica
+R6	U+132B7	R			unicode
+R7	U+132B8	R			unicode
+R8	U+132B9	R	nṯr		wikipedia-fonetica
+R9	U+132BA	R			unicode
+R10	U+132BB	R			unicode
+R10A	U+132BC	R			unicode
+R11	U+132BD	R	ḏd		wikipedia-fonetica
+R12	U+132BE	R			unicode
+R13	U+132BF	R			unicode
+R14	U+132C0	R			unicode
+R15	U+132C1	R			unicode
+R16	U+132C2	R			unicode
+R16A	U+132C3	R			unicode
+R17	U+132C4	R			unicode
+R18	U+132C5	R			unicode
+R19	U+132C6	R			unicode
+R20	U+132C7	R			unicode
+R21	U+132C8	R			unicode
+R22	U+132C9	R	ḫm		wikipedia-fonetica
+R23	U+132CA	R			unicode
+R24	U+132CB	R			unicode
+R25	U+132CC	R			unicode
+R26	U+132CD	R			unicode
+R27	U+132CE	R			unicode
+R28	U+132CF	R			unicode
+R29	U+132D0	R			unicode
+S1	U+132D1	S			unicode
+S2	U+132D2	S			unicode
+S2A	U+132D3	S			unicode
+S3	U+132D4	S			unicode
+S4	U+132D5	S			unicode
+S5	U+132D6	S			unicode
+S6	U+132D7	S			unicode
+S6A	U+132D8	S			unicode
+S7	U+132D9	S			unicode
+S8	U+132DA	S			unicode
+S9	U+132DB	S			unicode
+S10	U+132DC	S	mḏḥ		wikipedia-fonetica
+S11	U+132DD	S	wsḫ		wikipedia-fonetica
+S12	U+132DE	S	nbw		wikipedia-fonetica
+S13	U+132DF	S			unicode
+S14	U+132E0	S			unicode
+S14A	U+132E1	S			unicode
+S14B	U+132E2	S			unicode
+S15	U+132E3	S			unicode
+S16	U+132E4	S			unicode
+S17	U+132E5	S			unicode
+S17A	U+132E6	S			unicode
+S18	U+132E7	S			unicode
+S19	U+132E8	S			unicode
+S20	U+132E9	S			unicode
+S21	U+132EA	S			unicode
+S22	U+132EB	S	sṯ; sꜣṯ		wikipedia-fonetica
+S23	U+132EC	S	dmḏ		wikipedia-fonetica
+S24	U+132ED	S	ṯz; ṯꜣz		wikipedia-fonetica
+S25	U+132EE	S			unicode
+S26	U+132EF	S			unicode
+S26A	U+132F0	S			unicode
+S26B	U+132F1	S			unicode
+S27	U+132F2	S			unicode
+S28	U+132F3	S			unicode
+S29	U+132F4	S	s; snb		wikipedia-fonetica
+S30	U+132F5	S			unicode
+S31	U+132F6	S	smꜣ		wikipedia-fonetica
+S32	U+132F7	S	sjꜣ		wikipedia-fonetica
+S33	U+132F8	S			unicode
+S34	U+132F9	S	ꜥnḫ		wikipedia-fonetica
+S35	U+132FA	S			unicode
+S35A	U+132FB	S			unicode
+S36	U+132FC	S			unicode
+S37	U+132FD	S			unicode
+S38	U+132FE	S	ḥqꜣ		wikipedia-fonetica
+S39	U+132FF	S	ꜥwt		wikipedia-fonetica
+S40	U+13300	S	wꜣs; wꜣb		wikipedia-fonetica
+S41	U+13301	S	ḏꜥm		wikipedia-fonetica
+S42	U+13302	S	ꜥbꜣ; sḫm; ḫrp		wikipedia-fonetica
+S43	U+13303	S	md		wikipedia-fonetica
+S44	U+13304	S			unicode
+S45	U+13305	S			unicode
+S46	U+13306	S			unicode
+T1	U+13307	T	mn		wikipedia-fonetica
+T2	U+13308	T			unicode
+T3	U+13309	T	ḥḏ		wikipedia-fonetica
+T3A	U+1330A	T			unicode
+T4	U+1330B	T	ḥḏ		wikipedia-fonetica
+T5	U+1330C	T			unicode
+T6	U+1330D	T	ḥḏḏ		wikipedia-fonetica
+T7	U+1330E	T			unicode
+T7A	U+1330F	T			unicode
+T8	U+13310	T	tp		wikipedia-fonetica
+T8A	U+13311	T			unicode
+T9	U+13312	T	pḏ		wikipedia-fonetica
+T9A	U+13313	T			unicode
+T10	U+13314	T			unicode
+T11	U+13315	T	zwn		wikipedia-fonetica
+T11A	U+13316	T			unicode
+T12	U+13317	T	rwḏ		wikipedia-fonetica
+T13	U+13318	T	rs		wikipedia-fonetica
+T14	U+13319	T			unicode
+T15	U+1331A	T			unicode
+T16	U+1331B	T			unicode
+T16A	U+1331C	T			unicode
+T17	U+1331D	T			unicode
+T18	U+1331E	T	šms		wikipedia-fonetica
+T19	U+1331F	T	qs		wikipedia-fonetica
+T20	U+13320	T			unicode
+T21	U+13321	T	wꜥ		wikipedia-fonetica
+T22	U+13322	T	sn		wikipedia-fonetica
+T23	U+13323	T			unicode
+T24	U+13324	T	jḥ; ꜥḥ		wikipedia-fonetica
+T25	U+13325	T	ḏbꜣ		wikipedia-fonetica
+T26	U+13326	T			unicode
+T27	U+13327	T			unicode
+T28	U+13328	T	ẖr		wikipedia-fonetica
+T29	U+13329	T			unicode
+T30	U+1332A	T			unicode
+T31	U+1332B	T	sšm		wikipedia-fonetica
+T32	U+1332C	T	sšm		wikipedia-fonetica
+T32A	U+1332D	T			unicode
+T33	U+1332E	T			unicode
+T33A	U+1332F	T			unicode
+T34	U+13330	T	nm		wikipedia-fonetica
+T35	U+13331	T	nm		wikipedia-fonetica
+T36	U+13332	T			unicode
+U1	U+13333	U	mꜣ		wikipedia-fonetica
+U2	U+13334	U			unicode
+U3	U+13335	U			unicode
+U4	U+13336	U	mꜣꜥ		wikipedia-fonetica
+U5	U+13337	U			unicode
+U6	U+13338	U	mr		wikipedia-fonetica
+U6A	U+13339	U			unicode
+U6B	U+1333A	U			unicode
+U7	U+1333B	U			unicode
+U8	U+1333C	U	ḥn		wikipedia-fonetica
+U9	U+1333D	U			unicode
+U10	U+1333E	U			unicode
+U11	U+1333F	U			unicode
+U12	U+13340	U			unicode
+U13	U+13341	U	hb; šnꜥ		wikipedia-fonetica
+U14	U+13342	U			unicode
+U15	U+13343	U	tm		wikipedia-fonetica
+U16	U+13344	U			unicode
+U17	U+13345	U	grg		wikipedia-fonetica
+U18	U+13346	U			unicode
+U19	U+13347	U	nw		wikipedia-fonetica
+U20	U+13348	U			unicode
+U21	U+13349	U	stp		wikipedia-fonetica
+U22	U+1334A	U			unicode
+U23	U+1334B	U	ꜣb; mr		wikipedia-fonetica
+U23A	U+1334C	U			unicode
+U24	U+1334D	U			unicode
+U25	U+1334E	U			unicode
+U26	U+1334F	U			unicode
+U27	U+13350	U			unicode
+U28	U+13351	U	ḏꜣ		wikipedia-fonetica
+U29	U+13352	U	ḏꜣ		wikipedia-fonetica
+U29A	U+13353	U			unicode
+U30	U+13354	U	tꜣ		wikipedia-fonetica
+U31	U+13355	U			unicode
+U32	U+13356	U			unicode
+U32A	U+13357	U			unicode
+U33	U+13358	U	tj		wikipedia-fonetica
+U34	U+13359	U	ḫsf		wikipedia-fonetica
+U35	U+1335A	U	ḫsf		wikipedia-fonetica
+U36	U+1335B	U	ḥm		wikipedia-fonetica
+U37	U+1335C	U			unicode
+U38	U+1335D	U			unicode
+U39	U+1335E	U			unicode
+U40	U+1335F	U			unicode
+U41	U+13360	U			unicode
+U42	U+13361	U			unicode
+V1	U+13362	V	šn		wikipedia-fonetica
+V1A	U+13363	V			unicode
+V1B	U+13364	V			unicode
+V1C	U+13365	V			unicode
+V1D	U+13366	V			unicode
+V1E	U+13367	V			unicode
+V1F	U+13368	V			unicode
+V1G	U+13369	V			unicode
+V1H	U+1336A	V			unicode
+V1I	U+1336B	V			unicode
+V2	U+1336C	V	sṯꜣ		wikipedia-fonetica
+V2A	U+1336D	V			unicode
+V3	U+1336E	V			unicode
+V4	U+1336F	V	wꜣ		wikipedia-fonetica
+V5	U+13370	V			unicode
+V6	U+13371	V	šs; šsr		wikipedia-fonetica
+V7	U+13372	V	šn		wikipedia-fonetica
+V7A	U+13373	V			unicode
+V7B	U+13374	V			unicode
+V8	U+13375	V			unicode
+V9	U+13376	V			unicode
+V10	U+13377	V			unicode
+V11	U+13378	V			unicode
+V11A	U+13379	V			unicode
+V11B	U+1337A	V			unicode
+V11C	U+1337B	V			unicode
+V11D	U+1342F	V			unicode
+V12	U+1337C	V	ꜥrq		wikipedia-fonetica
+V12A	U+1337D	V			unicode
+V12B	U+1337E	V			unicode
+V13	U+1337F	V	ṯ		wikipedia-fonetica
+V14	U+13380	V			unicode
+V15	U+13381	V	jṯ		wikipedia-fonetica
+V16	U+13382	V	zꜣ		wikipedia-fonetica
+V17	U+13383	V	zꜣ		wikipedia-fonetica
+V18	U+13384	V			unicode
+V19	U+13385	V			unicode
+V20	U+13386	V			unicode
+V20A	U+13387	V			unicode
+V20B	U+13388	V			unicode
+V20C	U+13389	V			unicode
+V20D	U+1338A	V			unicode
+V20E	U+1338B	V			unicode
+V20F	U+1338C	V			unicode
+V20G	U+1338D	V			unicode
+V20H	U+1338E	V			unicode
+V20I	U+1338F	V			unicode
+V20J	U+13390	V			unicode
+V20K	U+13391	V			unicode
+V20L	U+13392	V			unicode
+V21	U+13393	V			unicode
+V22	U+13394	V	mḥ		wikipedia-fonetica
+V23	U+13395	V			unicode
+V23A	U+13396	V			unicode
+V24	U+13397	V	wḏ		wikipedia-fonetica
+V25	U+13398	V	wḏ		wikipedia-fonetica
+V26	U+13399	V	ꜥḏ		wikipedia-fonetica
+V27	U+1339A	V	ꜥḏ		wikipedia-fonetica
+V28	U+1339B	V	ḥ		wikipedia-fonetica
+V28A	U+1339C	V			unicode
+V29	U+1339D	V	sk; wꜣḥ		wikipedia-fonetica
+V29A	U+1339E	V			unicode
+V30	U+1339F	V	nb		wikipedia-fonetica
+V30A	U+133A0	V			unicode
+V31	U+133A1	V	k		wikipedia-fonetica
+V31A	U+133A2	V			unicode
+V32	U+133A3	V	msn		wikipedia-fonetica
+V33	U+133A4	V			unicode
+V33A	U+133A5	V			unicode
+V34	U+133A6	V			unicode
+V35	U+133A7	V			unicode
+V36	U+133A8	V	ḥn		wikipedia-fonetica
+V37	U+133A9	V	jdr		wikipedia-fonetica
+V37A	U+133AA	V			unicode
+V38	U+133AB	V			unicode
+V39	U+133AC	V			unicode
+V40	U+133AD	V			unicode
+V40A	U+133AE	V			unicode
+W1	U+133AF	W			unicode
+W2	U+133B0	W	bꜣs		wikipedia-fonetica
+W3	U+133B1	W			unicode
+W3A	U+133B2	W			unicode
+W4	U+133B3	W			unicode
+W5	U+133B4	W			unicode
+W6	U+133B5	W			unicode
+W7	U+133B6	W			unicode
+W8	U+133B7	W			unicode
+W9	U+133B8	W	ẖnm		wikipedia-fonetica
+W9A	U+133B9	W			unicode
+W10	U+133BA	W	bꜣ; jꜥb; wsḫ; ḥnt; ḥnw		wikipedia-fonetica
+W10A	U+133BB	W	bꜣ		wikipedia-fonetica
+W11	U+133BC	W	g		wikipedia-fonetica
+W12	U+133BD	W			unicode
+W13	U+133BE	W			unicode
+W14	U+133BF	W	ḥz		wikipedia-fonetica
+W14A	U+133C0	W			unicode
+W15	U+133C1	W			unicode
+W16	U+133C2	W			unicode
+W17	U+133C3	W	ḫnt		wikipedia-fonetica
+W17A	U+133C4	W			unicode
+W18	U+133C5	W			unicode
+W18A	U+133C6	W			unicode
+W19	U+133C7	W	mj		wikipedia-fonetica
+W20	U+133C8	W			unicode
+W21	U+133C9	W			unicode
+W22	U+133CA	W			unicode
+W23	U+133CB	W			unicode
+W24	U+133CC	W	jn; nw		wikipedia-fonetica
+W24A	U+133CD	W			unicode
+W25	U+133CE	W	jn		wikipedia-fonetica
+X1	U+133CF	X	t		wikipedia-fonetica
+X2	U+133D0	X			unicode
+X3	U+133D1	X			unicode
+X4	U+133D2	X			unicode
+X4A	U+133D3	X			unicode
+X4B	U+133D4	X			unicode
+X5	U+133D5	X			unicode
+X6	U+133D6	X			unicode
+X6A	U+133D7	X			unicode
+X7	U+133D8	X			unicode
+X8	U+133D9	X	ḏj		wikipedia-fonetica
+X8A	U+133DA	X			unicode
+Y1	U+133DB	Y			unicode
+Y1A	U+133DC	Y			unicode
+Y2	U+133DD	Y			unicode
+Y3	U+133DE	Y			unicode
+Y4	U+133DF	Y			unicode
+Y5	U+133E0	Y	mn		wikipedia-fonetica
+Y6	U+133E1	Y			unicode
+Y7	U+133E2	Y			unicode
+Y8	U+133E3	Y			unicode
+Z1	U+133E4	Z			unicode
+Z2	U+133E5	Z			unicode
+Z2A	U+133E6	Z			unicode
+Z2B	U+133E7	Z			unicode
+Z2C	U+133E8	Z			unicode
+Z2D	U+133E9	Z			unicode
+Z3	U+133EA	Z			unicode
+Z3A	U+133EB	Z			unicode
+Z3B	U+133EC	Z			unicode
+Z4	U+133ED	Z	y		wikipedia-fonetica
+Z4A	U+133EE	Z			unicode
+Z5	U+133EF	Z			unicode
+Z5A	U+133F0	Z			unicode
+Z6	U+133F1	Z			unicode
+Z7	U+133F2	Z	w		wikipedia-fonetica
+Z8	U+133F3	Z			unicode
+Z9	U+133F4	Z	sḏ; zwꜣ		wikipedia-fonetica
+Z10	U+133F5	Z			unicode
+Z11	U+133F6	Z	jm		wikipedia-fonetica
+Z12	U+133F7	Z			unicode
+Z13	U+133F8	Z			unicode
+Z14	U+133F9	Z			unicode
+Z15	U+133FA	Z			unicode
+Z15A	U+133FB	Z			unicode
+Z15B	U+133FC	Z			unicode
+Z15C	U+133FD	Z			unicode
+Z15D	U+133FE	Z			unicode
+Z15E	U+133FF	Z			unicode
+Z15F	U+13400	Z			unicode
+Z15G	U+13401	Z			unicode
+Z15H	U+13402	Z			unicode
+Z15I	U+13403	Z			unicode
+Z16	U+13404	Z			unicode
+Z16A	U+13405	Z			unicode
+Z16B	U+13406	Z			unicode
+Z16C	U+13407	Z			unicode
+Z16D	U+13408	Z			unicode
+Z16E	U+13409	Z			unicode
+Z16F	U+1340A	Z			unicode
+Z16G	U+1340B	Z			unicode
+Z16H	U+1340C	Z			unicode
+Aa1	U+1340D	Aa	ḫ		wikipedia-fonetica
+Aa2	U+1340E	Aa	wḥꜣ		wikipedia-fonetica
+Aa3	U+1340F	Aa			unicode
+Aa4	U+13410	Aa			unicode
+Aa5	U+13411	Aa	ḥp; ḥjp		wikipedia-fonetica
+Aa6	U+13412	Aa			unicode
+Aa7	U+13413	Aa			unicode
+Aa7A	U+13414	Aa			unicode
+Aa7B	U+13415	Aa			unicode
+Aa8	U+13416	Aa	qn		wikipedia-fonetica
+Aa9	U+13417	Aa			unicode
+Aa10	U+13418	Aa			unicode
+Aa11	U+13419	Aa	mꜣꜥ		wikipedia-fonetica
+Aa12	U+1341A	Aa			unicode
+Aa13	U+1341B	Aa	gs		wikipedia-fonetica
+Aa14	U+1341C	Aa			unicode
+Aa15	U+1341D	Aa	jm		wikipedia-fonetica
+Aa16	U+1341E	Aa	gs		wikipedia-fonetica
+Aa17	U+1341F	Aa	sꜣ		wikipedia-fonetica
+Aa18	U+13420	Aa	sꜣ		wikipedia-fonetica
+Aa19	U+13421	Aa			unicode
+Aa20	U+13422	Aa	ꜥpr		wikipedia-fonetica
+Aa21	U+13423	Aa	wḏꜥ		wikipedia-fonetica
+Aa22	U+13424	Aa			unicode
+Aa23	U+13425	Aa			unicode
+Aa24	U+13426	Aa			unicode
+Aa25	U+13427	Aa			unicode
+Aa26	U+13428	Aa			unicode
+Aa27	U+13429	Aa	nḏ		wikipedia-fonetica
+Aa28	U+1342A	Aa	qd		wikipedia-fonetica
+Aa29	U+1342B	Aa			unicode
+Aa30	U+1342C	Aa			unicode
+Aa31	U+1342D	Aa			unicode
+Aa32	U+1342E	Aa	sṯꜣ		wikipedia-fonetica

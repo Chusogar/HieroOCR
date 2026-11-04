@@ -40,16 +40,29 @@ static const char *first_existing(const char **list)
     return NULL;
 }
 
+static const char *model_paths[] = {
+    "datos/modelo.hmod", "modelo.hmod", "/usr/local/share/hieroocr/modelo.hmod",
+    "/usr/share/hieroocr/modelo.hmod", NULL
+};
+
+static const char *list_paths[] = {
+    "datos/gardiner.tsv", "gardiner.tsv", "/usr/local/share/hieroocr/gardiner.tsv",
+    "/usr/share/hieroocr/gardiner.tsv", NULL
+};
+
 static void usage(const char *prog)
 {
     fprintf(stderr,
         "Uso: %s [opciones] entrada.(pdf|jpg|png|...)\n"
+        "     %s --entrenar [-L lista.tsv] [-f fuente.ttf] [-m modelo.hmod]\n"
+        "     %s --evaluar  [-m modelo.hmod]\n"
         "\n"
         "  -o FICHERO   escribe el MdC en FICHERO (por defecto, salida estándar;\n"
         "               en la interfaz gráfica, salida.mdc)\n"
         "  -g           abre la interfaz SDL2 para revisar, corregir y enseñar signos\n"
         "  -r PPP       resolución de rasterizado del PDF (por defecto 300)\n"
-        "  -p N         procesa sólo la página N del PDF\n"
+        "  -p PÁGINAS   páginas del PDF que se procesan: 71, 71-92, 71- (hasta el\n"
+        "               final), -10 (desde el principio) o listas: 3,5,7-9\n"
         "  -f FUENTE    fuente jeroglífica TTF (Noto Sans Egyptian Hieroglyphs)\n"
         "  -U FICHERO   UnicodeData.txt (para saber el código Gardiner de cada signo)\n"
         "  -t CARPETA   plantillas aprendidas (por defecto ./plantillas)\n"
@@ -61,8 +74,12 @@ static void usage(const char *prog)
         "  -R           el texto se lee de derecha a izquierda\n"
         "  -u           marca los signos dudosos con ++?+s en el MdC\n"
         "  -T UMBRAL    puntuación a partir de la cual un signo es dudoso (0.11)\n"
+        "  -m MODELO    modelo entrenado (por defecto datos/modelo.hmod si existe)\n"
+        "  -L LISTA     lista de signos de Gardiner (por defecto datos/gardiner.tsv)\n"
+        "  --entrenar   entrena el modelo con todos los signos de la lista y lo evalúa\n"
+        "  --evaluar    mide el acierto del modelo con muestras sintéticas nuevas\n"
         "  -h           esta ayuda\n",
-        prog);
+        prog, prog, prog);
 }
 
 int process_page(Page *p, const Options *o, const TemplateSet *ts)
@@ -74,7 +91,7 @@ int process_page(Page *p, const Options *o, const TemplateSet *ts)
     page_segment(p, o);
     classify_page(p, ts);
     p->processed = 1;
-    fprintf(stderr, "%s: %d renglones, %d signos\n", p->path, p->nlines, p->ng);
+    fprintf(stderr, "Página %d: %d renglones, %d signos\n", p->pageno, p->nlines, p->ng);
     return 0;
 }
 
@@ -85,16 +102,18 @@ int main(int argc, char **argv)
     };
     static const struct option longopts[] = {
         {"captura", required_argument, NULL, 1000},
+        {"entrenar", no_argument, NULL, 1001},
+        {"evaluar", no_argument, NULL, 1002},
         {"ayuda", no_argument, NULL, 'h'},
         {NULL, 0, NULL, 0}
     };
     int c;
-    while ((c = getopt_long(argc, argv, "o:gr:p:f:U:t:FAj:a:RuT:h", longopts, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "o:gr:p:f:U:t:FAj:a:RuT:m:L:h", longopts, NULL)) != -1) {
         switch (c) {
         case 'o': o.output = optarg; break;
         case 'g': o.gui = 1; break;
         case 'r': o.dpi = atoi(optarg); break;
-        case 'p': o.page = atoi(optarg); break;
+        case 'p': o.pages = optarg; break;
         case 'f': o.font = optarg; break;
         case 'U': o.unicode = optarg; break;
         case 't': o.tmpl_dir = optarg; break;
@@ -106,17 +125,21 @@ int main(int argc, char **argv)
         case 'u': o.mark_uncertain = 1; break;
         case 'T': o.uncertain_thr = (float)atof(optarg); break;
         case 1000: o.screenshot = optarg; o.gui = 1; break;
+        case 1001: o.train = 1; break;
+        case 1002: o.evaluate = 1; break;
+        case 'm': o.model = optarg; break;
+        case 'L': o.list = optarg; break;
         case 'h': usage(argv[0]); return 0;
         default: usage(argv[0]); return 2;
         }
     }
-    if (optind >= argc) {
+    if (optind >= argc && !o.train && !o.evaluate) {
         usage(argv[0]);
         return 2;
     }
     if (o.dpi < 72 || o.dpi > 1200)
         o.dpi = 300;
-    const char *input = argv[optind];
+    const char *input = optind < argc ? argv[optind] : NULL;
 
     SDL_SetMainReady();
     if (SDL_Init(o.gui ? SDL_INIT_VIDEO : 0) != 0) {
@@ -134,10 +157,56 @@ int main(int argc, char **argv)
     if (!o.unicode)
         o.unicode = first_existing(unicode_paths);
 
+    if (!o.list)
+        o.list = first_existing(list_paths);
+    if (o.list) {
+        int ns = signs_load(o.list);
+        if (ns > 0)
+            fprintf(stderr, "Lista de Gardiner %s: %d signos\n", o.list, ns);
+        else
+            fprintf(stderr, "Aviso: no se puede leer la lista %s\n", o.list);
+    }
+
+    if (o.train) {
+        int rc = train_model(&o);
+        if (rc == 0) {
+            if (!o.model)
+                o.model = "datos/modelo.hmod";
+            o.all_signs = 1;   /* la evaluación trata por igual todos los signos */
+            classify_set_options(&o);
+            TemplateSet tm;
+            ts_init(&tm);
+            if (ts_load_model(&tm, o.model) > 0)
+                rc = evaluate_model(&o, &tm);
+            ts_free(&tm);
+        }
+        TTF_Quit();
+        SDL_Quit();
+        return rc;
+    }
+
     classify_set_options(&o);
     TemplateSet ts;
     ts_init(&ts);
-    if (!o.no_font) {
+    if (!o.model)
+        o.model = first_existing(model_paths);
+    int have_model = 0;
+    if (!o.no_font && o.model)
+        have_model = ts_load_model(&ts, o.model) > 0;
+    if (o.evaluate) {
+        if (!have_model) {
+            fprintf(stderr, "No hay modelo que evaluar: ejecuta antes --entrenar.\n");
+            return 1;
+        }
+        o.all_signs = 1;
+        classify_set_options(&o);
+        int rc = evaluate_model(&o, &ts);
+        ts_free(&ts);
+        TTF_Quit();
+        SDL_Quit();
+        return rc;
+    }
+    if (!o.no_font && !have_model) {
         if (!o.font || !o.unicode)
             fprintf(stderr, "Aviso: falta la fuente jeroglífica o UnicodeData.txt; usa -f y -U.\n");
         else
@@ -156,7 +225,7 @@ int main(int argc, char **argv)
     int nfiles = 0;
     const char *dot = strrchr(input, '.');
     if (dot && strcasecmp(dot, ".pdf") == 0) {
-        if (pdf_render(input, o.dpi, o.page, tmpdir, &files, &nfiles) != 0)
+        if (pdf_render(input, o.dpi, o.pages, tmpdir, &files, &nfiles) != 0)
             return 1;
     } else {
         files = malloc(sizeof(char *));
@@ -165,8 +234,12 @@ int main(int argc, char **argv)
     }
 
     Page *pages = calloc((size_t)nfiles, sizeof(Page));
-    for (int i = 0; i < nfiles; i++)
+    for (int i = 0; i < nfiles; i++) {
         snprintf(pages[i].path, sizeof pages[i].path, "%s", files[i]);
+        pages[i].pageno = tmpdir[0] ? page_number_from_path(files[i]) : 0;
+        if (pages[i].pageno <= 0)
+            pages[i].pageno = i + 1;
+    }
 
     int rc = 0;
     if (o.gui) {
@@ -187,7 +260,7 @@ int main(int argc, char **argv)
                 Str s = {0};
                 if (nfiles > 1) {
                     char hdr[64];
-                    snprintf(hdr, sizeof hdr, "++página %d+s-!\n", o.page > 0 ? o.page : i + 1);
+                    snprintf(hdr, sizeof hdr, "++página %d+s-!\n", pages[i].pageno);
                     str_puts(&s, hdr);
                 }
                 page_to_mdc(&pages[i], &o, &s, i == nfiles - 1);
