@@ -27,6 +27,7 @@
 #define TRAIN_SIZE   96      /* px de la fuente al entrenar */
 #define EVAL_SIZE    56      /* px de la fuente al evaluar (otra resolución) */
 #define NBITS        ((NORM * NORM + 7) / 8)
+#define VARIANT_PHOTO 20     /* plantilla sacada de una fotografía del conjunto de datos */
 
 static const char *variant_names[] = {
     "original", "contorno fino", "contorno grueso", "trazo grueso", "trazo fino",
@@ -236,6 +237,45 @@ static float quadrat_height(TTF_Font *ft)
     return q;
 }
 
+typedef struct {
+    FILE *f;
+    int32_t n;
+    int photos, holdout;      /* holdout: 1 = omitir las fotos de prueba (índice % 5 == 4) */
+    TemplateSet *ts;          /* si no es NULL, se añaden aquí en vez de escribirse */
+} PhotoSink;
+
+static void photo_record(const char *code, int index, const uint8_t *mask, int w, int h, void *ud)
+{
+    PhotoSink *ps = ud;
+    if (ps->holdout && index % 5 == 4)
+        return;
+    uint8_t nm[NORM * NORM];
+    normalize_mask(mask, w, h, nm);
+    const SignInfo *si = sign_find(code);
+    if (ps->ts) {
+        Template *t = ts_add(ps->ts);
+        template_from_norm(t, nm, (float)w / (float)h);
+        snprintf(t->code, CODE_LEN, "%s", code);
+        t->cp = si ? si->cp : 0;
+        t->common = 1;
+        t->variant = VARIANT_PHOTO;
+        t->relh = -1.0f;
+    } else {
+        ModelRec r;
+        memset(&r, 0, sizeof r);
+        snprintf(r.code, CODE_LEN, "%s", code);
+        r.cp = si ? si->cp : 0;
+        r.common = 1;
+        r.variant = VARIANT_PHOTO;
+        r.aspect = (float)w / (float)h;
+        r.relh = -1.0f;   /* las fotos no dicen nada del tamaño relativo */
+        pack_bits(nm, r.bits);
+        fwrite(&r, sizeof r, 1, ps->f);
+        ps->n++;
+    }
+    ps->photos++;
+}
+
 int train_model(const Options *o)
 {
     if (signs_count() == 0) {
@@ -315,6 +355,14 @@ int train_model(const Options *o)
         if (nsigns % 100 == 0)
             fprintf(stderr, "  %d signos...\n", nsigns);
     }
+    int nphotos = 0;
+    if (o->dataset) {
+        fprintf(stderr, "Añadiendo las fotografías de %s (contornos)...\n", o->dataset);
+        PhotoSink ps = {f, n, 0, 0, NULL};
+        dataset_walk(o->dataset, photo_record, &ps);
+        n = ps.n;
+        nphotos = ps.photos;
+    }
     fseek(f, 9, SEEK_SET);
     fwrite(&n, 4, 1, f);
     fclose(f);
@@ -329,6 +377,8 @@ int train_model(const Options *o)
     fprintf(stderr, ".\n");
     for (int v = 0; v < NVARIANTS; v++)
         fprintf(stderr, "  variante %-22s %d\n", variant_names[v], per_variant[v]);
+    if (nphotos)
+        fprintf(stderr, "  fotografías (contornos)         %d\n", nphotos);
     return 0;
 }
 
@@ -475,5 +525,73 @@ int evaluate_model(const Options *o, TemplateSet *full)
     for (int k = 0; k < nsec; k++)
         printf(" %s %.0f%%", sec_name[k], 100.0 * sec_ok[k] / (sec_tot[k] ? sec_tot[k] : 1));
     printf("\n");
+    return 0;
+}
+
+/* ---------- evaluación con fotografías reservadas ---------- */
+
+typedef struct {
+    const TemplateSet *font, *both;
+    int total, f1, f5, b1, b5, unknown;
+} PhotoEval;
+
+static void photo_test(const char *code, int index, const uint8_t *mask, int w, int h, void *ud)
+{
+    PhotoEval *pe = ud;
+    if (index % 5 != 4)
+        return;   /* sólo las fotos reservadas */
+    Glyph a, b;
+    memset(&a, 0, sizeof a);
+    memset(&b, 0, sizeof b);
+    classify_mask(mask, w, h, -1.0f, pe->font, &a);
+    classify_mask(mask, w, h, -1.0f, pe->both, &b);
+    int ra = rank_of(&a, pe->font, code), rb = rank_of(&b, pe->both, code);
+    pe->total++;
+    pe->f1 += ra == 0;
+    pe->f5 += ra >= 0;
+    pe->b1 += rb == 0;
+    pe->b5 += rb >= 0;
+    pe->unknown += !ts_codepoint(pe->font, code);
+}
+
+int evaluate_photos(const Options *o, const TemplateSet *model)
+{
+    /* Modelo sin fotos (sólo la fuente) */
+    TemplateSet font = {0}, both = {0};
+    font.view = 1;
+    for (int i = 0; i < model->n; i++)
+        if (model->t[i].variant != VARIANT_PHOTO && !model->t[i].user) {
+            if (font.n == font.cap) {
+                font.cap = font.cap ? font.cap * 2 : 4096;
+                font.t = realloc(font.t, sizeof(Template) * (size_t)font.cap);
+            }
+            font.t[font.n++] = model->t[i];
+        }
+    /* Fuente + fotos de entrenamiento (4 de cada 5) */
+    both.view = 0;
+    for (int i = 0; i < font.n; i++) {
+        Template *t = ts_add(&both);
+        *t = font.t[i];
+        t->ink = malloc(sizeof(uint16_t) * (size_t)(t->nink ? t->nink : 1));
+        memcpy(t->ink, font.t[i].ink, sizeof(uint16_t) * (size_t)t->nink);
+    }
+    fprintf(stderr, "Preparando las fotografías de entrenamiento (4 de cada 5 por clase)...\n");
+    PhotoSink ps = {NULL, 0, 0, 1, &both};
+    dataset_walk(o->dataset, photo_record, &ps);
+    fprintf(stderr, "Clasificando las fotografías reservadas (1 de cada 5)...\n");
+    PhotoEval pe = {&font, &both, 0, 0, 0, 0, 0, 0};
+    dataset_walk(o->dataset, photo_test, &pe);
+    free(font.t);
+    ts_free(&both);
+    if (!pe.total)
+        return 1;
+    printf("\nEvaluación con %d fotografías reservadas de %s:\n", pe.total, o->dataset);
+    printf("                                        acierto 1º   entre los 5 primeros\n");
+    printf("  sólo la fuente (sin fotos)              %5.1f %%       %5.1f %%\n",
+           100.0 * pe.f1 / pe.total, 100.0 * pe.f5 / pe.total);
+    printf("  fuente + %5d fotos de entrenamiento    %5.1f %%       %5.1f %%\n", ps.photos,
+           100.0 * pe.b1 / pe.total, 100.0 * pe.b5 / pe.total);
+    if (pe.unknown)
+        printf("  (%d de las fotos de prueba son de signos que no están en la fuente)\n", pe.unknown);
     return 0;
 }

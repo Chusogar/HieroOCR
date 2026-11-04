@@ -10,6 +10,8 @@ hieroocr -p 71-92 moldenke.pdf -o texto.mdc      # un rango de páginas
 hieroocr -g moldenke.pdf                         # interfaz para revisar y enseñar
 ```
 
+![Interfaz de hieroocr revisando la página 67 de Moldenke: cada signo con su código Gardiner, coloreado según la seguridad, y abajo los candidatos con su valor fonético y el MdC del renglón](hieroocr_interfaz.png)
+
 ## Cómo funciona
 
 1. **Entrada**: las imágenes se cargan con SDL2_image. Los PDF se rasterizan con
@@ -79,9 +81,55 @@ aprendidas de la propia edición, que se crean con la interfaz. En la página 67
 Moldenke el modelo acierta algunos signos más y falla otros, sin una mejora clara. En
 cambio, un solo junco M17 corregido a mano hizo reconocer 35 de una página.
 
+### Entrenamiento con fotografías reales (EgyptianHieroglyphicText)
+
+hieroocr puede entrenarse también con el conjunto de datos de
+**R. Fuentes-Ferrer, J. Duque-Domingo y P. J. Herrera**,
+[EgyptianHieroglyphicText](https://github.com/rfuentesfe/EgyptianHieroglyphicText):
+9 704 fotografías de jeroglíficos en estelas de piedra (relieve o pintura), en
+310 carpetas por código de Gardiner. No es un modelo ya entrenado (los autores usan
+redes neuronales), sino datos etiquetados, que hieroocr convierte en plantillas:
+
+```
+make entrenar-fotos      # descarga el conjunto en terceros/ y crea datos/modelo_fotos.hmod
+# o bien: ./hieroocr --entrenar -D ruta/EgyptianHieroglyphicText/dataset -m datos/modelo_fotos.hmod
+```
+
+Como son fotos con luz y sombras y no tinta sobre papel, de cada una se extrae el
+**contorno** del signo: suavizado, bordes de Sobel con umbral adaptativo y limpieza de
+manchas. Esos contornos se añaden al modelo junto a las variantes de la fuente, en
+total unas 20 400 plantillas. Tarda alrededor de un minuto.
+
+Evaluación con **1 de cada 5 fotos reservadas** (no usadas al entrenar):
+`./hieroocr --evaluar -D …/dataset`
+
+| | acierto 1º | entre los 5 primeros |
+|---|---|---|
+| sólo la fuente | 6,7 % | 18,8 % |
+| fuente + 7 887 fotos de entrenamiento | **51,9 %** | **79,2 %** |
+
+Es útil también con texto impreso de **signos huecos**: en el primer renglón de la
+página 67 de Moldenke, los signos correctos y en orden pasan del 34 % (modelo de la
+fuente) al **48 %** (con fotos). A cambio, con signos dibujados como la fuente
+Unicode el acierto sintético baja del 82,4 % al 72,7 %. Por eso hay dos modelos:
+
+- `datos/modelo_fotos.hmod` (fuente y fotos): se carga **por defecto si existe**. Es
+  el mejor para inscripciones y ediciones con signos huecos.
+- `datos/modelo.hmod` (solo fuente): se elige con `-m datos/modelo.hmod`. Es el mejor
+  para tipos parecidos a las fuentes Unicode.
+
+El repositorio de los datos no declara una licencia, así que ni las fotos ni el modelo
+derivado de ellas se distribuyen aquí: se descargan y se entrenan en local. Si los usas
+en un trabajo, cita a los autores:
+
+> R. Fuentes-Ferrer, J. Duque-Domingo, P. J. Herrera (2025). *Recognition of Egyptian
+> Hieroglyphic Texts through Focused Generic Segmentation and Cross-Validation Voting*.
+> Applied Soft Computing, 171, 112793. https://doi.org/10.1016/j.asoc.2025.112793
+
 ### Plantillas
 
-- **Del modelo entrenado** (`datos/modelo.hmod`), si existe; véase arriba.
+- **Del modelo entrenado**: `datos/modelo_fotos.hmod` si existe, si no `datos/modelo.hmod`;
+  véase arriba.
 - **De la fuente**, si no hay modelo: al arrancar se dibujan los 1071 signos de *Noto Sans Egyptian
   Hieroglyphs*. El código Gardiner de cada uno sale de su nombre en `UnicodeData.txt`
   (`EGYPTIAN HIEROGLYPH AA013` → `Aa13`). Unos 220 signos frecuentes tienen
@@ -142,7 +190,8 @@ hieroocr [opciones] entrada.(pdf|jpg|png|...)
   -R           texto de derecha a izquierda
   -u           añade ++?+s tras los cuadrados con signos dudosos
   -T UMBRAL    umbral de duda (0.11)
-  -m MODELO    modelo entrenado (datos/modelo.hmod)
+  -m MODELO    modelo entrenado (datos/modelo_fotos.hmod si existe, si no datos/modelo.hmod)
+  -D CARPETA   fotos por código Gardiner para --entrenar / --evaluar
   -L LISTA     lista de signos de Gardiner (datos/gardiner.tsv)
   --entrenar   entrena el modelo con todos los signos de la lista y lo evalúa
   --evaluar    mide el acierto del modelo con muestras sintéticas nuevas

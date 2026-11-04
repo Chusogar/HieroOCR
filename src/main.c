@@ -41,6 +41,7 @@ static const char *first_existing(const char **list)
 }
 
 static const char *model_paths[] = {
+    "datos/modelo_fotos.hmod", "modelo_fotos.hmod",   /* fuente + fotografías, si se ha entrenado */
     "datos/modelo.hmod", "modelo.hmod", "/usr/local/share/hieroocr/modelo.hmod",
     "/usr/share/hieroocr/modelo.hmod", NULL
 };
@@ -54,7 +55,7 @@ static void usage(const char *prog)
 {
     fprintf(stderr,
         "Uso: %s [opciones] entrada.(pdf|jpg|png|...)\n"
-        "     %s --entrenar [-L lista.tsv] [-f fuente.ttf] [-m modelo.hmod]\n"
+        "     %s --entrenar [-D carpeta_fotos] [-L lista.tsv] [-f fuente.ttf] [-m modelo.hmod]\n"
         "     %s --evaluar  [-m modelo.hmod]\n"
         "\n"
         "  -o FICHERO   escribe el MdC en FICHERO (por defecto, salida estándar;\n"
@@ -74,9 +75,13 @@ static void usage(const char *prog)
         "  -R           el texto se lee de derecha a izquierda\n"
         "  -u           marca los signos dudosos con ++?+s en el MdC\n"
         "  -T UMBRAL    puntuación a partir de la cual un signo es dudoso (0.11)\n"
-        "  -m MODELO    modelo entrenado (por defecto datos/modelo.hmod si existe)\n"
+        "  -m MODELO    modelo entrenado (por defecto datos/modelo_fotos.hmod si existe,\n"
+        "               si no datos/modelo.hmod)\n"
         "  -L LISTA     lista de signos de Gardiner (por defecto datos/gardiner.tsv)\n"
         "  --entrenar   entrena el modelo con todos los signos de la lista y lo evalúa\n"
+        "  -D CARPETA   añade al entrenamiento un conjunto de fotos organizado en\n"
+        "               carpetas por código Gardiner (p. ej. EgyptianHieroglyphicText/dataset);\n"
+        "               con --evaluar, mide el acierto con 1 de cada 5 fotos reservadas\n"
         "  --evaluar    mide el acierto del modelo con muestras sintéticas nuevas\n"
         "  -h           esta ayuda\n",
         prog, prog, prog);
@@ -108,7 +113,7 @@ int main(int argc, char **argv)
         {NULL, 0, NULL, 0}
     };
     int c;
-    while ((c = getopt_long(argc, argv, "o:gr:p:f:U:t:FAj:a:RuT:m:L:h", longopts, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "o:gr:p:f:U:t:FAj:a:RuT:m:L:D:h", longopts, NULL)) != -1) {
         switch (c) {
         case 'o': o.output = optarg; break;
         case 'g': o.gui = 1; break;
@@ -129,6 +134,7 @@ int main(int argc, char **argv)
         case 1002: o.evaluate = 1; break;
         case 'm': o.model = optarg; break;
         case 'L': o.list = optarg; break;
+        case 'D': o.dataset = optarg; break;
         case 'h': usage(argv[0]); return 0;
         default: usage(argv[0]); return 2;
         }
@@ -176,8 +182,11 @@ int main(int argc, char **argv)
             classify_set_options(&o);
             TemplateSet tm;
             ts_init(&tm);
-            if (ts_load_model(&tm, o.model) > 0)
+            if (ts_load_model(&tm, o.model) > 0) {
                 rc = evaluate_model(&o, &tm);
+                if (rc == 0 && o.dataset)
+                    rc = evaluate_photos(&o, &tm);
+            }
             ts_free(&tm);
         }
         TTF_Quit();
@@ -200,7 +209,7 @@ int main(int argc, char **argv)
         }
         o.all_signs = 1;
         classify_set_options(&o);
-        int rc = evaluate_model(&o, &ts);
+        int rc = o.dataset ? evaluate_photos(&o, &ts) : evaluate_model(&o, &ts);
         ts_free(&ts);
         TTF_Quit();
         SDL_Quit();

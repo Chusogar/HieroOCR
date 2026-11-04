@@ -5,3 +5,6 @@ hieroocr
 plantillas/
 *.mdc
 datos/*.tmp
+# Conjuntos de datos de terceros y modelos derivados de ellos (no se distribuyen)
+terceros/
+datos/modelo_fotos.hmod
