@@ -414,12 +414,16 @@ uint8_t *render_glyph(void *ttf_font, uint32_t cp, int *w, int *h)
 
 static int g_all_signs = 0;
 static float g_variant_penalty = 0.005f;
+static float g_photo_penalty = 0.0f;
 void classify_set_options(const Options *o)
 {
     g_all_signs = o->all_signs;
     const char *vp = getenv("HIEROOCR_PENALIZACION_VARIANTE");
     if (vp)
         g_variant_penalty = (float)atof(vp);
+    const char *pp = getenv("HIEROOCR_PENALIZACION_FOTO");
+    if (pp)
+        g_photo_penalty = (float)atof(pp);
 }
 
 static int cmp_float(const void *a, const void *b)
@@ -640,7 +644,9 @@ static float score_pair(const Template *q, const Template *t, float la)
         sc *= 0.6f;   /* misma edición y tipografía: la forma es mucho más fiable */
     else if (!t->common && !g_all_signs)
         sc += 0.03f;
-    if (t->variant > 0)
+    if (t->variant == 20)
+        sc += g_photo_penalty;     /* contorno sacado de una foto: útil pero ruidoso */
+    else if (t->variant > 0)
         sc += g_variant_penalty;   /* el dibujo original manda; las variantes desempatan */
     sc += 0.2f * fabsf(la);
     if (t->relh > 0 && q->relh > 0)

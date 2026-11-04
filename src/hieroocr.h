@@ -101,6 +101,7 @@ typedef struct {
     const char *list;           /* lista de signos de Gardiner (gardiner.tsv) */
     int         train;          /* --entrenar */
     int         evaluate;       /* --evaluar */
+    const char *dataset;        /* carpeta de fotos por código Gardiner (-D) */
 } Options;
 
 typedef struct { char *s; size_t n, cap; } Str;
@@ -146,10 +147,18 @@ int             signs_count(void);
 const SignInfo *sign_at(int i);
 const SignInfo *sign_find(const char *code);
 
+/* dataset.c: conjuntos de fotos organizados por carpetas de código Gardiner */
+typedef void (*DatasetCallback)(const char *code, int index, const uint8_t *mask,
+                                int w, int h, void *ud);
+uint8_t *photo_to_mask(const Gray *g, int *w, int *h);
+int      code_from_folder(const char *name, char *code);
+int      dataset_walk(const char *dir, DatasetCallback cb, void *ud);
+
 /* train.c: entrenamiento con variantes y evaluación */
 int ts_load_model(TemplateSet *ts, const char *path);
 int train_model(const Options *o);
 int evaluate_model(const Options *o, TemplateSet *ts);
+int evaluate_photos(const Options *o, const TemplateSet *model);
 int      valid_code(const char *s);
 
 /* mdc.c */
