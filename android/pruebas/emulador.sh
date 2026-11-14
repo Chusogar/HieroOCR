@@ -11,6 +11,7 @@ adb install -r apk/HieroOCR-depuracion.apk || exit 1
 adb logcat -c
 adb shell am start -W -n $P/.HieroActivity
 captura 1-inicio 8
+adb logcat -d | grep -iE "hieroocr|SDL|AndroidRuntime|FATAL|UnsatisfiedLink|dlopen" | head -80
 
 # Los archivos de prueba van a la caché de la aplicación (run-as: APK de depuración).
 for f in pagina72.pdf foto72.jpg; do
@@ -30,5 +31,7 @@ captura 5-foto 45
 
 adb shell run-as $P ls -la /data/data/$P/cache
 adb shell run-as $P cat /data/data/$P/files/registro.txt > capturas/registro.txt
-adb logcat -d -s hieroocr:V SDL:V SDL/APP:V AndroidRuntime:E DEBUG:V > capturas/logcat.txt
+adb logcat -d > capturas/logcat.txt
+echo "===== registro.txt"; cat capturas/registro.txt
+echo "===== logcat (filtrado)"; grep -iE "hieroocr|SDL|AndroidRuntime|FATAL|UnsatisfiedLink|dlopen|DEBUG" capturas/logcat.txt | tail -150
 adb shell pidof $P && echo "La aplicación sigue en marcha." || { echo "La aplicación se ha cerrado."; exit 1; }

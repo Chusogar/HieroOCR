@@ -39,6 +39,8 @@ jobs:
     name: Probar en un emulador
     needs: apk
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -64,3 +66,13 @@ jobs:
         with:
           name: capturas-emulador
           path: capturas/
+      - name: Publicar las capturas en la rama capturas-ci
+        if: always()
+        run: |
+          cd capturas
+          git init -q -b capturas-ci
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Capturas del emulador (${GITHUB_SHA::7})"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" capturas-ci
