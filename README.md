@@ -299,6 +299,8 @@ Colores de los recuadros: **verde** = seguro, **ámbar** = dudoso, **rojo** = mu
 
 ## Android
 
+<img src="android_interfaz.png" alt="HieroOCR en Android: página de Moldenke reconocida, un signo seleccionado con sus cinco candidatos y el MdC del renglón" width="300" align="right">
+
 La misma aplicación (el mismo código C con SDL2) compilada para Android 5.0 o
 posterior, con una pequeña actividad Java para lo que sólo se puede hacer con la API
 de Android.
