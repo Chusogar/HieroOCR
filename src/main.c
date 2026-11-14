@@ -13,43 +13,7 @@
 #include <strings.h>
 #include <unistd.h>
 
-static const char *font_paths[] = {
-    "/usr/share/fonts/truetype/noto/NotoSansEgyptianHieroglyphs-Regular.ttf",
-    "/usr/share/fonts/noto/NotoSansEgyptianHieroglyphs-Regular.ttf",
-    "/usr/share/fonts/google-noto/NotoSansEgyptianHieroglyphs-Regular.ttf",
-    "/usr/local/share/fonts/NotoSansEgyptianHieroglyphs-Regular.ttf",
-    "NotoSansEgyptianHieroglyphs-Regular.ttf",
-    "datos/NotoSansEgyptianHieroglyphs-Regular.ttf",
-    NULL
-};
-
-static const char *unicode_paths[] = {
-    "/usr/share/unicode/UnicodeData.txt",
-    "/usr/share/unicode-data/UnicodeData.txt",
-    "/usr/share/unidata/UnicodeData.txt",
-    "UnicodeData.txt",
-    "datos/UnicodeData.txt",
-    NULL
-};
-
-static const char *first_existing(const char **list)
-{
-    for (; *list; list++)
-        if (access(*list, R_OK) == 0)
-            return *list;
-    return NULL;
-}
-
-static const char *model_paths[] = {
-    "datos/modelo_fotos.hmod", "modelo_fotos.hmod",   /* fuente + fotografías, si se ha entrenado */
-    "datos/modelo.hmod", "modelo.hmod", "/usr/local/share/hieroocr/modelo.hmod",
-    "/usr/share/hieroocr/modelo.hmod", NULL
-};
-
-static const char *list_paths[] = {
-    "datos/gardiner.tsv", "gardiner.tsv", "/usr/local/share/hieroocr/gardiner.tsv",
-    "/usr/share/hieroocr/gardiner.tsv", NULL
-};
+#ifndef __ANDROID__   /* en Android el programa empieza en android.c */
 
 static void usage(const char *prog)
 {
@@ -73,6 +37,8 @@ static void usage(const char *prog)
         "  -j PX        radio de unión de trazos en píxeles (automático)\n"
         "  -a PX        área mínima de un signo en píxeles (automática)\n"
         "  -R           el texto se lee de derecha a izquierda\n"
+        "  -B           corrige la iluminación desigual (fotos de páginas hechas con\n"
+        "               el móvil, sombras)\n"
         "  -u           marca los signos dudosos con ++?+s en el MdC\n"
         "  -T UMBRAL    puntuación a partir de la cual un signo es dudoso (0.11)\n"
         "  -m MODELO    modelo entrenado (por defecto datos/modelo_fotos.hmod si existe,\n"
@@ -87,18 +53,13 @@ static void usage(const char *prog)
         prog, prog, prog);
 }
 
-int process_page(Page *p, const Options *o, const TemplateSet *ts)
-{
-    if (p->processed)
-        return 0;
-    if (gray_load(p->path, &p->gray))
-        return -1;
-    page_segment(p, o);
-    classify_page(p, ts);
-    p->processed = 1;
-    fprintf(stderr, "Página %d: %d renglones, %d signos\n", p->pageno, p->nlines, p->ng);
-    return 0;
-}
+/* Servicios de la plataforma en escritorio: no hay selector propio (se puede
+ * soltar un archivo en la ventana) y el MdC se guarda en el fichero de -o. */
+int platform_is_mobile(void) { return getenv("HIEROOCR_SIMULAR_MOVIL") != NULL; }
+void platform_pick_file(void) { fprintf(stderr, "Arrastra una imagen o un PDF a la ventana.\n"); }
+void platform_take_photo(void) { fprintf(stderr, "No hay cámara en la versión de escritorio.\n"); }
+void platform_share(const char *path, const char *text) { (void)path; (void)text; }
+const char *platform_mdc_path(const Options *o) { return o->output ? o->output : "salida.mdc"; }
 
 int main(int argc, char **argv)
 {
@@ -113,7 +74,7 @@ int main(int argc, char **argv)
         {NULL, 0, NULL, 0}
     };
     int c;
-    while ((c = getopt_long(argc, argv, "o:gr:p:f:U:t:FAj:a:RuT:m:L:D:h", longopts, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "o:gr:p:f:U:t:FAj:a:RBuT:m:L:D:h", longopts, NULL)) != -1) {
         switch (c) {
         case 'o': o.output = optarg; break;
         case 'g': o.gui = 1; break;
@@ -127,6 +88,7 @@ int main(int argc, char **argv)
         case 'j': o.join = atoi(optarg); break;
         case 'a': o.min_area = atoi(optarg); break;
         case 'R': o.rtl = 1; break;
+        case 'B': o.flatten = 1; break;
         case 'u': o.mark_uncertain = 1; break;
         case 'T': o.uncertain_thr = (float)atof(optarg); break;
         case 1000: o.screenshot = optarg; o.gui = 1; break;
@@ -139,7 +101,7 @@ int main(int argc, char **argv)
         default: usage(argv[0]); return 2;
         }
     }
-    if (optind >= argc && !o.train && !o.evaluate) {
+    if (optind >= argc && !o.train && !o.evaluate && !o.gui) {
         usage(argv[0]);
         return 2;
     }
@@ -158,20 +120,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    if (!o.font)
-        o.font = first_existing(font_paths);
-    if (!o.unicode)
-        o.unicode = first_existing(unicode_paths);
-
-    if (!o.list)
-        o.list = first_existing(list_paths);
-    if (o.list) {
-        int ns = signs_load(o.list);
-        if (ns > 0)
-            fprintf(stderr, "Lista de Gardiner %s: %d signos\n", o.list, ns);
-        else
-            fprintf(stderr, "Aviso: no se puede leer la lista %s\n", o.list);
-    }
+    app_find_data(&o);
 
     if (o.train) {
         int rc = train_model(&o);
@@ -196,12 +145,7 @@ int main(int argc, char **argv)
 
     classify_set_options(&o);
     TemplateSet ts;
-    ts_init(&ts);
-    if (!o.model)
-        o.model = first_existing(model_paths);
-    int have_model = 0;
-    if (!o.no_font && o.model)
-        have_model = ts_load_model(&ts, o.model) > 0;
+    int have_model = app_load_templates(&o, &ts, 0);
     if (o.evaluate) {
         if (!have_model) {
             fprintf(stderr, "No hay modelo que evaluar: ejecuta antes --entrenar.\n");
@@ -215,13 +159,6 @@ int main(int argc, char **argv)
         SDL_Quit();
         return rc;
     }
-    if (!o.no_font && !have_model) {
-        if (!o.font || !o.unicode)
-            fprintf(stderr, "Aviso: falta la fuente jeroglífica o UnicodeData.txt; usa -f y -U.\n");
-        else
-            ts_load_font(&ts, o.font, o.unicode);
-    }
-    ts_load_user(&ts, o.tmpl_dir);
     if (ts.n == 0) {
         fprintf(stderr, "No hay plantillas con las que comparar. Indica la fuente (-f) y UnicodeData.txt (-U)\n"
                         "o una carpeta de plantillas aprendidas (-t).\n");
@@ -229,69 +166,47 @@ int main(int argc, char **argv)
             return 1;
     }
 
-    char tmpdir[512] = "";
-    char **files = NULL;
-    int nfiles = 0;
-    const char *dot = strrchr(input, '.');
-    if (dot && strcasecmp(dot, ".pdf") == 0) {
-        if (pdf_render(input, o.dpi, o.pages, tmpdir, &files, &nfiles) != 0)
-            return 1;
-    } else {
-        files = malloc(sizeof(char *));
-        files[0] = strdup(input);
-        nfiles = 1;
-    }
-
-    Page *pages = calloc((size_t)nfiles, sizeof(Page));
-    for (int i = 0; i < nfiles; i++) {
-        snprintf(pages[i].path, sizeof pages[i].path, "%s", files[i]);
-        pages[i].pageno = tmpdir[0] ? page_number_from_path(files[i]) : 0;
-        if (pages[i].pageno <= 0)
-            pages[i].pageno = i + 1;
-    }
+    Doc doc = {0};
+    if (input && doc_open(&doc, input, &o) != 0)
+        return 1;
 
     int rc = 0;
     if (o.gui) {
-        rc = gui_run(pages, nfiles, &o, &ts);
-        for (int i = 0; i < nfiles; i++)
-            page_free(&pages[i]);
+        rc = gui_run(&doc, &o, &ts);
     } else {
         FILE *out = stdout;
         if (o.output && !(out = fopen(o.output, "w"))) {
             perror(o.output);
             rc = 1;
         } else {
-            for (int i = 0; i < nfiles; i++) {
-                if (process_page(&pages[i], &o, &ts) != 0) {
+            for (int i = 0; i < doc.np; i++) {
+                Page *p = &doc.pages[i];
+                if (process_page(p, &o, &ts) != 0) {
                     rc = 1;
                     continue;
                 }
                 Str s = {0};
-                if (nfiles > 1) {
+                if (doc.np > 1) {
                     char hdr[64];
-                    snprintf(hdr, sizeof hdr, "++página %d+s-!\n", pages[i].pageno);
+                    snprintf(hdr, sizeof hdr, "++página %d+s-!\n", p->pageno);
                     str_puts(&s, hdr);
                 }
-                page_to_mdc(&pages[i], &o, &s, i == nfiles - 1);
+                page_to_mdc(p, &o, &s, i == doc.np - 1);
                 if (s.s)
                     fputs(s.s, out);
                 free(s.s);
-                page_free(&pages[i]);
+                page_free(p);   /* libera memoria página a página */
             }
             if (out != stdout)
                 fclose(out);
         }
     }
-
-    if (tmpdir[0])
-        tmpdir_remove(tmpdir);
-    for (int i = 0; i < nfiles; i++)
-        free(files[i]);
-    free(files);
-    free(pages);
+    doc_free(&doc);
     ts_free(&ts);
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
     return rc;
 }
+
+#endif /* __ANDROID__ */

@@ -353,8 +353,11 @@ void page_free(Page *p)
     free(p->g);
     char path[sizeof p->path];
     memcpy(path, p->path, sizeof path);
+    int pageno = p->pageno, photo = p->photo;
     memset(p, 0, sizeof *p);
     memcpy(p->path, path, sizeof path);
+    p->pageno = pageno;
+    p->photo = photo;
 }
 
 int glyph_mask(const Page *p, int gi, uint8_t **mask, int *w, int *h)

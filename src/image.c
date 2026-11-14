@@ -7,6 +7,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <dirent.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -90,6 +91,100 @@ void binarize_otsu(const Gray *g, Bin *b)
     b->px = malloc(n);
     for (size_t i = 0; i < n; i++)
         b->px[i] = g->px[i] <= thr;
+}
+
+/*
+ * Corrige la iluminación desigual de una foto (sombras, viñeteado, luz
+ * lateral): estima el brillo del papel por bloques (percentil 90, que ignora
+ * la tinta), lo suaviza, lo interpola y divide cada píxel por él. Después de
+ * esto el papel queda casi blanco en toda la imagen y Otsu funciona igual que
+ * con una página escaneada.
+ */
+void gray_flatten(Gray *g)
+{
+    int w = g->w, h = g->h;
+    int B = (w > h ? w : h) / 48;
+    if (B < 16)
+        B = 16;
+    int gw = (w + B - 1) / B, gh = (h + B - 1) / B;
+    float *bg = malloc(sizeof(float) * (size_t)gw * gh);
+    float *tmp = malloc(sizeof(float) * (size_t)gw * gh);
+    if (!bg || !tmp) {
+        free(bg);
+        free(tmp);
+        return;
+    }
+    for (int by = 0; by < gh; by++)
+        for (int bx = 0; bx < gw; bx++) {
+            int hist[256] = {0}, n = 0;
+            for (int y = by * B; y < (by + 1) * B && y < h; y++)
+                for (int x = bx * B; x < (bx + 1) * B && x < w; x++) {
+                    hist[g->px[(size_t)y * w + x]]++;
+                    n++;
+                }
+            int target = n - n / 10, acc = 0, v = 0;
+            for (v = 0; v < 255; v++) {
+                acc += hist[v];
+                if (acc >= target)
+                    break;
+            }
+            bg[by * gw + bx] = (float)v;
+        }
+    /* Bloques casi sin papel (dibujos, bordes oscuros): tomar el máximo de los vecinos. */
+    for (int k = 0; k < 2; k++) {
+        for (int by = 0; by < gh; by++)
+            for (int bx = 0; bx < gw; bx++) {
+                float m = 0;
+                for (int dy = -1; dy <= 1; dy++)
+                    for (int dx = -1; dx <= 1; dx++) {
+                        int x = bx + dx, y = by + dy;
+                        if (x >= 0 && y >= 0 && x < gw && y < gh && bg[y * gw + x] > m)
+                            m = bg[y * gw + x];
+                    }
+                float c = bg[by * gw + bx];
+                tmp[by * gw + bx] = c < 0.6f * m ? m : c;
+            }
+        memcpy(bg, tmp, sizeof(float) * (size_t)gw * gh);
+    }
+    for (int k = 0; k < 2; k++) {   /* suavizado 3x3 */
+        for (int by = 0; by < gh; by++)
+            for (int bx = 0; bx < gw; bx++) {
+                float s = 0;
+                int n = 0;
+                for (int dy = -1; dy <= 1; dy++)
+                    for (int dx = -1; dx <= 1; dx++) {
+                        int x = bx + dx, y = by + dy;
+                        if (x >= 0 && y >= 0 && x < gw && y < gh) {
+                            s += bg[y * gw + x];
+                            n++;
+                        }
+                    }
+                tmp[by * gw + bx] = s / n;
+            }
+        memcpy(bg, tmp, sizeof(float) * (size_t)gw * gh);
+    }
+    for (int y = 0; y < h; y++) {
+        float fy = (y + 0.5f) / B - 0.5f;
+        int y0 = (int)floorf(fy);
+        float ty = fy - y0;
+        int ya = y0 < 0 ? 0 : y0, yb = y0 + 1 >= gh ? gh - 1 : y0 + 1;
+        if (ya >= gh) ya = gh - 1;
+        for (int x = 0; x < w; x++) {
+            float fx = (x + 0.5f) / B - 0.5f;
+            int x0 = (int)floorf(fx);
+            float tx = fx - x0;
+            int xa = x0 < 0 ? 0 : x0, xb = x0 + 1 >= gw ? gw - 1 : x0 + 1;
+            if (xa >= gw) xa = gw - 1;
+            float b = (1 - ty) * ((1 - tx) * bg[ya * gw + xa] + tx * bg[ya * gw + xb]) +
+                      ty * ((1 - tx) * bg[yb * gw + xa] + tx * bg[yb * gw + xb]);
+            if (b < 24)
+                b = 24;
+            float v = g->px[(size_t)y * w + x] * 255.0f / b;
+            g->px[(size_t)y * w + x] = (uint8_t)(v > 255 ? 255 : v);
+        }
+    }
+    free(bg);
+    free(tmp);
 }
 
 /* Entrecomilla para el shell: 'abc' -> 'abc', con ' escapadas. */
