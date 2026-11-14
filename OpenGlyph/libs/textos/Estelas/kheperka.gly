@@ -1,0 +1,47 @@
+@GLYPH LL71  17  0.70  2 40 601.000.50-1   0.700.50                            Garamond*******************************
++l Stèle de Kheperkarêemhat (Musée de Rennes. Moyen empire / XII° dynastie) +s-!
++s?100 +l Texte principal : +s-!
++s?100 +l H1 : +s sw t:Htp di E16 tp*Dw:f nTr O21 xnt i imi  w&t Aa2:O49 nb:N16:Dsr r:N25 q:r s +s-!
++s?100 +l H2 : +s T19 Q6:t:f m iz z:pr:f n R50 m z:t:xAst R13 t:t A21A s i i nfr wr:t i F39A:x +s-!
++s?100 +l V1 : +s x:r nTr P8\r2 nb R13 X1:xAst Y3 nTr qd ra xpr kA +s -!
++s?100 +l V2 : +s m HAt mAa:xrw\r1 sw t:di Htp ir:st*A40 nb Dd Dd O49 w +s-!
++s?100 +l V3 : +s nTr O29v nb Ab b Dw:O49 D37:f O3 F1*H1:sS*S27 n:f nfr m +s-!
++s?100 +l V4 : +s F15 G26 t*t:Hb wA g:D37 nw*nw*nw:O32A T8 M4 Hb +s-!
++s?100 +l V5 : +s z:k:r G10 O22:nb r:k V28 Hb s Aa18 D&Hb R22:R12 +s-!
++s?100 +l V6 : +s pr:r:t Hb Abd:dwA:Hb N63:N14:Hb O22:Hb nb nfr f:r +s -!
++s?100 +l V7 : +s W24:k mr i*i n:t:f H W14 z:n t&mwt f:zb t:n f:a Xr:r Htp:t*p t:X4:Z2 +s-!
++s?100 +l V8 : +s m O22:nb:Z2 n R50 DA A P1C:f H n:a nTr O29\r3 m DA t P1C +s -!
++s?100 +l V9 : +s nTr r p*q:r M3:O1 D37:t n:f:a m P30 Hr wA:t N31:Z2 R13 t +s-!
++s?100 +l V10 : +s Dsr:f Aa5A t:Z2 m P30 s Aa28 P1C:f m V26:t P30 D&d t:n:f M18 w +s-!
++s?100 +l V11 : +s m Htp i:n wr:Z2 nw:Z1 Ab b Dw:O49 s*sDm:f h:nw A8 m r:n  +s -!
++s?100 +l V12 : +s R18 h A k:r:Hb grH n:sDr t F39A:x ra xpr kA ir:n E9 w mAa:xrw nb F39A:Z1 +s -!
+
++s?100 +l V13: +s F39A:x i*i s*b k +s-! 
++s n:M3 x*t:nb F39A:Z1 +s-! 
++s N41*t:f U7:r t:f +s-! 
++s E9 w mAa:t:xrw\r1 +s-! 
++s i F39A:x ini n:t:f +s-! 
++s mAa:a:xrw\r1 nb F39A:Z1 +s-!
+
++s?100 +l Guéridon : +s-!
++l +s R9:N33-..-..-..-..-R9\:N33\ +s-!
++l +s    D46:db t:Htp-..-t:Htp\-   D46\:db\ +s-!!
+
++s?100 +l Registre sup : +s-!
++s?+l 1g : +s F39A:x i-i ini n:t:f mAa:xrw +s-!
++s?+l 2g : +s sn t:f ra xpr kA G39&t mAa:xrw\r1 +s-!
++s?+l 3g : +s G14 t:f U7 t:f E9 w mAa:xrw\r1 +s -!
++s?+l 1d : +s F39A:x G39 i s t:t mAa:xrw\r1 +s-!
++s?+l 2d : +s i A2 t:X2 W10:t mAa:xrw\r1 +s-!
++s?+l 3d : +s F39A:t O10 Htp:t*p mAa:xrw\r1:nb F39A:Z1 +s-!
++s?+l 4d : +s F39A i i i t:f anx mAa:xrw +s-!
++s?100 +l Registre inf : +s-!
++s?+l 1g : +s sn:f wsr s r:t z:n mAa:t:xrw\r1 nb F39A:Z1 +s-!
++s?+l 2g : +s ra xpr kA mAa:xrw nb F39A:Z1 +s-!
++s?+l 3g : +s F39A i i ra s Htp:t p:ib +s-!
++s?+l 4g : +s F39A G5 n:M3:t mAa:xrw +s-!
++s?+l 1d : +s r:n:f anx +s-!
++s?+l 2d : +s sn t:f z:n t:N18 +s-!
++s?+l 3d : +s F39A i i t z:n:t N18:mAa:t:xrw\r1 +s-!
++s?+l 4d : +s F39A i mn:n i i mAa:xrw +s-!!
+

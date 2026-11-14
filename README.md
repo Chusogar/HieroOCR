@@ -8,6 +8,11 @@ Funciona en Linux, macOS y Windows y también **en Android** (móvil y tableta),
 puede abrir imágenes y PDF del dispositivo o fotografiar la página con la cámara
 (ver [Android](#android)).
 
+Lleva integrados el **diccionario y el corpus de [OpenGlyph](OpenGlyph/)**: se puede
+buscar un signo o una combinación de signos (como en hieroglyphs.ai), ver la lectura de
+cada renglón reconocido, y el corpus ayuda al OCR a elegir entre signos parecidos (ver
+[OpenGlyph](#diccionario-y-corpus-de-openglyph)).
+
 ```
 hieroocr -p 71 moldenke.pdf -o pagina71.mdc      # una página
 hieroocr -p 71-92 moldenke.pdf -o texto.mdc      # un rango de páginas
@@ -154,6 +159,47 @@ corriges unas decenas de signos en las primeras páginas, pulsas **R** para recl
 y las páginas siguientes salen mucho mejor. En la prueba con Moldenke, enseñar **un solo**
 junco (M17) hizo que se reconocieran 35 de una página que antes daba 1.
 
+## Diccionario y corpus de OpenGlyph
+
+La carpeta [`OpenGlyph/`](OpenGlyph/) contiene el proyecto OpenGlyph (LGPL): un
+diccionario de unas 11 700 palabras (secuencia de signos → transliteración →
+traducción) y un corpus de 438 textos en MdC. `OpenGlyph/exportar.py` los convierte a
+`datos/openglyph_*.tsv` con códigos Gardiner, y hieroocr los carga al arrancar.
+
+**Buscar un signo o una combinación**, como en hieroglyphs.ai:
+
+```
+hieroocr --buscar "G17 D21"        # códigos Gardiner (en cualquier orden de mayúsculas)
+hieroocr --buscar "nfr-f:r"        # MdC con códigos fonéticos
+hieroocr --buscar "Htp-di-nsw"     # una fórmula: aparece en el corpus (estela C14)
+hieroocr --buscar "G17 ? D21"      # ? = cualquier signo
+hieroocr --buscar horizon          # transliteración (nfr, Axt) o palabra de la traducción
+```
+
+Salen primero las palabras del diccionario que coinciden exactamente, luego las que
+empiezan por la secuencia y las que la contienen (ordenadas por frecuencia en el
+corpus), y después los renglones del corpus donde aparece, con su transliteración y
+traducción cuando el texto las trae.
+
+En la **interfaz**, el botón **Diccionario** (tecla D) abre el buscador, con los
+resultados dibujados en jeroglíficos. Al seleccionar un signo, el panel muestra la
+**palabra** del diccionario a la que pertenece y la **lectura del renglón**: el renglón
+se parte en palabras del diccionario (programación dinámica que prefiere palabras largas
+y frecuentes), y si un renglón del corpus se le parece mucho, se indica cuál es y su
+traducción. **Ampliar selección** (E) extiende la selección a los signos siguientes y
+**Buscar en OpenGlyph** (B) busca esa combinación. Si se toca una palabra del
+diccionario con el mismo número de signos que la selección, sus códigos se aplican a
+la selección (y se aprenden como plantillas): así se corrige una palabra entera de un
+toque. `--lectura` añade esa lectura al MdC como comentario `++…+s` tras cada renglón.
+
+**El corpus ayuda al OCR**: con las frecuencias de pares de signos del corpus, cada
+renglón se decodifica con Viterbi sobre los 5 candidatos de cada signo, combinando la
+puntuación visual con la probabilidad de la secuencia. Con el modelo de la fuente, en
+las 26 páginas de *Los dos hermanos* de Moldenke (11 635 signos), el acierto pasa del
+**5,95 % al 8,96 %**, y eso sin usar los textos de *Los dos hermanos* del corpus, para
+no hacer trampa (`HIEROOCR_CORPUS_EXCLUIR="Two Brothers"`). Se desactiva con
+`--sin-corpus`; `HIEROOCR_LAMBDA` cambia el peso del corpus (0,012).
+
 ## Compilar
 
 Dependencias: SDL2, SDL2_image, SDL2_ttf, `pkg-config`, un compilador C11 y, para los
@@ -199,6 +245,9 @@ hieroocr [opciones] entrada.(pdf|jpg|png|...)
   -a PX        área mínima de un signo (automática)
   -R           texto de derecha a izquierda
   -B           corrige la iluminación desigual (fotos de páginas, sombras)
+  --buscar Q   busca en el diccionario y el corpus de OpenGlyph
+  --lectura    añade la lectura de cada renglón (OpenGlyph) al MdC
+  --sin-corpus no usa el corpus de OpenGlyph para elegir entre candidatos
   -u           añade ++?+s tras los cuadrados con signos dudosos
   -T UMBRAL    umbral de duda (0.11)
   -m MODELO    modelo entrenado (datos/modelo_fotos.hmod si existe, si no datos/modelo.hmod)
@@ -233,6 +282,9 @@ omiten.
 | Cambiar de página | AvPág / RePág |
 | Zoom / mover / ajustar | rueda o + −, arrastrar o flechas, F |
 | Abrir otro documento | soltar la imagen o el PDF sobre la ventana |
+| Buscador de OpenGlyph | D |
+| Ampliar la selección al signo siguiente | E |
+| Buscar la selección en OpenGlyph | B |
 | Salir | Q |
 
 Todas las órdenes tienen también botón: las del documento en la barra superior y las
@@ -263,6 +315,8 @@ de Android.
   abre el menú de compartir (correo, Drive, Telegram…) con el texto y el fichero.
 - Desde otras aplicaciones, **Abrir con** o **Compartir** una imagen o un PDF lo
   lleva a HieroOCR.
+- **Diccionario**: el buscador de OpenGlyph, con el teclado del sistema; y al tocar
+  un signo, su palabra y la lectura del renglón, como en escritorio.
 - El modelo entrenado con fotografías (`make entrenar-fotos`, que no se distribuye)
   se puede cargar eligiendo el archivo `modelo_fotos.hmod` con **Abrir**.
 
@@ -285,7 +339,48 @@ Cada cambio en `src/` o `android/` compila el APK en GitHub Actions
 (*Actions → Android → HieroOCR-apk*). Descarga `HieroOCR.apk` en el móvil y ábrelo;
 Android pedirá permitir la instalación de aplicaciones de origen desconocido.
 
-### Compilar
+### Diccionario y corpus de OpenGlyph
+
+La carpeta [`OpenGlyph/`](OpenGlyph/) contiene el proyecto OpenGlyph (LGPL): un
+diccionario de unas 11 700 palabras (secuencia de signos → transliteración →
+traducción) y un corpus de 438 textos en MdC. `OpenGlyph/exportar.py` los convierte a
+`datos/openglyph_*.tsv` con códigos Gardiner, y hieroocr los carga al arrancar.
+
+**Buscar un signo o una combinación**, como en hieroglyphs.ai:
+
+```
+hieroocr --buscar "G17 D21"        # códigos Gardiner (en cualquier orden de mayúsculas)
+hieroocr --buscar "nfr-f:r"        # MdC con códigos fonéticos
+hieroocr --buscar "Htp-di-nsw"     # una fórmula: aparece en el corpus (estela C14)
+hieroocr --buscar "G17 ? D21"      # ? = cualquier signo
+hieroocr --buscar horizon          # transliteración (nfr, Axt) o palabra de la traducción
+```
+
+Salen primero las palabras del diccionario que coinciden exactamente, luego las que
+empiezan por la secuencia y las que la contienen (ordenadas por frecuencia en el
+corpus), y después los renglones del corpus donde aparece, con su transliteración y
+traducción cuando el texto las trae.
+
+En la **interfaz**, el botón **Diccionario** (tecla D) abre el buscador, con los
+resultados dibujados en jeroglíficos. Al seleccionar un signo, el panel muestra la
+**palabra** del diccionario a la que pertenece y la **lectura del renglón**: el renglón
+se parte en palabras del diccionario (programación dinámica que prefiere palabras largas
+y frecuentes), y si un renglón del corpus se le parece mucho, se indica cuál es y su
+traducción. **Ampliar selección** (E) extiende la selección a los signos siguientes y
+**Buscar en OpenGlyph** (B) busca esa combinación. Si se toca una palabra del
+diccionario con el mismo número de signos que la selección, sus códigos se aplican a
+la selección (y se aprenden como plantillas): así se corrige una palabra entera de un
+toque. `--lectura` añade esa lectura al MdC como comentario `++…+s` tras cada renglón.
+
+**El corpus ayuda al OCR**: con las frecuencias de pares de signos del corpus, cada
+renglón se decodifica con Viterbi sobre los 5 candidatos de cada signo, combinando la
+puntuación visual con la probabilidad de la secuencia. Con el modelo de la fuente, en
+las 26 páginas de *Los dos hermanos* de Moldenke (11 635 signos), el acierto pasa del
+**5,95 % al 8,96 %**, y eso sin usar los textos de *Los dos hermanos* del corpus, para
+no hacer trampa (`HIEROOCR_CORPUS_EXCLUIR="Two Brothers"`). Se desactiva con
+`--sin-corpus`; `HIEROOCR_LAMBDA` cambia el peso del corpus (0,012).
+
+## Compilar
 
 Hace falta el SDK de Android con el NDK 27 y Java 17 (o Android Studio, abriendo la
 carpeta `android/`).

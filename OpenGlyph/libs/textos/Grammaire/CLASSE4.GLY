@@ -1,0 +1,21 @@
+@GLYPH LL87  15  0.75  1 35 922.502.509897 2.502.50                            Times New Roman************************
++b Syntaxe / Enoncés normatifs / Prédicat de classe +s-!
+
+
++b Ex. 14 +s-!
++s  G38: A1 z:A1*Z1-p w-i s r i i  M1A A1- r:n f- !
+
++b Ex. 15 +s-!
+ +s  tA: N23*Z1-p w nfr f:r- i A A  M2  N25- r:n f -!
+
++b Ex. 16 +s-!
++s  wA A w  N35A- p  W-n  M14  G36 r: N36  -!
+
++b Ex. 17 +s-!
++s  N41:t  B1 D60-  N35A A1- p*W:n-r:a N6 G7- !
+
++b Ex. 18 +s-!
++s  b w- p W- G36 r:n-  N17 :N23*Z1- p:n-!
+
+
+

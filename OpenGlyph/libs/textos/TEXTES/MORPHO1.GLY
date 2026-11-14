@@ -1,0 +1,17 @@
+@GLYPH LL44  15  0.8   1 35 922.502.50-1   2.502.50                            Times New Roman************************
++b Morphologie du genre et du nombre +s-!
++l Aux. + Sujet (nom) + Prédicat Adverbial (prép./nom) +s-!
++l M./S. +s i-w sn-n:A1 m pr:Z1 +t jw sn m pr +l Il y a le/un frère dans la maison +s-!
++l F./S. +s i-w sn-n:t-B1 m pr:Z1 +t jw sn.t m pr +l Il y a la/une soeur dans la maison +s-!
++l M./P. +s i-w sn-n:nw-w-A1-Z3 m pr:Z1 +t jw sn.w m pr +l Il y a les frères dans la maison +s-!
++l F./P. +s i-w sn-n:t-B1-Z3 m pr:Z1  +t jw sn.wt m pr +l Il y a les soeurs dans la maison +s-!
++l Aux. + Sujet (nom/adjectif) + Prédicat Adverbial (prép./nom) +s-!
++s i-w sn-n:A1 wr:r m pr:Z1 +t jw sn wr m pr +l Il y a le grand frère dans la maison +s-!
++s i-w sn-n:t-B1 wr r:t m pr:Z1  +t jw sn.t wr.t m pr +l Il y a la grande soeur dans la maison +s-!
++s i-w sn-n:nw-w-A1-Z3 wr:Z2 m pr:Z1 +t jw sn.w wr.w m pr +l Les grands frères sont dans la maison +s-!
++s i-w sn-n:t-B1-Z3 wr-r:t-Z3 m pr:Z1 +t jw sn.wt wr.wt m pr +l Les grandes soeurs sont dans la maison +s-!
++l Duel +s-!
++l M./D. +s i-w sn-n:nw- G43&Z4 A1-A1 m pr:Z1 +t jw sn.wy m pr +l Il y a les deux frères dans la maison +s-!
++l F./D. +s i-w sn-n:t*y-B1-B1 m pr:Z1 +t jw sn.ty m pr +l Il y a les deux soeurs dans la maison +s-!
++l M./D.  +s i-w sn-n:nw- G43&Z4 A1-A1 wr:r- G43&Z4 m pr:Z1 +t jw sn.wy wr.wy m pr +l deux grands frères... +s-!
++l F./D. +s i-w sn-n:t*y-B1-B1 wr-r:t*y m pr:Z1 +t jw sn.ty wr.ty m pr +l Il y a les deux grandes soeurs... +s-!

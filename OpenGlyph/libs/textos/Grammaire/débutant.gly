@@ -1,0 +1,18 @@
+@GLYPH LL125 17  0.8   2 40 602.502.50-1   2.502.50                            Times New Roman************************
++b  Exemple de phrase 1 : +s-!
++s  i w n:h*t  M1 Hr: Z1  wA  A t: N31 -!
++l  (you néhette hére ouaette) +s-!
++l  il y a un arbre sur la route (ou bien) l'arbre est sur le chemin +s-!
++l  La phrase commence par : +s i-w +l (you) il y a +s-!
++l  "il y a" + Sujet + Préposition + Complément +s-!
++l  il y a un arbre (you néhette) +s i-w n:h*t-M1 +l Préposition + Complément +s Hr:Z1 wA-A-t:N31 +s-!
++l  Préposition (sur) +s  Hr: Z1 +l + Complément (la route) +s  wA  A t: N31  +s-!
++b  Exemple de phrase 2 : +s-!
++s  i w  M8-A-i- E12-Hr-Z1  E34:n-m-A2 Hr: Z1  wA  A t: N31 +s-!
++l  (you shaï hére ounéme hére ouaette) +s-!
++l  il y a un cochon en train de manger sur la route (ou bien) le cochon mange sur la route. +s-!
++l  La phrase commence par : +s i-w +l (you) il y a +s-!
++l  "il y a" + Sujet + Verbe + Préposition + Complément +s-!
++l  il y a un cochon (you shaï) +s  i w M8-A-i- E12 +l + Verbe + Préposition + Complément +s-!
++l  Verbe (en train de manger) = Préposition (sur) +s Hr: Z1 +l + Infinitif (manger) +s  E34:n-m-A2 +s-!
++l  Préposition (sur) +s  Hr: Z1 +l + Complément (la route) +s  wA  A t: N31  +s-! 

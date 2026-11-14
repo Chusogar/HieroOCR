@@ -15,6 +15,43 @@
 
 #ifndef __ANDROID__   /* en Android el programa empieza en android.c */
 
+/* --buscar: diccionario y corpus de OpenGlyph en la terminal. */
+static int search_cli(const char *q)
+{
+    if (!dict_loaded()) {
+        fprintf(stderr, "No se encuentra el diccionario de OpenGlyph (datos/openglyph_diccionario.tsv).\n");
+        return 1;
+    }
+    DictHit h[60];
+    int total = 0, n = dict_search(q, h, 60, &total);
+    printf("«%s»: %d resultados%s\n", q, total, total > n ? " (se muestran los primeros)" : "");
+    int last = -1;
+    for (int i = 0; i < n; i++) {
+        char seq[512] = "", u[512];
+        if (h[i].kind != last)
+            printf("\n%s\n", h[i].kind == 0 ? "Diccionario:" : "Corpus:");
+        last = h[i].kind;
+        const int *s = h[i].kind == 0 ? dict_entry(h[i].idx)->s : corpus_line(h[i].idx)->s;
+        int ns = h[i].kind == 0 ? dict_entry(h[i].idx)->n : corpus_line(h[i].idx)->n;
+        for (int k = 0; k < ns && strlen(seq) < 400; k++) {
+            strcat(seq, k ? "-" : "");
+            strcat(seq, sign_code(s[k]));
+        }
+        if (h[i].kind == 0) {
+            const DictEntry *e = dict_entry(h[i].idx);
+            translit_unicode(e->tr, u, sizeof u);
+            printf("  %-28s %-14s %s%s\n", seq, u, e->trad, e->freq ? "" : "");
+        } else {
+            const CorpusLine *c = corpus_line(h[i].idx);
+            translit_unicode(c->tr, u, sizeof u);
+            printf("  %s, %d: %.90s%s\n", corpus_text_name(c->text), c->line, seq, ns > 0 && strlen(seq) > 90 ? "…" : "");
+            if (c->tr[0] || c->trad[0])
+                printf("      %s%s%s\n", u, c->tr[0] && c->trad[0] ? " — " : "", c->trad);
+        }
+    }
+    return 0;
+}
+
 static void usage(const char *prog)
 {
     fprintf(stderr,
@@ -49,6 +86,10 @@ static void usage(const char *prog)
         "               carpetas por código Gardiner (p. ej. EgyptianHieroglyphicText/dataset);\n"
         "               con --evaluar, mide el acierto con 1 de cada 5 fotos reservadas\n"
         "  --evaluar    mide el acierto del modelo con muestras sintéticas nuevas\n"
+        "  --buscar Q   busca en el diccionario y el corpus de OpenGlyph: signos\n"
+        "               (\"G17 D21\", \"nfr-f:r\", ? = cualquiera), transliteración o traducción\n"
+        "  --lectura    añade al MdC la lectura de cada renglón según el diccionario\n"
+        "  --sin-corpus no usa el corpus de OpenGlyph para elegir entre candidatos\n"
         "  -h           esta ayuda\n",
         prog, prog, prog);
 }
@@ -70,9 +111,13 @@ int main(int argc, char **argv)
         {"captura", required_argument, NULL, 1000},
         {"entrenar", no_argument, NULL, 1001},
         {"evaluar", no_argument, NULL, 1002},
+        {"buscar", required_argument, NULL, 1003},
+        {"lectura", no_argument, NULL, 1004},
+        {"sin-corpus", no_argument, NULL, 1005},
         {"ayuda", no_argument, NULL, 'h'},
         {NULL, 0, NULL, 0}
     };
+    const char *search = NULL;
     int c;
     while ((c = getopt_long(argc, argv, "o:gr:p:f:U:t:FAj:a:RBuT:m:L:D:h", longopts, NULL)) != -1) {
         switch (c) {
@@ -94,6 +139,9 @@ int main(int argc, char **argv)
         case 1000: o.screenshot = optarg; o.gui = 1; break;
         case 1001: o.train = 1; break;
         case 1002: o.evaluate = 1; break;
+        case 1003: search = optarg; break;
+        case 1004: o.reading = 1; break;
+        case 1005: o.no_lm = 1; break;
         case 'm': o.model = optarg; break;
         case 'L': o.list = optarg; break;
         case 'D': o.dataset = optarg; break;
@@ -101,7 +149,7 @@ int main(int argc, char **argv)
         default: usage(argv[0]); return 2;
         }
     }
-    if (optind >= argc && !o.train && !o.evaluate && !o.gui) {
+    if (optind >= argc && !o.train && !o.evaluate && !o.gui && !search) {
         usage(argv[0]);
         return 2;
     }
@@ -121,6 +169,8 @@ int main(int argc, char **argv)
     }
 
     app_find_data(&o);
+    if (search)
+        return search_cli(search);
 
     if (o.train) {
         int rc = train_model(&o);

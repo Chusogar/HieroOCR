@@ -1,0 +1,42 @@
+@GLYPH LL38  15  0.8   1 30 922.502.509281 2.502.50                            Times New Roman************************
++l prospectif +s-!
++s F21-m-f +s-!
++s F21-m-w-f +s-!
++s wn:n-f +s-!
++s wn-n:n-f +s-!
++s U2:D4-A-f +s-!
++s U2:D4-A-n:f +s-!
++s U2:D4-A-A-f +s-!
++s mr:r-i-i-A2-f +s-!
++s mr:r-A2 +s-!
++s mr:r-A2-f +s-!
++s D37:f +s-!
++s X8-f +s-!
++s r:D37-f +s-!
++s W25-n:t-f +s-!
++s W25-n:f +s-!
++s D54-w-t:f +s-!
++s D54-w-f +s-!
+
++s mr:r-A2 A1 D54-w-t:k +s-!
++t mr=j jw.t=k +s-!
+
++l Ebers 75, 12 +s-!
++s D4-U2:D4-A-A-V31A m-a:V31A F46:r:t-N33:Z2 p-W n:t wn:n U5:a-Y1 +s-!
++t jr mAA=k mk pXr.t pw n.t wn mAa +s-!
+
++l Ebers 88, 19 +s-!
++s D37:D37-V31A s&t r h-A-w-D54 z:n:f-D26:Z2 +s-!
++t djdj=k st r hAw snf +s-!
+
++l Kahun 3, 24 +s-!
++s i-r g:r:t U1:D4-A-n:V31A x:t-Y1:Z2 Hr:Z1 D4:D4-s-Z4 +s-!
++t jr grt mA.n=k x.t Hr jr.ty=sy +s-!
+
++l Meir III, 11 +s-!
++s D4:n-A1 U19:nw n U7:r-w-t wn:n:n r:n:Z2-s-n:Z2 mn:n-Y1:n I10&X1-tA +s-!
++t jr.n=j nw n-mrw.t wnn rn.w=sn mn(.w) n D.t +s-!
+
++l Le Caire 20539, II, c 7 +s-!
++s i-x:Y1 wn:n-A1 m Sms-s-D54:n nTr-Z1 +s-!
++t jx wn=j m Sms n nTr +s-!

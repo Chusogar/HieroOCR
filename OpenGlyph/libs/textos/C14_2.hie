@@ -1,0 +1,249 @@
+# The format is the following : the columns are separated by tabulations
+# in theory, the awk command 
+# awk -F\t '/^[^#\\]/ {print $1}' allows to get the code for HieroTeX.
+# MANCOD	translit	meaning
+anx\R-30	anx	live
+-G5	Hr	Horus
+-zmA:tA:tA	smA-tA.wy	Sema-tauy
+-nbty	nb.ty	nbty	the two ladies
+-zmA:tA:tA	smA-tA.wy	Sema-tauy
+-sw:t-bit:t	nsw-bity	king of Upper and Lower Egypt
+-<-zA-ra:.-mn:n-T:w-Htp:t*p->	sA-ra-mnTw-Htp	son of Re Mentouhotep
+-anx	anx	live
+-D:t:N17-!	Dt	eternally
+-bA:k-=f	bAk=f	servant
+:U2:mAa	mAa	true
+-n	n	of
+:st*(t:pr)-ib:Z1-=f	st-ib=f	confidence
+:ir:r	irr	do
+-H-Hz-z:z:t-=f	Hss.t=f	
+:nb:t	nb.t
+-m	m
+-Xr:r:t	Xr.t
+-hrw:Z1	hrw
+-n:t	n.t
+:hrw	hrw
+:nb	nb
+-imAx:i*i	imAxy
+-x:r	xr
+-nTr	nTr
+-aA\r1	aA
+-ir:ir-s-n:A1-!	ir.ty=sn
+-sw-t:Htp-di	Htp-di-nsw
+-ir:st-A40	wsir
+-nb	nb
+:Dd-d:niwt	Dddw
+-W18-n:t-R13	xn.ty-imn.tyw
+-nb	nb
+:Ab-b-Dw:niwt	AbDw
+-m	m
+-st-t:pr:Z2-=f	s.wt=f
+:nb:t	nb.t
+-nfr:t	nfr.t
+-wab-t:mw-!	wab.t
+-O3	pr.t-xrw
+-xA	xA
+-m	m
+-X2	t
+:Hnqt	Hnq.t
+-F1	iH
+:H1	Apd
+-Ss*Z1	sSr
+:mnxt	mnx.t
+-x*t	xt
+:nb	nb
+-nfr	nfr
+-wab	wab
+-X2	t
+:n	n
+-H-s-b:Y1	Hsb
+-H-q:t-nw	Hnq.t
+:XA-A-m-t:nw	XAm.t
+-D:f-A-w-N18:.*Z1*Z1*.:Z1	DfAw
+-nw:Z1-!	nw
+-nb:A40	nb
+-Ab-b-Dw:niwt	AbDw
+-s-D:r-t:Hnqt-Z3	sDr.t
+-HD-t:N8	HD.t
+-H-z:zA-t:E4	HsA.t
+-U7:r-r:t-N33	mrr.t
+-Ax-Z3	Ax
+-M42-A2	M42
+-i-m	im
+-n	n
+:imAx:x-i-i	imAxy
+-x:r	xr
+-ir:st-A40-!	wsir
+-x:r	xr
+-i-p:n-E16	inpw
+-nb	nb
+:tA-Dsr:xAst	tA-Dsr
+-m-r	mr
+:Hmt-w-t:.-A1-Z3	Hmww.w
+-zS\	sS
+-qs-t:Z1*Z1-A1	qs.t
+-ir:ir-s-n:A1	ir.ty=sn
+-D:d	Dd
+-i-w	iw(=i)
+-r:x-Y1\r3\-!-=k:w	rx=kw
+-s-S:t*U30	sStA
+-n	n
+:nTr*md*Y1\r3	mdw-nTr
+-s-T32:t:Y1	sSm.t
+-a:Z2	a
+:nw*Z1	n.w
+-W4-i-i-t:Y1:Z2	Hbyt
+-H-kA:Y1	HqA
+-nb	nb
+:a:p-r:apr-=n	apr.n(=i)
+:sw*w	sw
+-D35:n	nn
+-s-wA:t:N31	swAt
+-i-m	im
+-Hr-r:=A1-!	Hr=i
+-nw:k	ink
+-g:r:t	grt
+-Hmt-w-w	Hmww
+-i-q:r	iqr
+-m	m
+-Hmt-t:Z1:=f	Mmw.t=f
+-pr:r	pr
+-Hr:tp	Hry-tp
+-m	m
+-r:x:t-Y1:=n:=f	rx.t=n=f
+-i-w	iw(=i)
+-r:x:Y1-=k:w	rx(=kw)
+-r:r:r	r.w
+-b-A-g-w-mw-!	bAg.w
+-f:A-t:mxAt:Z2	fA.t
+-n:t	n.t
+:tp*Z1	tp
+-H-s-b-Aa2:Y1	Hsv
+-Sd:d:t	Sd.t
+-s-q*aq:t	saq.t
+-m	m
+-pr:r:D54	pr
+-q*aq:=f	aq=f
+-r	r
+:ii-w	iw
+-H-a:F51	Ha
+:r	r
+-st*t:=f	s.t=f
+-i-w	iw(=i)
+-r:x:Y1-=k:w	rx=kw
+-Sm:t	Sm.t
+-t:w-.:t-!-A53	tw.t
+-D54:t:Z1	iw.t
+-B1	tw.t
+-a:sxm:a-w	sxm-a.wy
+-nw:Z1	n
+-A-Z1:.-10:Z1	A.t
+-k:z:F3	ks
+-n	n
+:s*(q:r)-T30	sqr
+:wa:a-t:A13	wa.t
+-d:g*g-D5	dgg
+:ir:t*Z1	ir.t
+-n	n
+:sn*(n:t)-nw*Z1*Z1:s	sn.ty=s
+-s-s-D:snD	ssnD
+-Hr*Z1	Hr
+:n	n
+-r:s-rs-t:A13-Z3-!	rs.wt
+-f:A-t:mxAt	fA.t
+-a*Z1	a
+:n:t	n.t
+-xA-A-a:Aa2	xAa
+-xA-A-b-E25	XAb
+:D54-.:t:Z1	iw.t
+-p:.-H-r:r:D54	pHrr
+-i-w	iw(=i)
+-r:x:Y1-=k:w	rx=kw
+-ir:t	ir.t
+-i-M:m-i-i-t:Y1:Z2	imy.t
+-x:t-Y1:Z2-!	x.t
+-h-A-A-t:D54	hAA.t
+-n:Z2:D35:n	nn	(ou =sn nn)
+-r:D37:t	rd.t
+-U2-A-x-Q7	mAx
+-s-n	sn
+:x*t-Q7	xt
+-D35	nn
+:i*a-mw	ia
+-n:Z2:n	sn
+-mw	mw
+-g:r-t-!	grt
+-D35:n	nn
+:pr-r:i*i	pry
+-Xr:r-=s-n	Xr=sn
+:b*w	bw
+-nb	nb
+:wp:p-Y1:Hr-r:=A1	wp-Hr=i
+-wa:a:=k-w	wa=kw
+-H-n:a	Hna
+-zA:Z1-=A1	sA=i
+-A19-w	smsw
+-n	n
+:X:t*Z1-=A1	Xt=i
+-wD-D:Y1:=n	wD.n
+-nTr-Z1	nTr
+*ir:=f	ir=f
+-pr:r:D54-!-n:=f	pr.n=f
+:Xr-r:=s	Xr=s
+-i-w	iw
+-U2:ir-A-=n	mA.n(=i)
+:pr:r-t:Y1:Z2	pr.t
+-a:.*Z1*Z1*.:=f	a.wy=f
+-m	m
+-ir:t	ir.t
+-m-r	mr
+:kA-t:A9	kA.t
+-m	m
+-aA\r1-t:inr	aAt
+:nb	nb
+-Sps:t	Sps.t
+-HAt:t	HA.t
+:r	r
+-S14	HD
+-H-n:a	Hna
+-nbw:Z2-!	nbw
+pH:.*Z1*Z1*.	pH.wy
+-r	r
+:Ab*b-E25	Ab
+:r	r
+-h:b-n:hb:xt	Hbny
+-O3	pr.t-xrw
+-xA	xA
+-m	m
+-X2	t
+:.-Hnqt	Hnqt
+:H1	Apd
+-Ss	Ssr
+:F1-Z1	iH
+:mnxt	mnxt
+-x*t	x.t
+:nb:t	nb.t
+-nfr	nfr
+-wab	wab
+-n	n
+:imAx-i-i	imAxy
+-ir:ir-s-n:i*(q:r)	ir.ty=sn-iqr
+-mAa	mAa
+:xrw	xrw
+-ms:=n	ms.n
+-i-d:idn-t	idnt
+:mAa:t	mAa.t
+-xrw	xrw
+
+#EOF
+
+#needs :
+
+#indicate lemma
+#indicate sentence endings
+#indicate that translitteration <> hieroglyphs (e.g. HAt)
+#indicate proper noun ?
+#free comments ?
+
+#proposal: a line out of manual de codage should begin with \
+
