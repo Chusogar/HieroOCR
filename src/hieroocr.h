@@ -41,6 +41,7 @@ typedef struct {
     char      path[1024];       /* imagen de la página */
     int       pageno;           /* número de página en el documento original */
     int       processed;
+    int       photo;            /* fotografía: corregir la iluminación antes de binarizar */
     Gray      gray;
     Bin       bin;
     int      *label;            /* componente conexa de cada píxel, -1 si no hay tinta */
@@ -91,6 +92,7 @@ typedef struct {
     int         no_font;        /* no usar plantillas generadas desde la fuente */
     int         gui;
     int         all_signs;      /* no favorecer los signos frecuentes */
+    int         flatten;        /* corregir la iluminación desigual (fotos de páginas) */
     float       uncertain_thr;
     const char *font;
     const char *unicode;
@@ -106,10 +108,27 @@ typedef struct {
 
 typedef struct { char *s; size_t n, cap; } Str;
 
+/* Documento abierto: sus páginas y, si viene de un PDF, la carpeta temporal. */
+typedef struct {
+    Page *pages;
+    int   np;
+    char  tmpdir[512];
+} Doc;
+
+/* Petición que llega a la interfaz desde fuera (selector de archivos, cámara...). */
+enum { REQ_DOCUMENT, REQ_PHOTO, REQ_MODEL, REQ_STATUS };
+typedef struct {
+    int    kind;
+    int    n;
+    char **files;               /* imágenes ya preparadas, una por página */
+    char   msg[256];
+} Request;
+
 /* image.c */
 int  gray_load(const char *path, Gray *g);
 void gray_free(Gray *g);
 void binarize_otsu(const Gray *g, Bin *b);
+void gray_flatten(Gray *g);
 int  pdf_render(const char *pdf, int dpi, const char *pages, char tmpdir[512], char ***files, int *nfiles);
 int  parse_page_ranges(const char *spec, int (*ranges)[2], int max);
 int  page_number_from_path(const char *path);
@@ -167,9 +186,24 @@ void line_to_mdc(const Page *p, int line, const Options *o, Str *out);
 void page_to_mdc(const Page *p, const Options *o, Str *out, int last_page);
 
 /* gui.c */
-int gui_run(Page *pages, int npages, const Options *o, TemplateSet *ts);
+int      gui_run(Doc *doc, Options *o, TemplateSet *ts);
+uint32_t gui_event_type(void);          /* evento SDL por el que llegan las peticiones */
+void     request_free(Request *r);
 
-/* main.c */
-int process_page(Page *p, const Options *o, const TemplateSet *ts);
+/* app.c: partes comunes a escritorio y Android */
+void app_find_data(Options *o);
+int  app_load_templates(Options *o, TemplateSet *ts, int model_from_search);
+int  process_page(Page *p, const Options *o, const TemplateSet *ts);
+int  doc_from_files(Doc *d, char **files, int n, int photo, int numbered);
+int  doc_open(Doc *d, const char *input, const Options *o);
+void doc_free(Doc *d);
+int  doc_to_mdc(Doc *d, const Options *o, const TemplateSet *ts, Str *out);
+
+/* Servicios de la plataforma (main.c en escritorio, android.c en Android) */
+int  platform_is_mobile(void);          /* 1: hay selector de archivos y cámara */
+void platform_pick_file(void);
+void platform_take_photo(void);
+void platform_share(const char *path, const char *text);
+const char *platform_mdc_path(const Options *o);
 
 #endif

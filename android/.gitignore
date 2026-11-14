@@ -1,0 +1,14 @@
+# Generado por preparar.sh
+app/jni/SDL/
+app/jni/SDL_image/
+app/jni/SDL_ttf/
+app/src/main/java/org/libsdl/
+app/src/main/assets/
+# Compilación
+.gradle/
+build/
+app/build/
+app/.cxx/
+local.properties
+*.iml
+.idea/

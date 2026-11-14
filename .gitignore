@@ -1,6 +1,6 @@
 # Objetos y ejecutable
 src/*.o
-hieroocr
+/hieroocr
 # Plantillas aprendidas y salidas locales
 plantillas/
 *.mdc
