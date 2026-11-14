@@ -4,6 +4,10 @@ Programa en C con SDL2. Lee un **PDF** o una **imagen** (JPG, PNG, TIFF…) con 
 jeroglífico impreso en renglones horizontales y escribe la transcripción en
 **Manuel de Codage** (MdC), lista para pegar en JSesh.
 
+Funciona en Linux, macOS y Windows y también **en Android** (móvil y tableta), donde
+puede abrir imágenes y PDF del dispositivo o fotografiar la página con la cámara
+(ver [Android](#android)).
+
 ```
 hieroocr -p 71 moldenke.pdf -o pagina71.mdc      # una página
 hieroocr -p 71-92 moldenke.pdf -o texto.mdc      # un rango de páginas
@@ -15,8 +19,14 @@ hieroocr -g moldenke.pdf                         # interfaz para revisar y ense�
 ## Cómo funciona
 
 1. **Entrada**: las imágenes se cargan con SDL2_image. Los PDF se rasterizan con
-   `pdftoppm` (poppler-utils), por defecto a 300 ppp.
-2. **Binarización** por el método de Otsu.
+   `pdftoppm` (poppler-utils), por defecto a 300 ppp; en Android, con `PdfRenderer`.
+2. **Binarización** por el método de Otsu. En las fotos (`-B`, y siempre en Android
+   con imágenes de la cámara o la galería) antes se **corrige la iluminación**: se
+   estima el brillo del papel por bloques, se suaviza y se divide cada píxel por él,
+   con lo que desaparecen las sombras y el degradado de luz. En una foto simulada de
+   la página 72 de Moldenke (luz lateral, sombra del móvil, ruido y JPEG) el MdC
+   coincide en un 87 % con el de la página escaneada, frente al 25 % sin corregir; en
+   una página ya limpia la corrección no cambia nada.
 3. **Renglones** por perfil de proyección horizontal. Se unen los fragmentos de un
    mismo renglón y se descartan las bandas bajas, como los números de página.
 4. **Subrayados**: los trazos horizontales más largos que 1,2 renglones se borran y se
@@ -188,6 +198,7 @@ hieroocr [opciones] entrada.(pdf|jpg|png|...)
   -j PX        radio de unión de trazos (automático)
   -a PX        área mínima de un signo (automática)
   -R           texto de derecha a izquierda
+  -B           corrige la iluminación desigual (fotos de páginas, sombras)
   -u           añade ++?+s tras los cuadrados con signos dudosos
   -T UMBRAL    umbral de duda (0.11)
   -m MODELO    modelo entrenado (datos/modelo_fotos.hmod si existe, si no datos/modelo.hmod)
@@ -220,14 +231,78 @@ omiten.
 | Activar o desactivar el aprendizaje | L |
 | Guardar el MdC de todo el documento | S |
 | Cambiar de página | AvPág / RePág |
-| Zoom / mover / ajustar | rueda o + −, botón derecho arrastrando o flechas, F |
+| Zoom / mover / ajustar | rueda o + −, arrastrar o flechas, F |
+| Abrir otro documento | soltar la imagen o el PDF sobre la ventana |
 | Salir | Q |
+
+Todas las órdenes tienen también botón: las del documento en la barra superior y las
+del signo seleccionado bajo los candidatos, que se aceptan haciendo clic en su casilla.
+`hieroocr -g` sin archivo abre la interfaz vacía, lista para soltar uno.
 
 El panel inferior muestra la descripción y el valor fonético del signo seleccionado y
 de sus candidatos (por ejemplo `G17 [m]`), sacados de la lista de Wikipedia.
 
 Colores de los recuadros: **verde** = seguro, **ámbar** = dudoso, **rojo** = muy dudoso,
 **azul** = corregido por ti. Las líneas magenta son los subrayados detectados.
+
+## Android
+
+La misma aplicación (el mismo código C con SDL2) compilada para Android 5.0 o
+posterior, con una pequeña actividad Java para lo que sólo se puede hacer con la API
+de Android.
+
+- **Abrir**: elige una imagen (JPG, PNG, HEIC, WebP…) o un PDF del móvil, de la
+  tarjeta o de Drive. En un PDF de varias páginas pregunta cuáles reconocer, con la
+  misma sintaxis que `-p` (`71-92`, `3,5,7-9`…).
+- **Cámara**: abre la aplicación de cámara del sistema; la foto se endereza según su
+  EXIF, se reduce a 3600 px y se le corrige la iluminación antes de reconocerla.
+  HieroOCR no pide permiso de cámara: la foto la hace la aplicación de cámara.
+- **Compartir MdC**: guarda el MdC de todo el documento, lo copia al portapapeles y
+  abre el menú de compartir (correo, Drive, Telegram…) con el texto y el fichero.
+- Desde otras aplicaciones, **Abrir con** o **Compartir** una imagen o un PDF lo
+  lleva a HieroOCR.
+- El modelo entrenado con fotografías (`make entrenar-fotos`, que no se distribuye)
+  se puede cargar eligiendo el archivo `modelo_fotos.hmod` con **Abrir**.
+
+| Acción | Gesto |
+|---|---|
+| Seleccionar signo | tocarlo |
+| Aceptar un candidato | tocar su casilla |
+| Mover la página | arrastrar con un dedo |
+| Ampliar o reducir | pellizcar |
+| Escribir el código, borrar, unir, anterior / siguiente | botones bajo los candidatos |
+| Deseleccionar / salir | botón Atrás |
+
+El tamaño de letra y de los botones se ajusta a la densidad de la pantalla, y la
+interfaz se adapta a vertical y horizontal. Las correcciones se aprenden igual que en
+escritorio y se guardan en la memoria de la aplicación.
+
+### Instalar
+
+Cada cambio en `src/` o `android/` compila el APK en GitHub Actions
+(*Actions → Android → HieroOCR-apk*). Descarga `HieroOCR.apk` en el móvil y ábrelo;
+Android pedirá permitir la instalación de aplicaciones de origen desconocido.
+
+### Compilar
+
+Hace falta el SDK de Android con el NDK 27 y Java 17 (o Android Studio, abriendo la
+carpeta `android/`).
+
+```
+sh android/preparar.sh          # descarga SDL2, SDL2_image, SDL2_ttf y copia los datos
+cd android
+./gradlew assembleRelease       # → app/build/outputs/apk/release/app-release.apk
+```
+
+`preparar.sh` descarga las bibliotecas (SDL2 2.32, SDL2_image 2.8 con stb_image,
+SDL2_ttf 2.24 con FreeType) en `android/app/jni/` y copia a la aplicación el modelo,
+la lista de Gardiner y la fuente Noto. El APK de *release* se firma con la clave de
+depuración para poder instalarlo directamente; para publicarlo en una tienda habría que
+firmarlo con una clave propia.
+
+El workflow `.github/workflows/android.yml` además instala el APK en un emulador
+(Pixel 6, Android 11), abre un PDF y una foto girada, toca un signo y guarda capturas
+de pantalla (artefacto *capturas-emulador*).
 
 ## Limitaciones
 
