@@ -1,0 +1,17 @@
+@GLYPH LL44  15  0.8   1 35 922.502.509281 2.502.50                            Times New Roman************************
++b Morphologie +s-!
++l Aux. + Sujet (nom) + Prédicat Adverbial (prép./nom) +s-!
++l M./S. +s i-w sn-n:A1 m pr:Z1 -!
++l F./S. +s i-w sn-n:t-B1 m pr:Z1 -!
++l M./P. +s i-w sn-n:nw-w-A1-Z3 m pr:Z1 -!
++l F./P. +s i-w sn-n:t-B1-Z3 m pr:Z1 -!
++l Aux. + Sujet (nom/adjectif) + Prédicat Adverbial (prép./nom) +s-!
++l M./S. +s i-w sn-n:A1 wr:r m pr:Z1 -!
++l F./S. +s i-w sn-n:t-B1 wr r:t m pr:Z1 -!
++l M./P. +s i-w sn-n:nw-w-A1-Z3 wr:Z2 m pr:Z1 -!
++l F./P. +s i-w sn-n:t-B1-Z3 wr-r:t-Z3 m pr:Z1 -!
++l Duel +s-!
++l M./D. +s i-w sn-n:nw- G43&Z4 A1-A1 m pr:Z1 -!
++l F./D. +s i-w sn-n:t*y-B1-B1 m pr:Z1 -!
++l M./D.  +s i-w sn-n:nw- G43&Z4 A1-A1 wr:r- G43&Z4 m pr:Z1 -!
++l F./D. +s i-w sn-n:t*y-B1-B1 wr-r:t*y m pr:Z1 -!

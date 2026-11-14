@@ -1,0 +1,431 @@
+# Generado por OpenGlyph/exportar.py a partir de OpenGlyph (LGPL, J. A. García Sánchez).
+# id	archivo	nombre	comentario
+0	Admonitions/ADMONIT.GLY	ADMONIT	
+1	Amenemope.hie	Amenemope	
+2	Blinding of truth.hie	Blinding of Truth by Falseness	From papyrus Chester Beatty II, in AH Gardiner, Late Egyptian Stories
+3	Bln6.hie	Bln6	= Grundrisse V, p. 197-198 P. Médical Berlin 3038, 1, 5;
+4	C14_2.hie	C14_2	
+5	CGC25515.hie	CGC 25515 (extraits)	CGC, Cerny
+6	CT/CT 1/CT1.GLY	CT1	
+7	CT/CT 2/CTII.GLY	CTII	
+8	CT/CT 3/CTIII62F.GLY	CTIII62F	
+9	CT/CT 4/ctiv.gly	ctiv	
+10	CT/CT 6/ct6-86.gly	ct6-86	
+11	CT/CT 7/CT7.GLY	CT7	
+12	CT160_S2P.hie	CT 160, S2P	
+13	CT404B5.hie	CT404B5C	
+14	CTSpell885.hie	CT Spell 885. S14 C	
+15	Canopus Decree/canopo.hie	canopo	
+16	Chapter17.hie	Chapter 17	Chapitre 17 issu des colonnes 1 à 145 du Papyrus d'Any correspondant aux planches VII à X , compléte par les colonnes 16 à 52 du Papryrus de Nebseny. Ref: Budge Ppa Ani et collations sur photos.
+17	Destruction of Mankind.hie	Destruction of Mankind	From the adaptation proposed by M. Wilson
+18	DoomedPrince.hie	Prince	Doomed Prince=LES 1,9, P. Harris 500, verso
+19	Ens Loy/ENS-LOY.GLY	ENS-LOY	
+20	Enseignement d'Any.hie	Enseignement d'Any, Tb	Quack, Die Lehren des Ani, p. 278
+21	Estelas/1228b.gly	1228b	
+22	Estelas/1229.gly	1229	
+23	Estelas/1230.gly	1230	
+24	Estelas/1231.gly	1231	
+25	Estelas/1232.gly	1232	
+26	Estelas/1233.gly	1233	
+27	Estelas/1234.gly	1234	
+28	Estelas/1235.gly	1235	
+29	Estelas/1236.gly	1236	
+30	Estelas/1237.gly	1237	
+31	Estelas/1238.gly	1238	
+32	Estelas/1239.gly	1239	
+33	Estelas/1240.gly	1240	
+34	Estelas/1241.gly	1241	
+35	Estelas/1242.gly	1242	
+36	Estelas/1243.gly	1243	
+37	Estelas/14_2958.GLY	14_2958	
+38	Estelas/AN400.GLY	AN400	
+39	Estelas/BM_233.gly	BM_233	
+40	Estelas/C 14.GLY	C 14	
+41	Estelas/C 3.gly	C 3	
+42	Estelas/Gebel Barkal.gly	Gebel Barkal	
+43	Estelas/IKHRNFRT.GLY	Berlin 1204 (Ikhernofret stela)	Sethe, Lesestücke, pp. 70-71. and from Facsimile. Line separation a bit unsure around line 15/16, due to the facsimile being cut here.
+44	Estelas/KHAKHEP.GLY	KHAKHEP	
+45	Estelas/Louvre C26 Estela de Antef.hie	Louvre C26, Stèle d'Antef	
+46	Estelas/SAHATHOR.GLY	SAHATHOR	
+47	Estelas/SENRES.GLY	SENRES	
+48	Estelas/STELEKHE.GLY	STELEKHE	
+49	Estelas/Semna.gly	Semna	
+50	Estelas/Stela of  400 Years.hie	Stela of 400 Years	
+51	Estelas/Stèle Berlin 2081.hie	Stèle Berlin 2081	Noter que les groupements sont très loin de la réalité. Le systeme de H. Nederhof serait utile. Cependant, pb. avec le groupe contenant "D".
+52	Estelas/Stèle de Hr(w).gly	Stèle de Hr(w)	
+53	Estelas/TABET.GLY	TABET	
+54	Estelas/TCHIA.GLY	TCHIA	
+55	Estelas/TCHIA1.GLY	TCHIA1	
+56	Estelas/antef lo.gly	Kagemni ; Sethe, Lesestücke	
+57	Estelas/antef.gly	Stèle d'Antef, Louvre C26	
+58	Estelas/bm ea 58.gly	bm ea 58	
+59	Estelas/chats.gly	chats	
+60	Estelas/khabekhe.gly	khabekhe	
+61	Estelas/kheper2.gly	kheper2	
+62	Estelas/kheperka.gly	kheperka	
+63	Estelas/nebrê.gly	nebrê	
+64	Estelas/poétique.gly	poétique	
+65	Estelas/senrès1.gly	senrès1	
+66	Estelas/th32.gly	th32	
+67	Estelas/th33.gly	th33	
+68	Estelas/th34.gly	th34	
+69	Estelas/thcintre.gly	thcintre	
+70	Exemples/AUXILIAI.GLY	AUXILIAI	
+71	Exemples/Exercises.hie	Exercises	
+72	Exemples/URK 4.GLY	URK 4	
+73	Exemples/cg20518.gly	cg20518	
+74	Exemples/dédicace.gly	dédicace	
+75	Exemples/ex.gly	ex	
+76	Exemples/exercice.gly	exercice	
+77	Exemples/harhotep.gly	harhotep	
+78	Exemples/hatnub.gly	hatnub	
+79	Exemples/hkanxt i.gly	hkanxt i	
+80	Exemples/kahun.gly	kahun	
+81	Graffito M. Thébaine 1400-Traducido-.hie	Graffito M. Thébaine 1400	= KRI III, 641
+82	Graffito M. Thébaine 1400.hie	Graffito M. Thébaine 1400	= KRI III, 641
+83	Graffito Tombe 321 DEM.hie	Graffito Tombe 321 DEM	KRI VII, 368
+84	Grammaire/CLASSE.GLY	CLASSE	
+85	Grammaire/CLASSE1.GLY	CLASSE1	
+86	Grammaire/CLASSE2.GLY	CLASSE2	
+87	Grammaire/CLASSE3.GLY	CLASSE3	
+88	Grammaire/CLASSE4.GLY	CLASSE4	
+89	Grammaire/CLASSE5.GLY	CLASSE5	
+90	Grammaire/DEBUT2.GLY	DEBUT2	
+91	Grammaire/IMPERAT.GLY	IMPERAT	
+92	Grammaire/PARTICIP.GLY	PARTICIP	
+93	Grammaire/PHONO.GLY	PHONO	
+94	Grammaire/PREPOSIT.GLY	PREPOSIT	
+95	Grammaire/PROSPECT.GLY	PROSPECT	
+96	Grammaire/SITUA.GLY	SITUA	
+97	Grammaire/SITUA1.GLY	SITUA1	
+98	Grammaire/début.gly	début	
+99	Grammaire/débutant.gly	débutant	
+100	Grammaire/génitif.gly	génitif	
+101	Grammaire/hagège.gly	hagège	
+102	Grammaire/qualité.gly	qualité	
+103	Hammamat 19 V.hie	Hammamat 19, V	
+104	Hatchepsout/Chapelle Rge/CHAPROUG.GLY	CHAPROUG	
+105	Hatchepsout/NaisHat/URK239.GLY	URK239	
+106	Hatchepsout/NaisHat/URK254.GLY	URK254	
+107	Hatchepsout/NaisHat/URK255.GLY	URK255	
+108	Hatchepsout/NaisHat/URK256.GLY	URK256	
+109	Hatchepsout/NaisHat/URK257.GLY	URK257	
+110	Hatchepsout/NaisHat/URK258.GLY	URK258	
+111	Hatchepsout/NaisHat/URK259.GLY	URK259	
+112	Hatchepsout/NaisHat/URK260.GLY	URK260	
+113	Hatchepsout/NaisHat/URK261.GLY	URK261	
+114	Hatchepsout/NaisHat/URK262.GLY	URK262	
+115	Hatchepsout/NaisHat/URK263.GLY	URK263	
+116	Hatchepsout/NaisHat/URK264.GLY	URK264	
+117	Hatchepsout/NaisHat/URK265.GLY	URK265	
+118	Hatchepsout/NaisHat/urk241.gly	urk241	
+119	Hatchepsout/NaisHat/urk242.gly	urk242	
+120	Hatchepsout/NaisHat/urk243.gly	urk243	
+121	Hatchepsout/NaisHat/urk244.gly	urk244	
+122	Hatchepsout/NaisHat/urk245.gly	urk245	
+123	Hatchepsout/NaisHat/urk246.gly	urk246	
+124	Hatchepsout/NaisHat/urk247.gly	urk247	
+125	Hatchepsout/NaisHat/urk248.gly	urk248	
+126	Hatchepsout/NaisHat/urk249.gly	urk249	
+127	Hatchepsout/NaisHat/urk250.gly	urk250	
+128	Hatchepsout/NaisHat/urk251.gly	urk251	
+129	Hatchepsout/NaisHat/urk252.gly	urk252	
+130	Hatchepsout/NaisHat/urk253.gly	urk253	
+131	Hatchepsout/Obelhat/HAT1.GLY	HAT1	
+132	Hatchepsout/Obelhat/URK357.GLY	URK357	
+133	Hatchepsout/Obelhat/URK358.GLY	URK358	
+134	Hatchepsout/Obelhat/URK36.GLY	URK36	
+135	Hatchepsout/Obelhat/URK361.GLY	URK361	
+136	Hatchepsout/Obelhat/URK362.GLY	URK362	
+137	Hatchepsout/Obelhat/URK363.GLY	URK363	
+138	Hatchepsout/Obelhat/URK364.GLY	URK364	
+139	Hatchepsout/Obelhat/URK365.GLY	URK365	
+140	Hatchepsout/Obelhat/URK366.GLY	URK366	
+141	Hatchepsout/Obelhat/URK367.GLY	URK367	
+142	Hatchepsout/Obelhat/URK368.GLY	URK368	
+143	Hatchepsout/Obelhat/URK369.GLY	URK369	
+144	Hatchepsout/Obelhat/URK370.GLY	URK370	
+145	Hatchepsout/Obelhat/URK371.GLY	URK371	
+146	Hatchepsout/Obelhat/URK373.GLY	URK373	
+147	Hatchepsout/Senmout/SEN-CDN.GLY	SEN-CDN	
+148	HetS.hie	The Contendings of Horus and Seth	From papyrus Chester Beatty I recto. In: Gardiner, Late Egyptian Stories, 37-60
+149	Kagemni/kagemni.gly	Kagemni ; Sethe, Lesestücke	
+150	Kagemni/kagmni.gly	kagmni	
+151	Kagemni;Sethe;Lesestücke.hie	Kagemni ; Sethe, Lesestücke	
+152	Kah 10.hie	Kah 10	Grapow, die Medizinischen texte in Hieroglyphischer umschreibung autographiert p. 461
+153	Kahun/KAHUN.GLY	KAHUN	
+154	Khakhepereseneb.hie	Khakhepereseneb (EA)	
+155	LC26.hie	Stèle d'Antef, Louvre C26	
+156	LRL 19.hie	LRL 19	
+157	LRL 28.hie	LRL 28	LRL, pp 44-48. P. BM 10375 Lettre de Boutehamun
+158	LRL 38.hie	LRL 38	
+159	LRL 47.hie	LRL 47	
+160	LRL 7 (P. BN. 197, IV).hie	LRL 7 (P. BN. 197, IV)	LRL p. 13,
+161	LdM/LDM.GLY	LDM	
+162	LdM/NU.GLY	NU	
+163	Lebensmude/LEBENS.GLY	LEBENS	
+164	Lebensmüde;Sethe;Lesestücke.hie	Lebensmüde ; Sethe, Lesestücke	
+165	Louvre 25550.hie	Louvre 25550	
+166	Louvre C14.hie	Louvre C14	Collationné sur l'original. Quelques corrections relevées par J. Kraus à partir de l'édition de Barta.
+167	Louvre N 3026.hie	Louvre N 3026	
+168	Merykarê/M0.GLY	M0	
+169	Merykarê/M72-75.GLY	M72-75	
+170	Merykarê/M76-80.GLY	M76-80	
+171	Merykarê/M81-85.GLY	M81-85	
+172	Merykarê/M86-89.GLY	M86-89	
+173	Merykarê/M90-92.GLY	M90-92	
+174	Merykarê/M93.GLY	M93	
+175	Merykarê/MEMODURD.GLY	MEMODURD	
+176	Merykarê/mrykara.gly	mrykara	
+177	Naufragé/El náufrago.hie	naufragé	
+178	Naufragé/NAUF.GLY	NAUF	
+179	Naufragé/NAUFRAGE.GLY	NAUFRAGE	
+180	Naufragé/Shipwr.gly	Shipwr	
+181	Naufragé/naufrage.hie	naufragé	
+182	Neferhotep.hie	Neferhotep	
+183	Neferty/NEFERTY.GLY	NEFERTY	
+184	Neferty/NEFERTY2.GLY	NEFERTY2	
+185	O. Berlín 12398.hie	O. Berlin 12398	KRI VII, 194
+186	O. Cairo 25338.hie	O. Caire 25338	
+187	O. Cairo 25339.hie	O. Caire 25339	Titres du vizir Djhoutymes selon Weil, Die Veziere... p. 119 CGC. Daressy Ostraca p. 87. Remarque : l'original est composé de hiéroglyphes en colonnes
+188	O. Cairo 50729.hie	O. Caire 50729	KRI VII, 351
+189	O. Cairo CGC 25589.hie	O. Caire CGC 25589	Cerny OH. 31/2, 55, pl. 47-48 KRI V, 436. Note of Care of a cow and calf
+190	O. DM 103.hie	O. DM. 123	
+191	O. DM 123.hie	O. DM. 123	
+192	O. DM 1610.hie	O. DM 1610	
+193	O. DM 235.hie	O. DM. 235	Cerny, O. DM. III, 11. Bibliog. Allam, Hieratische Ostraka und Papyri , 108-109 Helk, Materialen, II, 344 Theodorides, RIDA 16, 1969 172f Theodorides, RIDA 17, 1970 207 N. 348
+194	O. DM 303.hie	O. DM 303	J. Cerny,Catalogue des ostraca hiératiques non littéraires de Deir el Médineh,tome 4 (n°242 à 339), DIFAO VI, Le Caire,1939
+195	O. DM 446.hie	O. DM. 446	
+196	O. DM 607,2.hie	O. DM. 607, 2	
+197	O. Florence 2616 (Revenant).hie	O. Florence 2616 (Revenant)	texte de O. Florence 2616, d'après Beckerath, ZÄS 119
+198	O. Florence 2617.hie	O. Florence 2617	O.DM 1252 + O. Florence 2617 + O. Turin 6620, 6638, 6851
+199	O. Gardiner 185.hie	O. Gardiner 185	= KRI VII, 297 an 29 Ramsès III
+200	O. Gardiner 4.hie	O. Gardiner 4	HO, pl. 27
+201	O. Gardiner Question à l'oracle.hie	O. Gardiner Question à l'oracle	Cerny BIFAO 72, 1972 Troisième série de questions adressées aux oracles
+202	O. Letellier.hie	O. Letellier	KRI VII, 257
+203	O. Louvre 667+700.hie	O. Louvre 667+700	O. Louvre 667+700 d'après Beckerath, ZÄS 119 p.99-100
+204	O. Mond 179.hie	O. Mond 179	O. Mond 179 = KRI VII, 299
+205	O. Turin 6619.hie	O. Turin 6619	O. DM 1251+ O. Turin 6619 et 6806 + O. Gardiner 306 Tiré de Posener, cat. ostraca hiératiques littéraires II, 3, pl. 63 et de Beckerath, ZÄS 119
+206	O. University College.hie	O. University College	O. University College, KRI V, 1-2
+207	O. Vienne 3722a.hie	O. Vienne 3722a.	O. Vienne 3722a. D'après Beckerath, ZÄS 119
+208	Ostracon Strasbourg H. 174.hie	Ostracon Strasbourg H. 174	
+209	Ostracon Strasbourg H. 44.hie	Ostracon Strasbourg H. 44	
+210	Ouchebtis/SHABTY A.GLY	SHABTY A	
+211	Ounamon.hie	Ounamon	A.H Gardiner, LES, pp. 61-76
+212	Ounamon/ounamon.gly	Ounamon	A.H Gardiner, LES, pp. 61-76
+213	P. BM 10373.hie	P. BM 10373	
+214	P. BM. 10416.hie	P. BM. 10416	
+215	P. Bankes I.hie	P. Bankes I	I.E.S EDWARDS, "The Bankes Papyri I and II",JEA 68 (19 ),126-133 et pl. XII. R.Navailles, F.Neveu, "Une ténébreuse affaire:P.Bankes I", GM 103 (1988),51-60.
+216	P. Berlin 11238.hie	P. Berlin 11238	
+217	P. Bologne 1094.hie	P. Bologne 1094	
+218	P. Caire 58059.hie	P. Caire 58059	KRI III, 251-252 Bakir Epistologaphy pl. 6_7, IX.
+219	P. Gurob III 1, recto (RAD 14-15).hie	P. Gurob III 1, recto (RAD 14-15)	
+220	P. Pouchkine 167.hie	P. Pouchkine 167	D'après Caminos, Lit. Frag. planches 17-
+221	P. Rifaud F.hie	P. Rifaud F	
+222	P. Salt 124 (P. BM. 10055).hie	P. Salt 124 (P. BM. 10055)	KRI IV, pp. 408-414. Correction recto 1,4 d'après Allam.
+223	PPI/PPI20.GLY	PPI20	
+224	Pacherereniset (Tanis, Tombe d'Osorkon II).hie	Pacherereniset (Tanis, Tombe d'Osorkon II)	
+225	Papiro Ebers/Ebers 63.hie	Ebers 63	Grund. V, 196 P. Ebers 19,19-22
+226	Paysan/OASIEN.GLY	OASIEN	
+227	Paysan/PAY1.GLY	PAY1	
+228	Paysan/PAY2.GLY	PAY2	
+229	Paysan/PAY3.GLY	PAY3	
+230	Paysan/PAY4.GLY	PAY4	
+231	Paysan/PAY5.GLY	PAY5	
+232	Paysan/PAY6.GLY	PAY6	
+233	Paysan/PAY7.GLY	PAY7	
+234	Paysan/PAY8.GLY	PAY8	
+235	Paysan/PAYSAN.GLY	PAYSAN	
+236	Poids Gardiner 12.hie	Poids Gardiner 12	KRI VII, 198
+237	Polids de Qenna.hie	Polids de Qenna	KRI VII, 323 sur un nodule de silex
+238	Poème de Qadesh.hie	Poème de Qadesh	KRI II, 3- . Paragraphes redécoupés par S. Rosmorduc.
+239	Prince.hie	Prince	Doomed Prince=LES 1,9, P. Harris 500, verso
+240	Ptahhotep/PTAH.GLY	PTAH	
+241	Scarabées/Scarab1.gly	Scarab1	
+242	Scarabées/Scarab2.gly	Scarab2	
+243	Scarabées/Scarab3.gly	Scarab3	
+244	Scarabées/Scarab4.gly	Scarab4	
+245	Seth et Anath.hie	Seth et Anath	D'après Roccati, RdE 24
+246	Sethe, Lesestücke 7.hie	Sethe, Lesestücke 7.	various medical recipes.
+247	Setnakht, Stèle à Elephantine (KRI V, 671).hie	Setnakht, Stèle à Elephantine (KRI V, 671)	
+248	Sinohé/sinohé.gly	sinohé	
+249	TEXTES/ALPHABET.GLY	ALPHABET	
+250	TEXTES/CHAMPOL.GLY	CHAMPOL	
+251	TEXTES/DESTRUCT.GLY	DESTRUCT	
+252	TEXTES/DYN18.GLY	DYN18	
+253	TEXTES/HARHOTEP.GLY	HARHOTEP	
+254	TEXTES/HATSHEP.GLY	HATSHEP	
+255	TEXTES/INENI.GLY	Ineni, Urk IV	
+256	TEXTES/JAR BOT.GLY	JAR BOT	
+257	TEXTES/JAR BOT1.GLY	JAR BOT1	
+258	TEXTES/METCHETC.GLY	METCHETC	
+259	TEXTES/MORPHO.GLY	MORPHO	
+260	TEXTES/MORPHO1.GLY	MORPHO1	
+261	TEXTES/TOUTANKH.GLY	TOUTANKH	
+262	TEXTES/akhethtp.gly	akhethtp	
+263	TEXTES/ineni2.gly	ineni2	
+264	TEXTES/meir3.gly	meir3	
+265	TEXTES/modèle.gly	modèle	
+266	TEXTES/uiv10.gly	uiv10	
+267	TP/PYR.GLY	PYR	
+268	The Contendings of Horus and Seth.hie	The Contendings of Horus and Seth	From papyrus Chester Beatty I recto. In: Gardiner, Late Egyptian Stories, 37-60
+269	The Two Brothers/Dos hermanos.hie	Dos hermanos	
+270	The Two Brothers/P. D'Orbiney (the Two Brothers).hie	P. D'Orbiney (the Two Brothers)	A.H Gardiner, LES, pp 9-30.
+271	The Two Brothers/deuxfrer.gly	P. D'Orbiney (the Two Brothers)	A.H Gardiner, LES, pp 9-30.
+272	The Two Brothers/twobro.hie	P. D'Orbiney (the Two Brothers)	A.H Gardiner, LES, pp 9-30.
+273	The eloquent peasant/The Tale of the Eloquent Peasant.gly	The Tale of the Eloquent Peasant	
+274	Tombes/Pached/PACHED.GLY	PACHED	
+275	Tombes/Pached/PACHED1.GLY	PACHED1	
+276	Tombes/Pached/PACHED2.GLY	PACHED2	
+277	Tombes/Sennefer/Muros.gly	Muros	
+278	Tombes/Sennefer/sennef.gly	sennef	
+279	URK 4/14-21/URK14.GLY	URK14	
+280	URK 4/14-21/URK15.GLY	URK15	
+281	URK 4/14-21/URK16.GLY	URK16	
+282	URK 4/14-21/URK17.GLY	URK17	
+283	URK 4/14-21/URK21.GLY	URK21	
+284	URK 4/156-175/URK156.GLY	URK156	
+285	URK 4/156-175/URK157.GLY	URK157	
+286	URK 4/156-175/URK158.GLY	URK158	
+287	URK 4/156-175/URK159.GLY	URK159	
+288	URK 4/156-175/URK160.GLY	URK160	
+289	URK 4/156-175/URK161.GLY	URK161	
+290	URK 4/156-175/URK162.GLY	URK162	
+291	URK 4/156-175/URK163.GLY	URK163	
+292	URK 4/156-175/URK164.GLY	URK164	
+293	URK 4/156-175/URK165.GLY	URK165	
+294	URK 4/156-175/URK166.GLY	URK166	
+295	URK 4/156-175/URK167.GLY	URK167	
+296	URK 4/156-175/URK168.GLY	URK168	
+297	URK 4/156-175/URK169.GLY	URK169	
+298	URK 4/156-175/URK170.GLY	URK170	
+299	URK 4/156-175/URK171.GLY	URK171	
+300	URK 4/156-175/URK172.GLY	URK172	
+301	URK 4/156-175/URK173.GLY	URK173	
+302	URK 4/156-175/URK174.GLY	URK174	
+303	URK 4/156-175/URK175.GLY	URK175	
+304	URK 4/215-240/URK227.GLY	URK227	
+305	URK 4/215-240/URK228.GLY	URK228	
+306	URK 4/215-240/URK229.GLY	URK229	
+307	URK 4/215-240/URK230.GLY	URK230	
+308	URK 4/215-240/URK231.GLY	URK231	
+309	URK 4/215-240/URK232.GLY	URK232	
+310	URK 4/215-240/URK233.GLY	URK233	
+311	URK 4/215-240/URK234.GLY	URK234	
+312	URK 4/215-240/URK235.GLY	URK235	
+313	URK 4/215-240/URK236.GLY	URK236	
+314	URK 4/215-240/URK237.GLY	URK237	
+315	URK 4/215-240/URK238.GLY	URK238	
+316	URK 4/215-240/URK239.GLY	URK239	
+317	URK 4/215-240/URK240.GLY	URK240	
+318	URK 4/215-240/urk216.gly	urk216	
+319	URK 4/215-240/urk217.gly	urk217	
+320	URK 4/215-240/urk218.gly	urk218	
+321	URK 4/215-240/urk219.gly	urk219	
+322	URK 4/215-240/urk220.gly	urk220	
+323	URK 4/215-240/urk221.gly	urk221	
+324	URK 4/215-240/urk222.gly	urk222	
+325	URK 4/215-240/urk223.gly	urk223	
+326	URK 4/215-240/urk224.gly	urk224	
+327	URK 4/215-240/urk225.gly	urk225	
+328	URK 4/215-240/urk226.gly	urk226	
+329	URK 4/241-265/URK254.GLY	URK254	
+330	URK 4/241-265/URK255.GLY	URK255	
+331	URK 4/241-265/URK256.GLY	URK256	
+332	URK 4/241-265/URK257.GLY	URK257	
+333	URK 4/241-265/URK258.GLY	URK258	
+334	URK 4/241-265/URK259.GLY	URK259	
+335	URK 4/241-265/URK260.GLY	URK260	
+336	URK 4/241-265/URK261.GLY	URK261	
+337	URK 4/241-265/URK262.GLY	URK262	
+338	URK 4/241-265/URK263.GLY	URK263	
+339	URK 4/241-265/URK264.GLY	URK264	
+340	URK 4/241-265/URK265.GLY	URK265	
+341	URK 4/241-265/urk241.gly	urk241	
+342	URK 4/241-265/urk242.gly	urk242	
+343	URK 4/241-265/urk243.gly	urk243	
+344	URK 4/241-265/urk244.gly	urk244	
+345	URK 4/241-265/urk245.gly	urk245	
+346	URK 4/241-265/urk246.gly	urk246	
+347	URK 4/241-265/urk247.gly	urk247	
+348	URK 4/241-265/urk248.gly	urk248	
+349	URK 4/241-265/urk249.gly	urk249	
+350	URK 4/241-265/urk250.gly	urk250	
+351	URK 4/241-265/urk251.gly	urk251	
+352	URK 4/241-265/urk252.gly	urk252	
+353	URK 4/241-265/urk253.gly	urk253	
+354	URK 4/319-347/URK319.GLY	URK319	
+355	URK 4/319-347/URK320.GLY	URK320	
+356	URK 4/319-347/URK321.GLY	URK321	
+357	URK 4/319-347/URK322.GLY	URK322	
+358	URK 4/319-347/URK323.GLY	URK323	
+359	URK 4/319-347/URK324.GLY	URK324	
+360	URK 4/319-347/URK325.GLY	URK325	
+361	URK 4/319-347/URK326.GLY	URK326	
+362	URK 4/319-347/URK327.GLY	URK327	
+363	URK 4/319-347/URK328.GLY	URK328	
+364	URK 4/319-347/URK329.GLY	URK329	
+365	URK 4/319-347/URK330.GLY	URK330	
+366	URK 4/319-347/URK331.GLY	URK331	
+367	URK 4/319-347/URK332.GLY	URK332	
+368	URK 4/319-347/URK333.GLY	URK333	
+369	URK 4/319-347/URK334.GLY	URK334	
+370	URK 4/319-347/URK335.GLY	URK335	
+371	URK 4/319-347/URK336.GLY	URK336	
+372	URK 4/319-347/URK337.GLY	URK337	
+373	URK 4/319-347/URK338.GLY	URK338	
+374	URK 4/319-347/URK339.GLY	URK339	
+375	URK 4/319-347/URK340.GLY	URK340	
+376	URK 4/319-347/URK341.GLY	URK341	
+377	URK 4/319-347/URK342.GLY	URK342	
+378	URK 4/319-347/URK343.GLY	URK343	
+379	URK 4/319-347/URK344.GLY	URK344	
+380	URK 4/319-347/URK345.GLY	URK345	
+381	URK 4/319-347/URK346.GLY	URK346	
+382	URK 4/319-347/URK347.GLY	URK347	
+383	URK 4/357-373/URK357.GLY	URK357	
+384	URK 4/357-373/URK358.GLY	URK358	
+385	URK 4/357-373/URK361 b.GLY	URK361 b	
+386	URK 4/357-373/URK361.GLY	URK361	
+387	URK 4/357-373/URK362.GLY	URK362	
+388	URK 4/357-373/URK363.GLY	URK363	
+389	URK 4/357-373/URK364.GLY	URK364	
+390	URK 4/357-373/URK365.GLY	URK365	
+391	URK 4/357-373/URK366.GLY	URK366	
+392	URK 4/357-373/URK367.GLY	URK367	
+393	URK 4/357-373/URK368.GLY	URK368	
+394	URK 4/357-373/URK369.GLY	URK369	
+395	URK 4/357-373/URK370.GLY	URK370	
+396	URK 4/357-373/URK371.GLY	URK371	
+397	URK 4/357-373/URK373.GLY	URK373	
+398	URK 4/383-391/URK383.GLY	URK383	
+399	URK 4/383-391/URK384.GLY	URK384	
+400	URK 4/383-391/URK385.GLY	URK385	
+401	URK 4/383-391/URK386.GLY	URK386	
+402	URK 4/383-391/URK387.GLY	URK387	
+403	URK 4/383-391/URK388.GLY	URK388	
+404	URK 4/383-391/URK389.GLY	URK389	
+405	URK 4/383-391/URK390.GLY	URK390	
+406	URK 4/383-391/URK391.GLY	URK391	
+407	URK 4/59/urk 59.gly	urk 59	
+408	URK 4/th31.gly	th31	
+409	Vase in Granada Museum, spain..hie	Vase in Granada Museum, spain.	
+410	Vocabulaire/VOCAB.GLY	VOCAB	
+411	Vocabulaire/VOCAB1.GLY	VOCAB1	
+412	Vocabulaire/VOCAB2.GLY	VOCAB2	
+413	Vocabulaire/VOCAB3.GLY	VOCAB3	
+414	Vocabulaire/VOCAB4.GLY	VOCAB4	
+415	Weni's autobiography..hie	Weni's autobiography	
+416	Westcar/WEST.GLY	WEST	
+417	Westcar/WEST6.GLY	WEST6	
+418	Westcar/westcar_hie.hie	P. Westcar	From Blackman's edition. P. Berlin 3033. Lines 6,23--9,22 taken from Mike Dyall-Smith's macscribe version for the AEL website. Thanks, Mike.
+419	berlin1024.hie	Berlin 1204 (Ikhernofret stela)	Sethe, Lesestücke, pp. 70-71. and from Facsimile. Line separation a bit unsure around line 15/16, due to the facsimile being cut here.
+420	c14.hie	c14	
+421	falsa_puerta.hie	falsa_puerta	
+422	ikhernofret.hie	Berlin 1204 (Ikhernofret stela)	Sethe, Lesestücke, pp. 70-71. and from Facsimile. Line separation a bit unsure around line 15/16, due to the facsimile being cut here.
+423	ineni.hie	Ineni, Urk IV	
+424	kagemni.hie	Kagemni ; Sethe, Lesestücke	
+425	lebensmuede.hie	Lebensmüde ; Sethe, Lesestücke	
+426	oun.hie	Ounamon	A.H Gardiner, LES, pp. 61-76
+427	sethnakht.hie	Setnakht, Stele a Elephantine	
+428	year400.hie	Stela of 400 Years	

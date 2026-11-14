@@ -1,0 +1,29 @@
+@GLYPH LL98  15  0.75  1 40 951.501.50-1   1.501.50                            CenturyExpd BT*************************
+++ Urk.IV,329
+++ Expédition vers Pount.
++s m U16 Y1:t*Z2 |(2)-xAst p wn:n t:xAst -!
++s M12 w xt:Z2 nb nfr f:r n nTr N17:xAst -!
++s aHa w  X3A X3A X3A m&q mi i*(.:t)*i N33A |(3)-n:t a:n G1&t N33A -!
++s m n:h w&t M1 M1 M1 n:t a:n A&N33&N33&N33 M14 -!
++s |(4)-m U13 n:Z4 xt Hr:Z1 U23B*b*T19:Z2 D60 -!
++s m S12A:N33A M14 |(5)-n a m w xAst -!
++s m ti A51A xt\ |(6)-X:z i .:t i xt\:Z2 -!
++s m i h G14&t:N33A |(7)-nTr sn T:r N33A ms s d  t&G14:N33A -!
++s |(8)-m a:n:a w  E32&Z2 |(9)-g:f w E33\150:Z2 |(10)-T:z m E14&Z2# ]]:.:. -!
++s |(11)-m i in:n |(12)-nm m w I1:Z2 |(13)-nw:Z1 U23B-i-i-E24:Z2-M27 -!
++s |(14)-m U7:r .:[[:. t#1234 .:]]:. A1*B1:Z2 H n:a |(15)-ms w  A17:[[\50*Z2*]]\50#34 s n -!
++s D35 z:p*zp ini n:t |(16)-mi t:t M22A n sw t:n nb xpr Dr:r zp:t N17 -!
++s?2000 +b Retour et accostage à Thèbes.  +s-!
++l ..... +s-!
++s |(1)-s qd d:nw t&w P2\ -!
++s ii i t:D54 m Htp:t*p -!
++s d w r tA:N21*Z1 |(2)-r i p:t st st st t:niwt m Aw:t*ib -!!
+++ ( "m Aw.t-ib" comme moi quand j'ai fini la page !)
+++ RQ OB :
+++ 5 : pas pu mettre le hachurage sur le trait central de Z2, c impossible à faire avec winglyph...
+++ 6 : même problème que ligne 5, ici avec N33A ! 
+++ 7 : Sethe signale les 2 "xt" à l'envers ! 
+++ 10 : je ne trouvais pas ce bestiaud dans les animaux, j'ai donc tenu compte des corrections de Sethe (b-c) et ai mis D3 à la place...
+++        ce qui me donne nmsw (des couvertures, cf Hannig 415G4) malgré l'absence du 's', sinon il n'y avait aucunes définitions 
+++        commencant par nm ou nmw qui correspondaient... j'ai donc corrigé tout le groupe signalé en bas de page.
+++ 15 : P2 à l'envers ! 

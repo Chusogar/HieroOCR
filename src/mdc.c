@@ -150,6 +150,59 @@ void line_to_mdc(const Page *p, int line, const Options *o, Str *out)
     free(it);
 }
 
+/* Índices de los signos del renglón en el orden en que aparecen en el MdC
+ * (columna a columna; dentro de cada una, de arriba abajo y de izquierda a derecha). */
+int line_glyph_order(const Page *p, int line, const Options *o, int *out)
+{
+    Item *it = malloc(sizeof(Item) * (size_t)(p->ng ? p->ng : 1));
+    int n = 0;
+    for (int i = 0; i < p->ng; i++) {
+        const Glyph *g = &p->g[i];
+        if (g->alive && g->line == line)
+            it[n++] = (Item){i, (g->r.x0 + g->r.x1) * 0.5f * (o->rtl ? -1.0f : 1.0f)};
+    }
+    qsort(it, (size_t)n, sizeof(Item), cmp_item);
+    int k = 0, no = 0;
+    g_page = p;
+    g_rtl = o->rtl;
+    while (k < n) {
+        int s = k, cx0 = p->g[it[k].idx].r.x0, cx1 = p->g[it[k].idx].r.x1;
+        k++;
+        while (k < n) {
+            Rect r = p->g[it[k].idx].r;
+            int ov = imin(r.x1, cx1) - imax(r.x0, cx0) + 1;
+            int mw = imin(r.x1 - r.x0 + 1, cx1 - cx0 + 1);
+            if (ov <= 0.45f * mw)
+                break;
+            cx0 = imin(cx0, r.x0);
+            cx1 = imax(cx1, r.x1);
+            k++;
+        }
+        int m = k - s, *mem = out + no;
+        for (int j = 0; j < m; j++)
+            mem[j] = it[s + j].idx;
+        qsort(mem, (size_t)m, sizeof(int), cmp_y);
+        for (int a = 0; a < m;) {
+            int rs = a, ry0 = p->g[mem[a]].r.y0, ry1 = p->g[mem[a]].r.y1;
+            a++;
+            while (a < m) {
+                Rect r = p->g[mem[a]].r;
+                int ov = imin(r.y1, ry1) - imax(r.y0, ry0) + 1;
+                int mh = imin(r.y1 - r.y0 + 1, ry1 - ry0 + 1);
+                if (ov <= 0.3f * mh)
+                    break;
+                ry0 = imin(ry0, r.y0);
+                ry1 = imax(ry1, r.y1);
+                a++;
+            }
+            qsort(mem + rs, (size_t)(a - rs), sizeof(int), cmp_x);
+        }
+        no += m;
+    }
+    free(it);
+    return no;
+}
+
 void page_to_mdc(const Page *p, const Options *o, Str *out, int last_page)
 {
     (void)last_page;
@@ -157,8 +210,19 @@ void page_to_mdc(const Page *p, const Options *o, Str *out, int last_page)
     for (int L = 0; L < p->nlines; L++) {
         size_t before = pg.n;
         line_to_mdc(p, L, o, &pg);
-        if (pg.n > before)
+        if (pg.n > before) {
             str_puts(&pg, "!\n");
+            if (o->reading && dict_loaded()) {
+                Str r = {0};
+                line_reading(p, L, o, &r);
+                if (r.s) {
+                    str_puts(&pg, "++");
+                    str_puts(&pg, r.s);
+                    str_puts(&pg, "+s\n");
+                }
+                free(r.s);
+            }
+        }
     }
     if (pg.n >= 2 && pg.s[pg.n - 2] == '!' && pg.s[pg.n - 1] == '\n') {
         pg.s[--pg.n] = 0;          /* "!\n" -> "!!\n" al final de la página */

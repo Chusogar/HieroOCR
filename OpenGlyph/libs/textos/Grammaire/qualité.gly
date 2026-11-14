@@ -1,0 +1,19 @@
+@GLYPH LL87  15  0.75  1 35 922.502.509900 2.502.50                            Times New Roman************************
++b Prédicat de Qualité. +s-!
++s nfr-f:r sw-W +t nfr sw +l Il est bon. +s-!
++s nfr-f:r s-y +t nfr sy +l Elle est bonne. +s-!
++s nfr-f:r s-t +t nfr st +l C'est bon. +s-!
++s nfr-f:r w-y s-t +t nfr.wy st +l Comme cela est bon !+s-!
++s i-q:r Y1v s-x:r- Y1v p:n +t jqr sxr pn +l Ce plan est excellent. +s-!
++s i-q:r Y1v  M22A:n s-x:r- Y1: Z2 +s +t jqr nn n sxr.w +l Ces plans sont excellents. +s-!
++s nfr-f:r  N41:t-B1 t:n +t nfr Hm.t tn +l Cette femme est belle. +s-!
++s nfr-f:r w-y   N41:t-B1 t:n +t nfr.wy Hm.t tn +l Comme cette femme est belle ! +s-!
++s S:t*  U30 A Y1: G36-r:t  V4 A t: N31 +t StA wr.t wA.t +l Le chemin était très difficile. +s-!
++s nfr-f:r s-t:r-x:t-Y1:Z2 nb:t +t nfr st r x.t nb.t +l C'est meilleur que tout (bon par rapport à toute chose). +s-!
++s wr:r i Z11-m z:a-H- E31 Z3 +t wr jmy saH.w +l Le plus grand des nobles (grand parmi les nobles). +s-!
++s n-w-A1  N5 A40 +t n(y)-wj ra +l J'appartiens à Rê. +s-!
++s n-sw-w +l = +s n: F20-sw-w N5 A40 +t n(y)-sw +l = +t nsw ra +l Il appartient à Rê. +s-!
++s n s-y +l = +s n:F20-s-y N5 A40 +t n(y)-sy +l = +t nsy ra +l Elle appartient à Rê. +s-!
++s n-n:t:k h:r-w N5 Z1 +t n(y) ntk hrw +l Le jour t'appartient (= le jour est à toi). +s-!
++s n:n:k-A1 p*t: N1 n:n:k- A1  N16: N23* Z1 +t nnk p.t nnk tA +l Le ciel est à moi, la terre m'appartient. +s-!
++s n: F20-sw-w wr:r +t nsw wr +l Combien est-ce ? (Comment grand est-ce ? = il appartient à "combien grand" ?)

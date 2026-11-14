@@ -54,6 +54,20 @@ void app_find_data(Options *o)
         o->font = first_existing(font_paths);
     if (!o->unicode)
         o->unicode = first_existing(unicode_paths);
+    if (!o->data_dir) {
+        static const char *dirs[] = {"datos", ".", "/usr/local/share/hieroocr", "/usr/share/hieroocr", NULL};
+        for (const char **d = dirs; *d; d++) {
+            char p[600];
+            snprintf(p, sizeof p, "%s/openglyph_diccionario.tsv", *d);
+            if (access(p, R_OK) == 0) {
+                o->data_dir = *d;
+                break;
+            }
+        }
+    }
+    if (o->data_dir && dict_load(o->data_dir, getenv("HIEROOCR_CORPUS_EXCLUIR")) > 0)
+        fprintf(stderr, "OpenGlyph: %d entradas de diccionario, %d renglones de corpus\n",
+                dict_count(), corpus_count());
     if (!o->list)
         o->list = first_existing(list_paths);
     if (o->list) {
@@ -94,6 +108,11 @@ int process_page(Page *p, const Options *o, const TemplateSet *ts)
         gray_flatten(&p->gray);
     page_segment(p, o);
     classify_page(p, ts);
+    if (!o->no_lm && lm_ready()) {
+        int ch = lm_rerank_page(p, o, ts);
+        if (ch)
+            fprintf(stderr, "Página %d: el corpus ha cambiado %d signos\n", p->pageno, ch);
+    }
     p->processed = 1;
     fprintf(stderr, "Página %d: %d renglones, %d signos\n", p->pageno, p->nlines, p->ng);
     return 0;
