@@ -1,0 +1,1 @@
+Binarios de HieroOCR compilados y probados por GitHub Actions a partir de 3c8e3e5.
