@@ -19,12 +19,15 @@
 #include <string.h>
 
 #define NCACHE  4096
-#define MAXBTN  64
+#define MAXBTN  160
+#define MAXHITS 120
 
 enum {
     A_NONE, A_OPEN, A_CAMERA, A_PREV_PAGE, A_NEXT_PAGE, A_FIT, A_LEARN, A_RECLASS, A_SAVE,
     A_PREV_SIGN, A_NEXT_SIGN, A_EDIT, A_DELETE, A_MERGE, A_EDIT_OK, A_EDIT_CANCEL,
-    A_CAND   /* A_CAND + k: candidato k */
+    A_DICT, A_DICT_CLOSE, A_DICT_EDIT, A_DICT_GO, A_EXTEND, A_SEARCH_SEL,
+    A_CAND,              /* A_CAND + k: candidato k */
+    A_HIT = A_CAND + 16  /* A_HIT + i: resultado i del diccionario */
 };
 enum { B_NORMAL, B_PRIMARY, B_ON, B_LABEL };
 
@@ -57,6 +60,18 @@ typedef struct {
     int           press_x, press_y;
     Finger        fing[2];
     int           nfing, ntouch, pinch;
+    /* OpenGlyph: selección de varios signos, buscador y lectura */
+    int           sel_n;                  /* signos seleccionados a partir de sel, en orden de lectura */
+    int           overlay;                /* buscador abierto */
+    int           sedit;                  /* escribiendo en el buscador */
+    char          query[160];
+    int           q_from_sel;             /* la consulta viene de la selección */
+    DictHit       hits[MAXHITS];
+    int           nhits, ntotal;
+    float         ov_scroll;
+    int           ov_y0, ov_y1;
+    unsigned      rd_key;                 /* lectura del renglón en caché */
+    char          rd_text[1200], rd_word[400];
     CacheEntry    cache[NCACHE];
     int           ncache;
 } Gui;
@@ -90,6 +105,7 @@ static const char *ui_font_paths[] = {
     "/system/fonts/NotoSans-Regular.ttf",
     "/system/fonts/DroidSans.ttf",
     "/System/Library/Fonts/Supplemental/Arial.ttf",
+    "C:/Windows/Fonts/segoeui.ttf",
     "C:/Windows/Fonts/arial.ttf",
     NULL
 };
@@ -106,6 +122,17 @@ static TTF_Font *open_ui_font(int size)
         TTF_Font *f = TTF_OpenFont(*p, size);
         if (f)
             return f;
+    }
+    const char *win = getenv("WINDIR");   /* Windows instalado fuera de C: */
+    if (win) {
+        char p[600];
+        snprintf(p, sizeof p, "%s\\Fonts\\segoeui.ttf", win);
+        TTF_Font *f = TTF_OpenFont(p, size);
+        if (!f) {
+            snprintf(p, sizeof p, "%s\\Fonts\\arial.ttf", win);
+            f = TTF_OpenFont(p, size);
+        }
+        return f;
     }
     return NULL;
 }
@@ -273,6 +300,9 @@ static CacheEntry *cached(Gui *g, const char *code, char kind, SDL_Color c)
     return e;
 }
 
+static int selection(Gui *g, int *out, int max);
+static void update_reading(Gui *g);
+
 /* ---------- botones ---------- */
 
 static void set_rgb(Gui *g, int r, int gg, int b) { SDL_SetRenderDrawColor(g->ren, (Uint8)r, (Uint8)gg, (Uint8)b, 255); }
@@ -342,13 +372,15 @@ static int flow_buttons(Gui *g, int x0, int y0, int maxw, const BtnSpec *b, int 
 
 static int toolbar(Gui *g, int ww, int draw)
 {
-    BtnSpec b[12];
+    BtnSpec b[14];
     int n = 0;
     char pg[48];
     if (g->mobile) {
         b[n++] = (BtnSpec){"Abrir", A_OPEN, B_PRIMARY};
         b[n++] = (BtnSpec){"Cámara", A_CAMERA, B_PRIMARY};
     }
+    if (dict_loaded())
+        b[n++] = (BtnSpec){"Diccionario", g->overlay ? A_DICT_CLOSE : A_DICT, g->overlay ? B_ON : B_NORMAL};
     if (has_doc(g)) {
         if (g->doc->np > 1) {
             snprintf(pg, sizeof pg, "Pág. %d (%d/%d)", cur_page(g)->pageno, g->cur + 1, g->doc->np);
@@ -403,6 +435,28 @@ static int panel(Gui *g, int ww, int y0, int draw)
                  gl->manual ? " · corregido" : "", gl->underlined ? " · subrayado" : "");
         y += draw_wrapped(g, g->ui, pad, y, line, black, maxw, 2, draw) + U(4);
 
+        if (dict_loaded()) {   /* OpenGlyph: palabra del signo y lectura del renglón */
+            const SDL_Color brown = {120, 60, 10, 255};
+            update_reading(g);
+            if (g->sel_n > 1) {
+                int sl[64], ns = selection(g, sl, 64);
+                char q[200] = "";
+                for (int i = 0; i < ns && strlen(q) < 180; i++) {
+                    strcat(q, i ? "-" : "");
+                    strcat(q, p->g[sl[i]].code[0] ? p->g[sl[i]].code : "?");
+                }
+                snprintf(line, sizeof line, "Selección: %s (%d signos) · «Buscar» la consulta en OpenGlyph", q, ns);
+                y += draw_wrapped(g, g->ui, pad, y, line, brown, maxw, 2, draw) + U(2);
+            } else if (g->rd_word[0]) {
+                snprintf(line, sizeof line, "Palabra: %s", g->rd_word);
+                y += draw_wrapped(g, g->ui, pad, y, line, brown, maxw, 2, draw) + U(2);
+            }
+            if (g->rd_text[0]) {
+                snprintf(line, sizeof line, "Lectura: %s", g->rd_text);
+                y += draw_wrapped(g, g->small, pad, y, line, brown, maxw, 2, draw) + U(4);
+            }
+        }
+
         /* candidatos: casillas que se pueden tocar */
         int gap = U(6), cw = (maxw - (NCAND - 1) * gap) / NCAND;
         if (cw > U(190))
@@ -454,8 +508,9 @@ static int panel(Gui *g, int ww, int y0, int draw)
             {"< Anterior", A_PREV_SIGN, B_NORMAL}, {"Siguiente >", A_NEXT_SIGN, B_NORMAL},
             {"Escribir código", A_EDIT, B_NORMAL}, {"Borrar", A_DELETE, B_NORMAL},
             {"Unir con el siguiente", A_MERGE, B_NORMAL},
+            {"Ampliar selección >", A_EXTEND, B_NORMAL}, {"Buscar en OpenGlyph", A_SEARCH_SEL, B_NORMAL},
         };
-        y += flow_buttons(g, pad, y, maxw, b, 5, draw) + U(6);
+        y += flow_buttons(g, pad, y, maxw, b, dict_loaded() ? 7 : 5, draw) + U(6);
     } else {
         y += draw_wrapped(g, g->ui, pad, y,
                           g->mobile ? "Toca un signo para corregirlo. Arrastra para mover la página y pellizca para ampliarla."
@@ -466,6 +521,7 @@ static int panel(Gui *g, int ww, int y0, int draw)
         y += draw_wrapped(g, g->small, pad, y,
                           "Clic: seleccionar · Tab: siguiente · 1-5: candidato · Intro: escribir código · Supr: borrar · "
                           "M: unir con el siguiente · R: reclasificar · L: aprendizaje · S: guardar MdC · "
+                          "E: ampliar selección · B: buscar la selección · D: diccionario · "
                           "AvPág/RePág: página · rueda/+/-: zoom · F: ajustar · arrastrar: mover · Q: salir",
                           grey, maxw, 3, draw) + U(4);
     return y - y0;
@@ -475,7 +531,7 @@ static void measure(Gui *g, int *ww, int *wh)
 {
     SDL_GetRendererOutputSize(g->ren, ww, wh);
     g->top_h = toolbar(g, *ww, 0);
-    g->panel_h = panel(g, *ww, 0, 0);
+    g->panel_h = g->overlay ? 0 : panel(g, *ww, 0, 0);
     if (g->panel_h > *wh / 2)
         g->panel_h = *wh / 2;
 }
@@ -603,6 +659,112 @@ static int hit_test(Gui *g, int mx, int my)
     return best;
 }
 
+/* Signos seleccionados (sel y los sel_n-1 siguientes del renglón), en orden de lectura. */
+static int selection(Gui *g, int *out, int max)
+{
+    Page *p = cur_page(g);
+    if (!p || g->sel < 0)
+        return 0;
+    int *ord = malloc(sizeof(int) * (size_t)p->ng);
+    int m = line_glyph_order(p, p->g[g->sel].line, g->o, ord), n = 0, k = 0;
+    while (k < m && ord[k] != g->sel)
+        k++;
+    for (; k < m && n < g->sel_n && n < max; k++)
+        out[n++] = ord[k];
+    free(ord);
+    return n;
+}
+
+static int in_selection(Gui *g, int gi)
+{
+    int s[64], n = selection(g, s, 64);
+    for (int i = 0; i < n; i++)
+        if (s[i] == gi)
+            return 1;
+    return 0;
+}
+
+/* Lectura del renglón del signo seleccionado (se recalcula sólo si cambian los signos). */
+static void update_reading(Gui *g)
+{
+    Page *p = cur_page(g);
+    g->rd_text[0] = g->rd_word[0] = 0;
+    if (!p || g->sel < 0 || !dict_loaded())
+        return;
+    int ids[1024], gl[1024];
+    int n = line_sign_ids(p, p->g[g->sel].line, g->o, ids, gl, 1024);
+    unsigned key = 2166136261u ^ (unsigned)g->sel;
+    for (int i = 0; i < n; i++)
+        key = (key ^ (unsigned)ids[i]) * 16777619u;
+    if (key == g->rd_key && g->rd_text[0])
+        return;
+    g->rd_key = key;
+    DictWord w[256];
+    int nw = dict_read(ids, n, w, 256);
+    size_t len = 0;
+    char u[256];
+    for (int k = 0; k < nw; k++) {
+        const DictEntry *e = dict_entry(w[k].entry);
+        translit_unicode(e->tr, u, sizeof u);
+        int here = 0;
+        for (int j = w[k].start; j < w[k].start + w[k].len; j++)
+            here |= gl[j] == g->sel;
+        if (here)
+            snprintf(g->rd_word, sizeof g->rd_word, "%.200s%s%.150s%s", u, e->trad[0] ? " «" : "", e->trad,
+                     e->trad[0] ? "»" : "");
+        if (len < sizeof g->rd_text - 1)
+            len += (size_t)snprintf(g->rd_text + len, sizeof g->rd_text - len, "%s%s%s%s", k ? " · " : "",
+                                    here ? "[" : "", u, here ? "]" : "");
+    }
+    float r = 0;
+    int c = corpus_best_line(ids, n, &r);
+    if (c >= 0 && r >= 0.5f && len < sizeof g->rd_text - 1) {
+        const CorpusLine *cl = corpus_line(c);
+        snprintf(g->rd_text + len, sizeof g->rd_text - len, "%sparecido a %s, %d (%.0f %%)%s%.200s",
+                 len ? " · " : "", corpus_text_name(cl->text), cl->line, 100 * r, cl->trad[0] ? ": " : "", cl->trad);
+    }
+}
+
+static void run_query(Gui *g)
+{
+    g->nhits = g->ntotal = 0;
+    g->ov_scroll = 0;
+    if (g->query[0])
+        g->nhits = dict_search(g->query, g->hits, MAXHITS, &g->ntotal);
+}
+
+static void open_search(Gui *g, int from_sel)
+{
+    g->overlay = 1;
+    g->q_from_sel = 0;
+    if (from_sel) {
+        int s[64], n = selection(g, s, 64);
+        Page *p = cur_page(g);
+        g->query[0] = 0;
+        for (int i = 0; i < n; i++) {
+            const char *c = p->g[s[i]].code[0] ? p->g[s[i]].code : "?";
+            if (strlen(g->query) + strlen(c) + 2 < sizeof g->query) {
+                if (i)
+                    strcat(g->query, " ");
+                strcat(g->query, c);
+            }
+        }
+        g->q_from_sel = n;
+        g->sedit = 0;
+    } else {
+        g->sedit = 1;
+        SDL_StartTextInput();
+    }
+    run_query(g);
+}
+
+static void close_search(Gui *g)
+{
+    g->overlay = 0;
+    g->sedit = 0;
+    SDL_StopTextInput();
+}
+
 /* Desplaza la vista para que el signo seleccionado quede a la vista. */
 static void ensure_visible(Gui *g)
 {
@@ -626,7 +788,32 @@ static void ensure_visible(Gui *g)
 static void select_glyph(Gui *g, int i)
 {
     g->sel = i;
+    g->sel_n = 1;
     ensure_visible(g);
+}
+
+/* Aplica a la selección los signos de una palabra del diccionario. */
+static void assign(Gui *g, int gi, const char *code);
+static void apply_hit(Gui *g, int i)
+{
+    if (i < 0 || i >= g->nhits || g->hits[i].kind != 0)
+        return;
+    const DictEntry *e = dict_entry(g->hits[i].idx);
+    int s[64], n = selection(g, s, 64);
+    if (n != e->n || n != g->q_from_sel) {
+        snprintf(g->status, sizeof g->status, "Para aplicar una palabra, selecciona tantos signos como tiene (%d).", e->n);
+        return;
+    }
+    int learn = g->learn;
+    for (int k = 0; k < n; k++)
+        assign(g, s[k], sign_code(e->s[k]));
+    g->learn = learn;
+    char u[256];
+    translit_unicode(e->tr, u, sizeof u);
+    snprintf(g->status, sizeof g->status, "Aplicada la palabra %.200s (%d signos).", u, n);
+    close_search(g);
+    g->sel = s[0];
+    g->sel_n = n;
 }
 
 static void assign(Gui *g, int gi, const char *code)
@@ -750,6 +937,21 @@ static void do_action(Gui *g, int a)
     switch (a) {
     case A_OPEN: platform_pick_file(); break;
     case A_CAMERA: platform_take_photo(); break;
+    case A_DICT: open_search(g, 0); break;
+    case A_DICT_CLOSE: close_search(g); break;
+    case A_DICT_EDIT: g->sedit = 1; SDL_StartTextInput(); break;
+    case A_DICT_GO: run_query(g); g->sedit = 0; SDL_StopTextInput(); break;
+    case A_SEARCH_SEL: if (g->sel >= 0) open_search(g, 1); break;
+    case A_EXTEND:
+        if (p && g->sel >= 0) {
+            int s[64], n = selection(g, s, 64);
+            g->sel_n = n + 1;
+            if (selection(g, s, 64) == n) {
+                g->sel_n = n;
+                snprintf(g->status, sizeof g->status, "La selección ya llega al final del renglón.");
+            }
+        }
+        break;
     case A_PREV_PAGE: if (g->cur > 0) load_page(g, g->cur - 1); break;
     case A_NEXT_PAGE: if (g->doc && g->cur + 1 < g->doc->np) load_page(g, g->cur + 1); break;
     case A_FIT: fit_page(g); break;
@@ -782,7 +984,9 @@ static void do_action(Gui *g, int a)
         }
         break;
     default:
-        if (a >= A_CAND && a < A_CAND + NCAND && p && g->sel >= 0) {
+        if (a >= A_HIT) {
+            apply_hit(g, a - A_HIT);
+        } else if (a >= A_CAND && a < A_CAND + NCAND && p && g->sel >= 0) {
             int k = a - A_CAND;
             if (k < p->g[g->sel].ncand)
                 assign(g, g->sel, g->ts->t[p->g[g->sel].cand[k]].code);
@@ -797,6 +1001,27 @@ static void handle_key(Gui *g, SDL_Keysym ks)
     measure(g, &ww, &wh);
     float cy = (g->top_h + wh - g->panel_h) / 2.0f;
 
+    if (g->overlay) {
+        size_t n = strlen(g->query);
+        if (ks.sym == SDLK_RETURN || ks.sym == SDLK_KP_ENTER) {
+            do_action(g, A_DICT_GO);
+        } else if (ks.sym == SDLK_ESCAPE || ks.sym == SDLK_AC_BACK) {
+            if (g->sedit && g->mobile) { g->sedit = 0; SDL_StopTextInput(); }
+            else close_search(g);
+        } else if (ks.sym == SDLK_BACKSPACE && n && g->sedit) {
+            while (n > 0 && ((unsigned char)g->query[n - 1] & 0xC0) == 0x80)
+                n--;                       /* borra un carácter UTF-8 entero */
+            g->query[n ? n - 1 : 0] = 0;
+            run_query(g);
+        } else if (ks.sym == SDLK_UP) {
+            g->ov_scroll -= U(60);
+        } else if (ks.sym == SDLK_DOWN) {
+            g->ov_scroll += U(60);
+        } else if (!g->sedit && ks.sym == SDLK_d) {
+            close_search(g);
+        }
+        return;
+    }
     if (g->editing) {
         size_t n = strlen(g->buf);
         if (ks.sym == SDLK_RETURN || ks.sym == SDLK_KP_ENTER)
@@ -814,7 +1039,7 @@ static void handle_key(Gui *g, SDL_Keysym ks)
         break;
     case SDLK_ESCAPE:
     case SDLK_AC_BACK:
-        if (g->sel >= 0) g->sel = -1;
+        if (g->sel >= 0) { g->sel = -1; g->sel_n = 1; }
         else g->running = 0;
         break;
     case SDLK_TAB: select_glyph(g, next_glyph(cur_page(g), g->sel, (ks.mod & KMOD_SHIFT) ? -1 : 1)); break;
@@ -826,6 +1051,9 @@ static void handle_key(Gui *g, SDL_Keysym ks)
     case SDLK_DELETE:
     case SDLK_BACKSPACE: do_action(g, A_DELETE); break;
     case SDLK_m: do_action(g, A_MERGE); break;
+    case SDLK_d: if (dict_loaded()) do_action(g, A_DICT); break;
+    case SDLK_e: do_action(g, A_EXTEND); break;
+    case SDLK_b: if (dict_loaded()) do_action(g, A_SEARCH_SEL); break;
     case SDLK_r: do_action(g, A_RECLASS); break;
     case SDLK_s: do_action(g, A_SAVE); break;
     case SDLK_f: do_action(g, A_FIT); break;
@@ -909,7 +1137,7 @@ static void handle_finger(Gui *g, SDL_Event *e)
         Finger old[2] = {g->fing[0], g->fing[1]};
         g->fing[i].x = x;
         g->fing[i].y = y;
-        if (g->pinch && g->nfing == 2) {
+        if (g->pinch && g->nfing == 2 && !g->overlay) {
             float d0 = hypotf(old[0].x - old[1].x, old[0].y - old[1].y);
             float d1 = hypotf(g->fing[0].x - g->fing[1].x, g->fing[0].y - g->fing[1].y);
             float c0x = (old[0].x + old[1].x) / 2, c0y = (old[0].y + old[1].y) / 2;
@@ -956,7 +1184,10 @@ static void handle_event(Gui *g, SDL_Event *e)
     case SDL_MOUSEWHEEL: {
         int mx, my;
         SDL_GetMouseState(&mx, &my);
-        zoom_at(g, e->wheel.y > 0 ? 1.15f : 1 / 1.15f, (float)mx, (float)my);
+        if (g->overlay)
+            g->ov_scroll -= e->wheel.y * U(60);
+        else
+            zoom_at(g, e->wheel.y > 0 ? 1.15f : 1 / 1.15f, (float)mx, (float)my);
         break;
     }
     case SDL_FINGERDOWN:
@@ -987,9 +1218,9 @@ static void handle_event(Gui *g, SDL_Event *e)
             if (g->press_action != A_NONE) {
                 if (button_at(g, e->button.x, e->button.y) == g->press_action)
                     do_action(g, g->press_action);
-            } else if (g->press_in_page && !g->moved && !g->editing) {
-                int hit = hit_test(g, e->button.x, e->button.y);
-                g->sel = hit;
+            } else if (g->press_in_page && !g->moved && !g->editing && !g->overlay) {
+                g->sel = hit_test(g, e->button.x, e->button.y);
+                g->sel_n = 1;
             }
         }
         break;
@@ -1000,7 +1231,9 @@ static void handle_event(Gui *g, SDL_Event *e)
             int dx = e->motion.x - g->press_x, dy = e->motion.y - g->press_y;
             if (!g->moved && dx * dx + dy * dy > U(8) * U(8))
                 g->moved = 1;
-            if (g->moved) {
+            if (g->moved && g->overlay) {
+                g->ov_scroll -= e->motion.yrel;
+            } else if (g->moved) {
                 g->offx += e->motion.xrel;
                 g->offy += e->motion.yrel;
             }
@@ -1010,7 +1243,13 @@ static void handle_event(Gui *g, SDL_Event *e)
         }
         break;
     case SDL_TEXTINPUT:
-        if (g->editing)
+        if (g->overlay && g->sedit) {
+            size_t n = strlen(g->query), l = strlen(e->text.text);
+            if (n + l + 1 < sizeof g->query) {
+                memcpy(g->query + n, e->text.text, l + 1);
+                run_query(g);
+            }
+        } else if (g->editing)
             for (const char *c = e->text.text; *c; c++) {
                 size_t n = strlen(g->buf);
                 if (isalnum((unsigned char)*c) && n + 1 < CODE_LEN) {
@@ -1060,9 +1299,10 @@ static void draw_page(Gui *g, int ww, int y0, int y1)
         SDL_Color c = gl->manual ? c_man
                     : gl->score <= g->o->uncertain_thr * 0.75f ? c_ok
                     : gl->score <= g->o->uncertain_thr ? c_mid : c_bad;
-        set_color(g, i == g->sel ? c_sel : c);
+        int insel = i == g->sel || (g->sel_n > 1 && in_selection(g, i));
+        set_color(g, insel ? c_sel : c);
         SDL_RenderDrawRect(g->ren, &r);
-        if (i == g->sel) {
+        if (insel) {
             for (int k = 1; k <= U(2) + 1; k++) {
                 SDL_Rect r2 = {r.x - k, r.y - k, r.w + 2 * k, r.h + 2 * k};
                 SDL_RenderDrawRect(g->ren, &r2);
@@ -1121,6 +1361,148 @@ static void draw_editor(Gui *g, int ww, int y0)
     flow_buttons(g, box.x + pad, box.y + 2 * pad + line_h(g->ui), box.w - 2 * pad, b, 2, 1);
 }
 
+/* Fila de jeroglíficos de alto h; devuelve el ancho usado. */
+static int draw_signs(Gui *g, int x, int y, int h, const int *ids, int n, int maxw, int draw)
+{
+    const SDL_Color black = {20, 20, 20, 255};
+    int x0 = x, gap = U(3);
+    for (int k = 0; k < n; k++) {
+        CacheEntry *e = cached(g, sign_code(ids[k]), 'H', black);
+        int w, hh = h;
+        if (e) {
+            float kk = (float)h / (e->h > 0 ? e->h : 1);
+            if (e->w * kk > 1.6f * h)
+                kk = 1.6f * h / e->w;
+            w = (int)(e->w * kk);
+            hh = (int)(e->h * kk);
+        } else {
+            w = text_w(g->small, sign_code(ids[k]));
+        }
+        if (x + w - x0 > maxw) {
+            if (draw)
+                draw_text(g, g->small, x, y + h / 3, "…", black, 0);
+            return x - x0 + U(12);
+        }
+        if (draw) {
+            if (e) {
+                SDL_Rect d = {x, y + (h - hh), w, hh};
+                SDL_RenderCopy(g->ren, e->t, &e->src, &d);
+            } else {
+                draw_text(g, g->small, x, y + h / 3, sign_code(ids[k]), black, 0);
+            }
+        }
+        x += w + gap;
+    }
+    return x - x0;
+}
+
+/* Buscador de OpenGlyph: diccionario y corpus. */
+static void draw_overlay(Gui *g, int ww, int y0, int y1)
+{
+    const SDL_Color black = {20, 20, 20, 255}, grey = {95, 95, 95, 255}, blue = {30, 70, 200, 255},
+                    brown = {120, 60, 10, 255};
+    int pad = U(10), maxw = ww - 2 * pad;
+    SDL_Rect bg = {0, y0, ww, y1 - y0};
+    set_rgb(g, 250, 248, 242);
+    SDL_RenderFillRect(g->ren, &bg);
+
+    /* cabecera: consulta y botones */
+    char line[400];
+    snprintf(line, sizeof line, "Buscar: %s%s", g->query, g->sedit ? "_" : "");
+    int y = y0 + pad;
+    int qh = line_h(g->ui) + U(14);
+    SDL_Rect qb = {pad, y, maxw, qh};
+    set_rgb(g, 255, 255, 255);
+    SDL_RenderFillRect(g->ren, &qb);
+    set_rgb(g, g->sedit ? 30 : 150, g->sedit ? 70 : 150, g->sedit ? 200 : 150);
+    SDL_RenderDrawRect(g->ren, &qb);
+    draw_text(g, g->ui, qb.x + U(8), qb.y + U(7), line, blue, qb.w - U(16));
+    add_button(g, qb, A_DICT_EDIT);
+    y += qh + U(6);
+    BtnSpec b[] = {{"Buscar", A_DICT_GO, B_PRIMARY}, {"Cerrar", A_DICT_CLOSE, B_NORMAL}};
+    y += flow_buttons(g, pad, y, maxw, b, 2, 1) + U(6);
+    if (g->q_from_sel)
+        snprintf(line, sizeof line, "%d resultados. Toca una palabra de %d signos para aplicarla a la selección.",
+                 g->ntotal, g->q_from_sel);
+    else if (g->query[0])
+        snprintf(line, sizeof line, "%d resultados%s", g->ntotal, g->ntotal > g->nhits ? " (se muestran los primeros)" : "");
+    else
+        snprintf(line, sizeof line, "Escribe códigos Gardiner o MdC (G17 D21, nfr-f:r; ? = cualquier signo), "
+                 "una transliteración (nfr, Htp) o una palabra de la traducción (horizon).");
+    y += draw_wrapped(g, g->small, pad, y, line, grey, maxw, 3, 1) + U(6);
+    set_rgb(g, 190, 190, 190);
+    SDL_RenderDrawLine(g->ren, 0, y, ww, y);
+    int top = y + 1;
+
+    /* resultados con desplazamiento */
+    SDL_Rect clip = {0, top, ww, y1 - top};
+    SDL_RenderSetClipRect(g->ren, &clip);
+    int sh = U(34), sl = line_h(g->small), uh = line_h(g->ui);
+    int total_h = 0;
+    for (int pass = 0; pass < 2; pass++) {   /* 0: medir, 1: dibujar */
+        if (pass == 1) {
+            float maxs = (float)(total_h - (y1 - top) + U(20));
+            if (g->ov_scroll > maxs) g->ov_scroll = maxs;
+            if (g->ov_scroll < 0) g->ov_scroll = 0;
+        }
+        int yy = top + U(6) - (pass ? (int)g->ov_scroll : 0), last = -1;
+        for (int i = 0; i < g->nhits; i++) {
+            DictHit *h = &g->hits[i];
+            int vis = pass && yy < y1 && yy + 4 * sl + sh > top;
+            if (h->kind != last) {
+                if (vis)
+                    draw_text(g, g->ui, pad, yy, h->kind == 0 ? "Diccionario de OpenGlyph" : "Corpus de OpenGlyph", brown, maxw);
+                yy += uh + U(4);
+                last = h->kind;
+            }
+            int y_start = yy;
+            char u[600];
+            if (h->kind == 0) {
+                const DictEntry *e = dict_entry(h->idx);
+                int wsig = draw_signs(g, pad, yy, sh, e->s, e->n, maxw / 2, vis);
+                translit_unicode(e->tr, u, sizeof u);
+                if (vis)
+                    draw_text(g, g->ui, pad + wsig + U(10), yy + sh - uh, u[0] ? u : "—", blue, maxw - wsig - U(10));
+                yy += sh + U(4);
+                char t[600];
+                snprintf(t, sizeof t, "%s%s", e->trad[0] ? e->trad : "(sin traducción)",
+                         e->freq ? "" : "");
+                yy += draw_wrapped(g, g->small, pad + U(6), yy, t, black, maxw - U(6), 2, vis);
+                if (e->freq) {
+                    snprintf(t, sizeof t, "%d apariciones en el corpus", e->freq);
+                    yy += draw_wrapped(g, g->small, pad + U(6), yy, t, grey, maxw - U(6), 1, vis);
+                }
+                if (pass && g->q_from_sel == e->n) {
+                    SDL_Rect r = {0, y_start - U(3), ww, yy - y_start + U(6)};
+                    if (r.y + r.h > top && r.y < y1)
+                        add_button(g, r, A_HIT + i);
+                }
+            } else {
+                const CorpusLine *c = corpus_line(h->idx);
+                snprintf(u, sizeof u, "%s, renglón %d", corpus_text_name(c->text), c->line);
+                yy += draw_wrapped(g, g->small, pad, yy, u, grey, maxw, 1, vis) + U(2);
+                /* los signos alrededor de la coincidencia */
+                int from = h->pos > 3 ? h->pos - 3 : 0, cnt = c->n - from;
+                draw_signs(g, pad, yy, sh, c->s + from, cnt, maxw, vis);
+                yy += sh + U(4);
+                if (c->tr[0]) {
+                    translit_unicode(c->tr, u, sizeof u);
+                    yy += draw_wrapped(g, g->small, pad + U(6), yy, u, blue, maxw - U(6), 2, vis);
+                }
+                if (c->trad[0])
+                    yy += draw_wrapped(g, g->small, pad + U(6), yy, c->trad, black, maxw - U(6), 2, vis);
+            }
+            yy += U(10);
+            if (vis) {
+                set_rgb(g, 225, 222, 214);
+                SDL_RenderDrawLine(g->ren, pad, yy - U(5), ww - pad, yy - U(5));
+            }
+        }
+        total_h = yy - (top + U(6)) + (pass ? (int)g->ov_scroll : 0);
+    }
+    SDL_RenderSetClipRect(g->ren, NULL);
+}
+
 static void render(Gui *g, const char *busy)
 {
     int ww, wh;
@@ -1135,6 +1517,8 @@ static void render(Gui *g, const char *busy)
     else if (!busy)
         draw_empty(g, ww, y0, y1);
 
+    if (g->overlay)
+        draw_overlay(g, ww, y0, wh);
     toolbar(g, ww, 1);
     if (g->panel_h > 0) {
         SDL_Rect pr = {0, y1, ww, g->panel_h};
@@ -1239,6 +1623,21 @@ int gui_run(Doc *doc, Options *o, TemplateSet *ts)
                 g->scale = (float)atof(z);
                 g->offx = U(20) - s0->r.x0 * g->scale;
                 g->offy = g->top_h + U(40) - s0->r.y0 * g->scale;
+            }
+        }
+        if (o->screenshot) {   /* modo de prueba del buscador y de la selección múltiple */
+            const char *ns = getenv("HIEROOCR_PRUEBA_SELECCION"), *q = getenv("HIEROOCR_PRUEBA_BUSCAR");
+            if (ns && g->sel >= 0)
+                g->sel_n = atoi(ns);
+            if (q && !g->overlay) {
+                if (strcmp(q, "seleccion") == 0) {
+                    open_search(g, 1);
+                } else {
+                    open_search(g, 0);
+                    snprintf(g->query, sizeof g->query, "%s", q);
+                    run_query(g);
+                    g->sedit = 0;
+                }
             }
         }
         render(g, NULL);

@@ -9,9 +9,19 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#ifdef _WIN32
+#include <direct.h>
+#define MKDIR(p) _mkdir(p)
+#else
+#include <sys/stat.h>
+#define MKDIR(p) mkdir((p), 0755)
+#endif
+
 #define NORM      40   /* lado de la rejilla normalizada para comparar signos */
 #define CODE_LEN  16   /* longitud máxima de un código Gardiner (p. ej. "Aa13", "N35A") */
 #define NCAND      5   /* candidatos que se guardan por signo */
+
+typedef struct { char *s; size_t n, cap; } Str;
 
 /* Imagen en escala de grises (0 = negro, 255 = blanco). */
 typedef struct { int w, h; uint8_t *px; } Gray;
@@ -104,9 +114,10 @@ typedef struct {
     int         train;          /* --entrenar */
     int         evaluate;       /* --evaluar */
     const char *dataset;        /* carpeta de fotos por código Gardiner (-D) */
+    int         no_lm;          /* no usar el corpus para reordenar candidatos */
+    int         reading;        /* --lectura: añadir la lectura de cada renglón al MdC */
+    const char *data_dir;       /* carpeta con el diccionario y el corpus de OpenGlyph */
 } Options;
-
-typedef struct { char *s; size_t n, cap; } Str;
 
 /* Documento abierto: sus páginas y, si viene de un PDF, la carpeta temporal. */
 typedef struct {
@@ -180,7 +191,43 @@ int evaluate_model(const Options *o, TemplateSet *ts);
 int evaluate_photos(const Options *o, const TemplateSet *model);
 int      valid_code(const char *s);
 
+/* dict.c: diccionario y corpus de OpenGlyph */
+typedef struct {
+    int  *s, n;                 /* secuencia de signos (ids) */
+    char *tr, *tr_u, *trad;     /* transliteración MdC, en Unicode, traducción */
+    int   freq, is_sign;        /* apariciones en el corpus; 1 = ficha de signo */
+} DictEntry;
+typedef struct {
+    int   text, line;
+    int  *s, n;
+    char *mdc, *tr, *trad;
+} CorpusLine;
+typedef struct { int kind, idx, match, pos; } DictHit;   /* kind 0 = diccionario, 1 = corpus */
+typedef struct { int start, len, entry; } DictWord;
+
+int  dict_load(const char *dir, const char *exclude);
+int  dict_loaded(void);
+int  dict_count(void);
+int  corpus_count(void);
+const DictEntry  *dict_entry(int i);
+const CorpusLine *corpus_line(int i);
+const char *corpus_text_name(int t);
+const char *sign_code(int id);
+int  sign_id_find(const char *code);
+void translit_unicode(const char *mdc, char *out, size_t n);
+int  dict_parse_query(const char *q, int *ids, int max);
+int  dict_search_signs(const int *q, int m, DictHit *hits, int max, int *ntotal);
+int  dict_search_text(const char *q, DictHit *hits, int max, int *ntotal);
+int  dict_search(const char *q, DictHit *hits, int max, int *ntotal);
+int  dict_read(const int *s, int n, DictWord *w, int maxw);
+int  corpus_best_line(const int *s, int n, float *ratio);
+int  lm_ready(void);
+int  lm_rerank_page(Page *p, const Options *o, const TemplateSet *ts);
+int  line_sign_ids(const Page *p, int line, const Options *o, int *ids, int *glyphs, int max);
+void line_reading(const Page *p, int line, const Options *o, Str *out);
+
 /* mdc.c */
+int  line_glyph_order(const Page *p, int line, const Options *o, int *out);
 void str_puts(Str *s, const char *t);
 void line_to_mdc(const Page *p, int line, const Options *o, Str *out);
 void page_to_mdc(const Page *p, const Options *o, Str *out, int last_page);

@@ -1,0 +1,29 @@
+@GLYPH LL98  15  0.75  1 40 951.501.50109181.501.50                            CenturyExpd BT*************************
+++ Urk.IV,388
+
++s h:n nw w O18:Z2 nw:1 S27 -!
++s H M2:n nw w  W59:nb mn:n:Y1 Hr:1 st t:pr .:[[ .:f#34 .:]] -!
++s m&x#2 D35 s t#  a:q ir:ir-!
++s s  T32 w |(26)- X6A?:t R8A R8A t:tm -!
++s D35 wn:n:t F2B Y1 m pr:Z1 f -!
++s nTr i t:f A1:Z2 m tp:1 Sw w // // -!
++s ir m a i t:f |(27)-Hr:1 Hm Z1 A42 A42 -!
++s D37:f X8 Hr:1 n r:mn:n nw w  D42:Z2 nTr Z1 -!
++s A35E D40 n A1 nTr O7 t:pr f wr&t m i n:r:inr V24 n .:[[ a:n:nw#34 .:]] D7 -!
++s  O32B:Z2 |(28)-z m sS:z O39 n NN&NN&S12A -!
++s ???:Z2 m N34:N33A D42:D42 Dw -!
++s X:p# w Aa2:Z2 i r:Z4 m wAs S12A:N33A -!
++s D242:r Hr:r A28 Sw t:Z4A #b .. . #e -!
++s [[  z:xa# ]] a:Y1 |(29)- n i Hm 1:n nTr*p:n m H b w [[  Hb:Z2:f# ]] -!
++s .:[[ .:n#34 .:]] G21# H b D30\ ??? Z2:Hb W4 G26 V29 Y1v n i n:f [[ m# ]] U2:t*V1 -!
++s |(30)-i*w:Z2 m r:Z1 -!
++s D35:n m tp:Z1 t:r w M6 hrw:Z1 f -!!
+
+++ RQ OB :
+++ 4 : pas sûr de X6A !
+++ 10 : groupe =  NN&NN&S12A (100/20/60%) le hiéro existe en fonte IFAO (290,14) mais pas sous winglyph...!
+++ 11 : même pb que page précédente, signe pas trouvé. 
+++ 15 : pas sûr de D30, et en plus à l'envers...
+
+++ EUREKA... j'en ai encore trouvé une bonne (que je cherchais depuis un moment !!!) : pour mettre un ? au-dessus d'un hiéro,
+++ il suffit de le coller avec un \ (anti-slash) au hiéro en question, ex = D30\? donnera D30 avec un (?) au dessus...

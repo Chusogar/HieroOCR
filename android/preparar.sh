@@ -31,6 +31,9 @@ cp "$JNI"/SDL/android-project/app/src/main/java/org/libsdl/app/*.java app/src/ma
 DATOS=app/src/main/assets/datos
 mkdir -p "$DATOS"
 cp ../datos/modelo.hmod ../datos/gardiner.tsv "$DATOS"/
+# Diccionario y corpus de OpenGlyph (OpenGlyph/exportar.py)
+cp ../datos/openglyph_diccionario.tsv ../datos/openglyph_corpus.tsv ../datos/openglyph_textos.tsv \
+   ../datos/mdc_fonetico.tsv "$DATOS"/
 # El modelo entrenado con fotografías (make entrenar-fotos) no se distribuye; si
 # lo tienes y quieres llevarlo en tu propio APK: INCLUIR_MODELO_FOTOS=1 ./preparar.sh
 # (también se puede cargar desde la aplicación eligiendo el archivo .hmod).

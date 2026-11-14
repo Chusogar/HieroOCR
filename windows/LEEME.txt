@@ -1,0 +1,31 @@
+HieroOCR para Windows (64 bits)
+================================
+
+OCR de jeroglíficos egipcios impresos con salida en Manuel de Codage (MdC), con el
+diccionario y el corpus de OpenGlyph.
+
+Uso
+---
+- Doble clic en hieroocr.exe: abre la interfaz. Arrastra a la ventana una imagen
+  (JPG, PNG...) o un PDF. Pulsa D para el diccionario de OpenGlyph.
+- Desde una consola (cmd o PowerShell), en esta carpeta:
+
+    hieroocr -p 71-92 libro.pdf -o texto.mdc     reconocer páginas de un PDF
+    hieroocr -g libro.pdf                        abrir un PDF en la interfaz
+    hieroocr -B foto.jpg                         foto de una página (corrige la luz)
+    hieroocr --buscar "G17 D21"                  buscar signos en OpenGlyph
+    hieroocr -h                                  todas las opciones
+
+Las correcciones que hagas en la interfaz se guardan en la carpeta "plantillas" y
+mejoran las páginas siguientes.
+
+Contenido
+---------
+hieroocr.exe            el programa
+SDL2*.dll               SDL2, SDL2_image, SDL2_ttf (licencia zlib)
+pdfium.dll              PDFium, para leer los PDF (BSD / Apache 2.0)
+datos/                  modelo, lista de Gardiner, diccionario y corpus de OpenGlyph
+                        (LGPL) y la fuente Noto Sans Egyptian Hieroglyphs (OFL)
+licencias/              licencias de todo lo anterior
+
+Código fuente: https://github.com/Chusogar/HieroOCR

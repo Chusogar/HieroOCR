@@ -12,6 +12,82 @@
 #include <string.h>
 #include <unistd.h>
 
+/* Orientación EXIF (1-8) de un JPEG; 1 si no tiene o no es JPEG. */
+static int exif_orientation(const char *path)
+{
+    SDL_RWops *rw = SDL_RWFromFile(path, "rb");
+    if (!rw)
+        return 1;
+    uint8_t b[65536];
+    size_t n = SDL_RWread(rw, b, 1, sizeof b);
+    SDL_RWclose(rw);
+    if (n < 4 || b[0] != 0xFF || b[1] != 0xD8)
+        return 1;
+    size_t i = 2;
+    while (i + 4 < n && b[i] == 0xFF) {
+        int marker = b[i + 1];
+        size_t len = (size_t)b[i + 2] << 8 | b[i + 3];
+        if (marker == 0xE1 && i + 10 < n && memcmp(b + i + 4, "Exif\0\0", 6) == 0) {
+            const uint8_t *t = b + i + 10;
+            size_t tn = n - (i + 10);
+            if (len < 8 || tn < 8)
+                return 1;
+            int le = t[0] == 'I';
+#define U16(p) (le ? (unsigned)((p)[0] | (p)[1] << 8) : (unsigned)((p)[0] << 8 | (p)[1]))
+#define U32(p) (le ? (unsigned)((p)[0] | (p)[1] << 8 | (p)[2] << 16 | (unsigned)(p)[3] << 24) \
+                   : (unsigned)((unsigned)(p)[0] << 24 | (p)[1] << 16 | (p)[2] << 8 | (p)[3]))
+            size_t ifd = U32(t + 4);
+            if (ifd + 2 > tn)
+                return 1;
+            unsigned cnt = U16(t + ifd);
+            for (unsigned k = 0; k < cnt && ifd + 2 + 12 * (k + 1) <= tn; k++) {
+                const uint8_t *e = t + ifd + 2 + 12 * k;
+                if (U16(e) == 0x0112) {
+                    unsigned v = U16(e + 8);
+                    return v >= 1 && v <= 8 ? (int)v : 1;
+                }
+            }
+#undef U16
+#undef U32
+            return 1;
+        }
+        if (marker == 0xDA)
+            break;
+        i += 2 + len;
+    }
+    return 1;
+}
+
+/* Endereza la imagen según la orientación EXIF (las fotos de los móviles). */
+static void gray_orient(Gray *g, int o)
+{
+    if (o <= 1 || o > 8)
+        return;
+    int w = g->w, h = g->h, swap = o >= 5;
+    int nw = swap ? h : w, nh = swap ? w : h;
+    uint8_t *d = malloc((size_t)w * h);
+    if (!d)
+        return;
+    for (int y = 0; y < h; y++)
+        for (int x = 0; x < w; x++) {
+            int X = x, Y = y;
+            switch (o) {
+            case 2: X = w - 1 - x; break;
+            case 3: X = w - 1 - x; Y = h - 1 - y; break;
+            case 4: Y = h - 1 - y; break;
+            case 5: X = y; Y = x; break;
+            case 6: X = h - 1 - y; Y = x; break;
+            case 7: X = h - 1 - y; Y = w - 1 - x; break;
+            case 8: X = y; Y = w - 1 - x; break;
+            }
+            d[(size_t)Y * nw + X] = g->px[(size_t)y * w + x];
+        }
+    free(g->px);
+    g->px = d;
+    g->w = nw;
+    g->h = nh;
+}
+
 int gray_load(const char *path, Gray *g)
 {
     SDL_Surface *s = IMG_Load(path);
@@ -44,6 +120,7 @@ int gray_load(const char *path, Gray *g)
     }
     SDL_UnlockSurface(c);
     SDL_FreeSurface(c);
+    gray_orient(g, exif_orientation(path));
     return 0;
 }
 
@@ -187,10 +264,17 @@ void gray_flatten(Gray *g)
     free(tmp);
 }
 
-/* Entrecomilla para el shell: 'abc' -> 'abc', con ' escapadas. */
+/* Entrecomilla un argumento para system(): '...' en POSIX, "..." en cmd.exe. */
 static void shell_quote(const char *in, char *out, size_t n)
 {
     size_t k = 0;
+#ifdef _WIN32
+    out[k++] = '"';
+    for (; *in && k + 4 < n; in++)
+        if (*in != '"')
+            out[k++] = *in;
+    out[k++] = '"';
+#else
     out[k++] = '\'';
     for (; *in && k + 6 < n; in++) {
         if (*in == '\'') {
@@ -201,13 +285,209 @@ static void shell_quote(const char *in, char *out, size_t n)
         }
     }
     out[k++] = '\'';
+#endif
     out[k] = 0;
 }
 
-static int is_png(const struct dirent *d)
+static int cmp_str(const void *a, const void *b)
 {
-    size_t l = strlen(d->d_name);
-    return l > 4 && strcmp(d->d_name + l - 4, ".png") == 0;
+    return strcmp(*(char *const *)a, *(char *const *)b);
+}
+
+/* Las imágenes .png de una carpeta, ordenadas por nombre. */
+static int list_png(const char *dir, char ***files)
+{
+    DIR *d = opendir(dir);
+    if (!d)
+        return 0;
+    int n = 0, cap = 0;
+    char **f = NULL;
+    struct dirent *e;
+    while ((e = readdir(d))) {
+        size_t l = strlen(e->d_name);
+        if (l <= 4 || strcmp(e->d_name + l - 4, ".png") != 0)
+            continue;
+        if (n == cap) {
+            cap = cap ? cap * 2 : 32;
+            f = realloc(f, sizeof(char *) * (size_t)cap);
+        }
+        size_t len = strlen(dir) + l + 2;
+        f[n] = malloc(len);
+        snprintf(f[n], len, "%s/%s", dir, e->d_name);
+        n++;
+    }
+    closedir(d);
+    qsort(f, (size_t)n, sizeof(char *), cmp_str);
+    *files = f;
+    return n;
+}
+
+/* Carpeta temporal nueva (sin mkdtemp, que no existe en Windows). */
+static int make_tmpdir(char tmpdir[512])
+{
+    const char *t = getenv("TMPDIR");
+    if (!t || !*t) t = getenv("TEMP");
+    if (!t || !*t) t = getenv("TMP");
+    if (!t || !*t) t = "/tmp";
+    static unsigned seq;
+    for (int i = 0; i < 1000; i++) {
+        snprintf(tmpdir, 512, "%s/hieroocr-%u-%u-%u", t, (unsigned)SDL_GetTicks(), (unsigned)rand() % 100000u, seq++);
+        if (MKDIR(tmpdir) == 0)
+            return 0;
+    }
+    tmpdir[0] = 0;
+    return -1;
+}
+
+/*
+ * PDFium (el motor de PDF de Chrome y del PdfRenderer de Android), cargado en
+ * tiempo de ejecución si está junto al programa: pdfium.dll en Windows. Si no
+ * está, se usa pdftoppm.
+ */
+typedef void *(*PF_LoadMem)(const void *, int, const char *);
+typedef int (*PF_Count)(void *);
+typedef void *(*PF_LoadPage)(void *, int);
+typedef double (*PF_Size)(void *);
+typedef void *(*PF_BmpCreate)(int, int, int);
+typedef void (*PF_BmpFill)(void *, int, int, int, int, unsigned long);
+typedef void (*PF_Render)(void *, void *, int, int, int, int, int, int);
+typedef void *(*PF_BmpBuf)(void *);
+typedef int (*PF_BmpStride)(void *);
+typedef void (*PF_Free)(void *);
+typedef void (*PF_Init)(void);
+
+static struct {
+    int tried, ok;
+    PF_LoadMem load; PF_Count count; PF_LoadPage page; PF_Size width, height;
+    PF_BmpCreate bcreate; PF_BmpFill bfill; PF_Render render; PF_BmpBuf bbuf; PF_BmpStride bstride;
+    PF_Free bdestroy, closepage, closedoc;
+} pf;
+
+static int pdfium_load(void)
+{
+    if (pf.tried)
+        return pf.ok;
+    pf.tried = 1;
+#ifdef _WIN32
+    const char *names[] = {"pdfium.dll", NULL};
+#else
+    const char *names[] = {"libpdfium.so", NULL};
+#endif
+    void *lib = NULL;
+    char *base = SDL_GetBasePath();
+    for (int i = 0; names[i] && !lib; i++) {
+        char p[1200];
+        if (base) {
+            snprintf(p, sizeof p, "%s%s", base, names[i]);
+            lib = SDL_LoadObject(p);
+        }
+        if (!lib && getenv("HIEROOCR_PDFIUM"))
+            lib = SDL_LoadObject(getenv("HIEROOCR_PDFIUM"));
+#ifdef _WIN32
+        if (!lib)
+            lib = SDL_LoadObject(names[i]);
+#endif
+    }
+    SDL_free(base);
+    SDL_ClearError();
+    if (!lib)
+        return 0;
+#define SYM(field, type, name) pf.field = (type)SDL_LoadFunction(lib, name); if (!pf.field) return 0
+    PF_Init init = (PF_Init)SDL_LoadFunction(lib, "FPDF_InitLibrary");
+    if (!init)
+        return 0;
+    SYM(load, PF_LoadMem, "FPDF_LoadMemDocument");
+    SYM(count, PF_Count, "FPDF_GetPageCount");
+    SYM(page, PF_LoadPage, "FPDF_LoadPage");
+    SYM(width, PF_Size, "FPDF_GetPageWidth");
+    SYM(height, PF_Size, "FPDF_GetPageHeight");
+    SYM(bcreate, PF_BmpCreate, "FPDFBitmap_Create");
+    SYM(bfill, PF_BmpFill, "FPDFBitmap_FillRect");
+    SYM(render, PF_Render, "FPDF_RenderPageBitmap");
+    SYM(bbuf, PF_BmpBuf, "FPDFBitmap_GetBuffer");
+    SYM(bstride, PF_BmpStride, "FPDFBitmap_GetStride");
+    SYM(bdestroy, PF_Free, "FPDFBitmap_Destroy");
+    SYM(closepage, PF_Free, "FPDF_ClosePage");
+    SYM(closedoc, PF_Free, "FPDF_CloseDocument");
+#undef SYM
+    init();
+    pf.ok = 1;
+    return 1;
+}
+
+static int pdfium_render(const char *pdf, int dpi, int (*ranges)[2], int nr, const char *tmpdir)
+{
+    /* el PDF entero en memoria: SDL_RWFromFile entiende rutas UTF-8 también en Windows */
+    SDL_RWops *rw = SDL_RWFromFile(pdf, "rb");
+    if (!rw) {
+        fprintf(stderr, "No se puede abrir %s: %s\n", pdf, SDL_GetError());
+        return -1;
+    }
+    Sint64 size = SDL_RWsize(rw);
+    char *data = size > 0 ? malloc((size_t)size) : NULL;
+    if (!data || SDL_RWread(rw, data, 1, (size_t)size) != (size_t)size) {
+        SDL_RWclose(rw);
+        free(data);
+        return -1;
+    }
+    SDL_RWclose(rw);
+    void *doc = pf.load(data, (int)size, NULL);
+    if (!doc) {
+        fprintf(stderr, "PDFium no puede abrir %s\n", pdf);
+        free(data);
+        return -1;
+    }
+    int np = pf.count(doc), done = 0;
+    fprintf(stderr, "%s: %d páginas (PDFium)\n", pdf, np);
+    for (int r = 0; r < nr; r++) {
+        int a = ranges[r][0] > 0 ? ranges[r][0] : 1, b = ranges[r][1] > 0 ? ranges[r][1] : np;
+        if (a > np)
+            fprintf(stderr, "Aviso: el PDF sólo tiene %d páginas (se pidió la %d)\n", np, a);
+        for (int pg = a; pg <= b && pg <= np; pg++) {
+            void *page = pf.page(doc, pg - 1);
+            if (!page)
+                continue;
+            int w = (int)(pf.width(page) * dpi / 72.0 + 0.5), h = (int)(pf.height(page) * dpi / 72.0 + 0.5);
+            void *bmp = (w > 0 && h > 0 && (long)w * h < 200000000L) ? pf.bcreate(w, h, 0) : NULL;
+            if (bmp) {
+                pf.bfill(bmp, 0, 0, w, h, 0xFFFFFFFFul);
+                pf.render(bmp, page, 0, 0, w, h, 0, 0x01 | 0x800);   /* anotaciones, modo impresión */
+                SDL_Surface *s = SDL_CreateRGBSurfaceWithFormatFrom(pf.bbuf(bmp), w, h, 32, pf.bstride(bmp),
+                                                                    SDL_PIXELFORMAT_BGRX8888 == 0 ? 0 : SDL_PIXELFORMAT_XRGB8888);
+                if (s) {
+                    char out[700];
+                    snprintf(out, sizeof out, "%s/p-%03d.png", tmpdir, pg);
+                    fprintf(stderr, "Rasterizando la página %d a %d ppp...\n", pg, dpi);
+                    if (IMG_SavePNG(s, out) == 0)
+                        done++;
+                    SDL_FreeSurface(s);
+                }
+                pf.bdestroy(bmp);
+            }
+            pf.closepage(page);
+        }
+    }
+    pf.closedoc(doc);
+    free(data);
+    return done > 0 ? 0 : -1;
+}
+
+/* pdftoppm: junto al programa (poppler/pdftoppm) o en el PATH. */
+static void pdftoppm_path(char *out, size_t n)
+{
+    char *base = SDL_GetBasePath();
+    snprintf(out, n, "pdftoppm");
+    if (base) {
+        char p[1200];
+#ifdef _WIN32
+        snprintf(p, sizeof p, "%spoppler\\pdftoppm.exe", base);
+#else
+        snprintf(p, sizeof p, "%spoppler/pdftoppm", base);
+#endif
+        if (access(p, 0) == 0)
+            shell_quote(p, out, n);
+        SDL_free(base);
+    }
 }
 
 /*
@@ -290,67 +570,61 @@ int pdf_render(const char *pdf, int dpi, const char *pages, char tmpdir[512], ch
             return -1;
         }
     }
-
-    const char *t = getenv("TMPDIR");
-    if (!t || !*t)
-        t = "/tmp";
-    snprintf(tmpdir, 512, "%s/hieroocr-XXXXXX", t);
-    if (!mkdtemp(tmpdir)) {
-        perror("mkdtemp");
-        tmpdir[0] = 0;
+    if (make_tmpdir(tmpdir) != 0) {
+        perror("carpeta temporal");
         return -1;
     }
 
-    char qpdf[2200], qprefix[1200], prefix[600], cmd[4096], fl[48];
-    snprintf(prefix, sizeof prefix, "%s/p", tmpdir);
-    shell_quote(pdf, qpdf, sizeof qpdf);
-    shell_quote(prefix, qprefix, sizeof qprefix);
-
     int ok = 0;
-    for (int i = 0; i < nr; i++) {
-        int f = ranges[i][0], l = ranges[i][1];
-        fl[0] = 0;
-        if (f > 0 && l > 0)
-            snprintf(fl, sizeof fl, "-f %d -l %d ", f, l);
-        else if (f > 0)
-            snprintf(fl, sizeof fl, "-f %d ", f);
-        if (f > 0 && l == f)
-            fprintf(stderr, "Rasterizando la página %d de %s a %d ppp...\n", f, pdf, dpi);
-        else if (f > 0 && l > 0)
-            fprintf(stderr, "Rasterizando páginas %d-%d de %s a %d ppp...\n", f, l, pdf, dpi);
-        else if (f > 0)
-            fprintf(stderr, "Rasterizando desde la página %d de %s a %d ppp...\n", f, pdf, dpi);
-        else
-            fprintf(stderr, "Rasterizando %s entero a %d ppp...\n", pdf, dpi);
-        snprintf(cmd, sizeof cmd, "pdftoppm -r %d %s-png %s %s", dpi, fl, qpdf, qprefix);
-        if (system(cmd) == 0)
-            ok++;
-        else
-            fprintf(stderr, "Aviso: pdftoppm ha fallado con el rango %d-%d "
-                            "(¿fuera del documento? ¿está instalado poppler-utils?)\n", f, l);
+    if (pdfium_load()) {
+        ok = pdfium_render(pdf, dpi, ranges, nr, tmpdir) == 0;
+    } else {
+        char qpdf[2200], qprefix[1200], prefix[600], cmd[8192], fl[48], prog[1300];
+        snprintf(prefix, sizeof prefix, "%s/p", tmpdir);
+        shell_quote(pdf, qpdf, sizeof qpdf);
+        shell_quote(prefix, qprefix, sizeof qprefix);
+        pdftoppm_path(prog, sizeof prog);
+        for (int i = 0; i < nr; i++) {
+            int f = ranges[i][0], l = ranges[i][1];
+            fl[0] = 0;
+            if (f > 0 && l > 0)
+                snprintf(fl, sizeof fl, "-f %d -l %d ", f, l);
+            else if (f > 0)
+                snprintf(fl, sizeof fl, "-f %d ", f);
+            if (f > 0 && l == f)
+                fprintf(stderr, "Rasterizando la página %d de %s a %d ppp...\n", f, pdf, dpi);
+            else if (f > 0 && l > 0)
+                fprintf(stderr, "Rasterizando páginas %d-%d de %s a %d ppp...\n", f, l, pdf, dpi);
+            else if (f > 0)
+                fprintf(stderr, "Rasterizando desde la página %d de %s a %d ppp...\n", f, pdf, dpi);
+            else
+                fprintf(stderr, "Rasterizando %s entero a %d ppp...\n", pdf, dpi);
+#ifdef _WIN32
+            /* cmd.exe quita las comillas exteriores: se envuelve todo en otras */
+            snprintf(cmd, sizeof cmd, "\"%s -r %d %s-png %s %s\"", prog, dpi, fl, qpdf, qprefix);
+#else
+            snprintf(cmd, sizeof cmd, "%s -r %d %s-png %s %s", prog, dpi, fl, qpdf, qprefix);
+#endif
+            if (system(cmd) == 0)
+                ok++;
+            else
+                fprintf(stderr, "Aviso: pdftoppm ha fallado con el rango %d-%d "
+                                "(¿fuera del documento? ¿está instalado poppler-utils?)\n", f, l);
+        }
     }
 
-    struct dirent **nl;
-    int n = scandir(tmpdir, &nl, is_png, alphasort);
+    char **fl = NULL;
+    int n = list_png(tmpdir, &fl);
     if (!ok || n <= 0) {
-        if (n > 0) {
-            for (int i = 0; i < n; i++)
-                free(nl[i]);
-            free(nl);
-        }
+        for (int i = 0; i < n; i++)
+            free(fl[i]);
+        free(fl);
         fprintf(stderr, "El PDF no ha producido ninguna página.\n");
         tmpdir_remove(tmpdir);
         tmpdir[0] = 0;
         return -1;
     }
-    *files = malloc((size_t)n * sizeof(char *));
-    for (int i = 0; i < n; i++) {
-        size_t len = strlen(tmpdir) + strlen(nl[i]->d_name) + 2;
-        (*files)[i] = malloc(len);
-        snprintf((*files)[i], len, "%s/%s", tmpdir, nl[i]->d_name);
-        free(nl[i]);
-    }
-    free(nl);
+    *files = fl;
     *nfiles = n;
     fprintf(stderr, "%d página(s) preparadas.\n", n);
     return 0;

@@ -4,6 +4,7 @@
  */
 #include "hieroocr.h"
 
+#include <SDL.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
@@ -40,11 +41,34 @@ static const char *list_paths[] = {
     "/usr/share/hieroocr/gardiner.tsv", NULL
 };
 
+/* Una ruta relativa se busca en la carpeta actual y, si no está, junto al
+ * ejecutable (en Windows el programa suele abrirse con doble clic). */
+static const char *locate(const char *rel)
+{
+    if (access(rel, R_OK) == 0)
+        return rel;
+    if (rel[0] == '/' || strchr(rel, ':'))
+        return NULL;
+    static char *base;
+    static int tried;
+    if (!tried) {
+        tried = 1;
+        base = SDL_GetBasePath();
+    }
+    if (!base)
+        return NULL;
+    char p[1200];
+    snprintf(p, sizeof p, "%s%s", base, rel);
+    return access(p, R_OK) == 0 ? strdup(p) : NULL;
+}
+
 static const char *first_existing(const char **list)
 {
-    for (; *list; list++)
-        if (access(*list, R_OK) == 0)
-            return *list;
+    for (; *list; list++) {
+        const char *p = locate(*list);
+        if (p)
+            return p;
+    }
     return NULL;
 }
 
@@ -54,6 +78,27 @@ void app_find_data(Options *o)
         o->font = first_existing(font_paths);
     if (!o->unicode)
         o->unicode = first_existing(unicode_paths);
+    if (!o->data_dir) {
+        static const char *dirs[] = {"datos", ".", "/usr/local/share/hieroocr", "/usr/share/hieroocr", NULL};
+        for (const char **d = dirs; *d && !o->data_dir; d++) {
+            char p[600];
+            snprintf(p, sizeof p, "%s/openglyph_diccionario.tsv", *d);
+            const char *f = locate(p);
+            if (f) {   /* la carpeta del fichero encontrado */
+                char *dd = strdup(f);
+                char *slash = strrchr(dd, '/');
+                char *bs = strrchr(dd, '\\');
+                if (bs && (!slash || bs > slash))
+                    slash = bs;
+                if (slash)
+                    *slash = 0;
+                o->data_dir = dd;
+            }
+        }
+    }
+    if (o->data_dir && dict_load(o->data_dir, getenv("HIEROOCR_CORPUS_EXCLUIR")) > 0)
+        fprintf(stderr, "OpenGlyph: %d entradas de diccionario, %d renglones de corpus\n",
+                dict_count(), corpus_count());
     if (!o->list)
         o->list = first_existing(list_paths);
     if (o->list) {
@@ -94,6 +139,11 @@ int process_page(Page *p, const Options *o, const TemplateSet *ts)
         gray_flatten(&p->gray);
     page_segment(p, o);
     classify_page(p, ts);
+    if (!o->no_lm && lm_ready()) {
+        int ch = lm_rerank_page(p, o, ts);
+        if (ch)
+            fprintf(stderr, "Página %d: el corpus ha cambiado %d signos\n", p->pageno, ch);
+    }
     p->processed = 1;
     fprintf(stderr, "Página %d: %d renglones, %d signos\n", p->pageno, p->nlines, p->ng);
     return 0;

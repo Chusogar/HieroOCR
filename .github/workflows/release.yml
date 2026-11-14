@@ -1,0 +1,115 @@
+name: Release
+
+# Ramas: compila y prueba. Etiquetas v* o release publicada en GitHub: además sube
+# los binarios a la release.
+on:
+  push:
+    branches: [release]
+    tags: ['v*']
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      etiqueta:
+        description: 'Etiqueta de la release que se crea (p. ej. v1.0.0); vacío = sólo compilar y probar'
+        required: false
+        default: ''
+
+
+jobs:
+  windows:
+    name: Compilar para Windows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: MinGW-w64
+        run: sudo apt-get update -q && sudo apt-get install -y -q gcc-mingw-w64-x86-64 zip
+      - name: Compilar y empaquetar
+        run: sh windows/compilar.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: windows/HieroOCR-windows-x64.zip
+
+  probar-windows:
+    name: Probar en Windows
+    needs: windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows
+      - name: Reconocer un PDF, buscar en OpenGlyph y capturar la interfaz
+        shell: pwsh
+        run: |
+          Expand-Archive HieroOCR-windows-x64.zip -DestinationPath prueba
+          $exe = "prueba\HieroOCR\hieroocr.exe"
+          & $exe -o salida.mdc android\pruebas\pagina72.pdf 2> registro.txt
+          Get-Content registro.txt
+          $mdc = Get-Content salida.mdc -Raw
+          Write-Host "MdC: $($mdc.Length) caracteres"
+          Write-Host $mdc.Substring(0, [Math]::Min(300, $mdc.Length))
+          if ($mdc.Length -lt 1000) { throw "El MdC es demasiado corto" }
+          & $exe --buscar "G17 D21" 2>$null | Select-Object -First 8
+          & $exe -B -o foto.mdc android\pruebas\foto72.jpg 2>$null
+          $foto = (Get-Content foto.mdc -Raw).Length
+          Write-Host "Foto (girada con EXIF): $foto caracteres"
+          if ($foto -lt 1000) { throw "La foto no se ha enderezado o reconocido" }
+          $env:SDL_VIDEODRIVER = "offscreen"
+          & $exe -g --captura captura-windows.png android\pruebas\pagina72.pdf 2>$null
+          if (Test-Path captura-windows.png) { Write-Host "Captura de la interfaz guardada" }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: prueba-windows
+          path: |
+            salida.mdc
+            registro.txt
+            captura-windows.png
+
+  android:
+    name: Compilar para Android
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: sh android/preparar.sh
+      - working-directory: android
+        run: ./gradlew --no-daemon assembleRelease
+      - run: cp android/app/build/outputs/apk/release/app-release.apk HieroOCR-android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: HieroOCR-android.apk
+
+  publicar:
+    name: Publicar la release
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'release' || inputs.etiqueta != ''
+    needs: [probar-windows, android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: binarios
+          merge-multiple: true
+      - name: Crear la release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ls -la binarios
+          TAG="${{ github.event.release.tag_name || inputs.etiqueta || github.ref_name }}"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" binarios/HieroOCR-windows-x64.zip binarios/HieroOCR-android.apk --clobber
+          else
+            gh release create "$TAG" --target "$GITHUB_SHA" \
+              binarios/HieroOCR-windows-x64.zip binarios/HieroOCR-android.apk \
+              --title "HieroOCR $TAG" --notes-file .github/notas-release.md
+          fi
