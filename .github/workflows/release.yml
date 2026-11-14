@@ -44,7 +44,9 @@ jobs:
           if ($mdc.Length -lt 1000) { throw "El MdC es demasiado corto" }
           & $exe --buscar "G17 D21" 2>$null | Select-Object -First 8
           & $exe -B -o foto.mdc android\pruebas\foto72.jpg 2>$null
-          Write-Host "Foto: $((Get-Content foto.mdc -Raw).Length) caracteres"
+          $foto = (Get-Content foto.mdc -Raw).Length
+          Write-Host "Foto (girada con EXIF): $foto caracteres"
+          if ($foto -lt 1000) { throw "La foto no se ha enderezado o reconocido" }
           $env:SDL_VIDEODRIVER = "offscreen"
           & $exe -g --captura captura-windows.png android\pruebas\pagina72.pdf 2>$null
           if (Test-Path captura-windows.png) { Write-Host "Captura de la interfaz guardada" }

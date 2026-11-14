@@ -12,6 +12,82 @@
 #include <string.h>
 #include <unistd.h>
 
+/* Orientación EXIF (1-8) de un JPEG; 1 si no tiene o no es JPEG. */
+static int exif_orientation(const char *path)
+{
+    SDL_RWops *rw = SDL_RWFromFile(path, "rb");
+    if (!rw)
+        return 1;
+    uint8_t b[65536];
+    size_t n = SDL_RWread(rw, b, 1, sizeof b);
+    SDL_RWclose(rw);
+    if (n < 4 || b[0] != 0xFF || b[1] != 0xD8)
+        return 1;
+    size_t i = 2;
+    while (i + 4 < n && b[i] == 0xFF) {
+        int marker = b[i + 1];
+        size_t len = (size_t)b[i + 2] << 8 | b[i + 3];
+        if (marker == 0xE1 && i + 10 < n && memcmp(b + i + 4, "Exif\0\0", 6) == 0) {
+            const uint8_t *t = b + i + 10;
+            size_t tn = n - (i + 10);
+            if (len < 8 || tn < 8)
+                return 1;
+            int le = t[0] == 'I';
+#define U16(p) (le ? (unsigned)((p)[0] | (p)[1] << 8) : (unsigned)((p)[0] << 8 | (p)[1]))
+#define U32(p) (le ? (unsigned)((p)[0] | (p)[1] << 8 | (p)[2] << 16 | (unsigned)(p)[3] << 24) \
+                   : (unsigned)((unsigned)(p)[0] << 24 | (p)[1] << 16 | (p)[2] << 8 | (p)[3]))
+            size_t ifd = U32(t + 4);
+            if (ifd + 2 > tn)
+                return 1;
+            unsigned cnt = U16(t + ifd);
+            for (unsigned k = 0; k < cnt && ifd + 2 + 12 * (k + 1) <= tn; k++) {
+                const uint8_t *e = t + ifd + 2 + 12 * k;
+                if (U16(e) == 0x0112) {
+                    unsigned v = U16(e + 8);
+                    return v >= 1 && v <= 8 ? (int)v : 1;
+                }
+            }
+#undef U16
+#undef U32
+            return 1;
+        }
+        if (marker == 0xDA)
+            break;
+        i += 2 + len;
+    }
+    return 1;
+}
+
+/* Endereza la imagen según la orientación EXIF (las fotos de los móviles). */
+static void gray_orient(Gray *g, int o)
+{
+    if (o <= 1 || o > 8)
+        return;
+    int w = g->w, h = g->h, swap = o >= 5;
+    int nw = swap ? h : w, nh = swap ? w : h;
+    uint8_t *d = malloc((size_t)w * h);
+    if (!d)
+        return;
+    for (int y = 0; y < h; y++)
+        for (int x = 0; x < w; x++) {
+            int X = x, Y = y;
+            switch (o) {
+            case 2: X = w - 1 - x; break;
+            case 3: X = w - 1 - x; Y = h - 1 - y; break;
+            case 4: Y = h - 1 - y; break;
+            case 5: X = y; Y = x; break;
+            case 6: X = h - 1 - y; Y = x; break;
+            case 7: X = h - 1 - y; Y = w - 1 - x; break;
+            case 8: X = y; Y = w - 1 - x; break;
+            }
+            d[(size_t)Y * nw + X] = g->px[(size_t)y * w + x];
+        }
+    free(g->px);
+    g->px = d;
+    g->w = nw;
+    g->h = nh;
+}
+
 int gray_load(const char *path, Gray *g)
 {
     SDL_Surface *s = IMG_Load(path);
@@ -44,6 +120,7 @@ int gray_load(const char *path, Gray *g)
     }
     SDL_UnlockSurface(c);
     SDL_FreeSurface(c);
+    gray_orient(g, exif_orientation(path));
     return 0;
 }
 
