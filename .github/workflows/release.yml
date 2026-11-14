@@ -1,10 +1,13 @@
 name: Release
 
-# Ramas: compila y prueba. Etiquetas v*: además publica la release con los binarios.
+# Ramas: compila y prueba. Etiquetas v* o release publicada en GitHub: además sube
+# los binarios a la release.
 on:
   push:
     branches: [release]
     tags: ['v*']
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -80,7 +83,7 @@ jobs:
 
   publicar:
     name: Publicar la release
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'release'
     needs: [probar-windows, android]
     runs-on: ubuntu-latest
     permissions:
@@ -96,7 +99,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ls -la binarios
-          gh release create "$GITHUB_REF_NAME" \
-            binarios/HieroOCR-windows-x64.zip binarios/HieroOCR-android.apk \
-            --title "HieroOCR $GITHUB_REF_NAME" \
-            --notes-file .github/notas-release.md
+          TAG="${{ github.event.release.tag_name || github.ref_name }}"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" binarios/HieroOCR-windows-x64.zip binarios/HieroOCR-android.apk --clobber
+          else
+            gh release create "$TAG" \
+              binarios/HieroOCR-windows-x64.zip binarios/HieroOCR-android.apk \
+              --title "HieroOCR $TAG" --notes-file .github/notas-release.md
+          fi
