@@ -113,3 +113,28 @@ jobs:
               binarios/HieroOCR-windows-x64.zip binarios/HieroOCR-android.apk \
               --title "HieroOCR $TAG" --notes-file .github/notas-release.md
           fi
+
+  binarios:
+    name: Copiar los binarios a la rama binarios
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release'
+    needs: [probar-windows, android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: binarios
+          merge-multiple: true
+      - name: Publicar en la rama binarios
+        run: |
+          cd binarios
+          rm -f salida.mdc registro.txt captura-windows.png
+          printf 'Binarios de HieroOCR compilados y probados por GitHub Actions a partir de %s.\n' "${GITHUB_SHA::7}" > LEEME.txt
+          ls -la
+          git init -q -b binarios
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Binarios de ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" binarios
