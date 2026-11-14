@@ -200,6 +200,21 @@ las 26 páginas de *Los dos hermanos* de Moldenke (11 635 signos), el acierto pa
 no hacer trampa (`HIEROOCR_CORPUS_EXCLUIR="Two Brothers"`). Se desactiva con
 `--sin-corpus`; `HIEROOCR_LAMBDA` cambia el peso del corpus (0,012).
 
+## Descargar
+
+En [Releases](https://github.com/Chusogar/HieroOCR/releases) hay binarios listos:
+
+- **Windows 10/11 (64 bits)**: `HieroOCR-windows-x64.zip`. Se descomprime y se abre
+  `hieroocr.exe` con doble clic (interfaz; se le arrastra una imagen o un PDF) o desde
+  la consola con las opciones de [Uso](#uso). Lleva SDL2, PDFium (para los PDF; no hace
+  falta poppler), los datos, el diccionario y el corpus de OpenGlyph y la fuente.
+- **Android 5.0+**: `HieroOCR-android.apk` (ver [Android](#android)).
+
+Las releases se generan con `.github/workflows/release.yml` al subir una etiqueta
+`v*`: compila Windows con MinGW-w64 (`windows/compilar.sh`), prueba el `.exe` en un
+Windows de GitHub con un PDF, una búsqueda y una captura de la interfaz, compila el
+APK y publica los dos.
+
 ## Compilar
 
 Dependencias: SDL2, SDL2_image, SDL2_ttf, `pkg-config`, un compilador C11 y, para los
@@ -219,8 +234,11 @@ y descarga `UnicodeData.txt` de unicode.org.
 la fuente Noto Sans Egyptian Hieroglyphs y `UnicodeData.txt` y pásalas con `-f` y `-U`
 (o déjalas en `datos/`).
 
-**Windows**: MSYS2/MinGW con los paquetes `mingw-w64-x86_64-SDL2`, `-SDL2_image`,
-`-SDL2_ttf` y `-poppler`, y `make`.
+**Windows**: desde Linux, `sh windows/compilar.sh` (necesita `gcc-mingw-w64-x86-64`
+y `zip`) descarga SDL2 y PDFium, compila `hieroocr.exe` y prepara el ZIP. En Windows
+también vale MSYS2/MinGW con `mingw-w64-x86_64-SDL2`, `-SDL2_image`, `-SDL2_ttf` y
+`make`. Para los PDF basta con `pdfium.dll` junto al programa (si no está, se usa
+`pdftoppm`).
 
 Si la fuente o `UnicodeData.txt` no están en las rutas habituales, el programa los busca
 también en el directorio actual y en `datos/`.
