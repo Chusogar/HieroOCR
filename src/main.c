@@ -15,6 +15,10 @@
 
 #ifndef __ANDROID__   /* en Android el programa empieza en android.c */
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 /* --buscar: diccionario y corpus de OpenGlyph en la terminal. */
 static int search_cli(const char *q)
 {
@@ -149,6 +153,16 @@ int main(int argc, char **argv)
         default: usage(argv[0]); return 2;
         }
     }
+#ifdef _WIN32
+    /* Doble clic en hieroocr.exe: sin argumentos se abre la interfaz y se cierra la
+     * consola que Windows crea para el programa (si no es la de un cmd abierto). */
+    if (argc == 1) {
+        DWORD procs[4];
+        if (GetConsoleProcessList(procs, 4) <= 1)
+            FreeConsole();
+        o.gui = 1;
+    }
+#endif
     if (optind >= argc && !o.train && !o.evaluate && !o.gui && !search) {
         usage(argv[0]);
         return 2;

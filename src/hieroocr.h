@@ -9,6 +9,14 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#ifdef _WIN32
+#include <direct.h>
+#define MKDIR(p) _mkdir(p)
+#else
+#include <sys/stat.h>
+#define MKDIR(p) mkdir((p), 0755)
+#endif
+
 #define NORM      40   /* lado de la rejilla normalizada para comparar signos */
 #define CODE_LEN  16   /* longitud máxima de un código Gardiner (p. ej. "Aa13", "N35A") */
 #define NCAND      5   /* candidatos que se guardan por signo */

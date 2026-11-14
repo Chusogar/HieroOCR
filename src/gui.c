@@ -105,6 +105,7 @@ static const char *ui_font_paths[] = {
     "/system/fonts/NotoSans-Regular.ttf",
     "/system/fonts/DroidSans.ttf",
     "/System/Library/Fonts/Supplemental/Arial.ttf",
+    "C:/Windows/Fonts/segoeui.ttf",
     "C:/Windows/Fonts/arial.ttf",
     NULL
 };
@@ -121,6 +122,17 @@ static TTF_Font *open_ui_font(int size)
         TTF_Font *f = TTF_OpenFont(*p, size);
         if (f)
             return f;
+    }
+    const char *win = getenv("WINDIR");   /* Windows instalado fuera de C: */
+    if (win) {
+        char p[600];
+        snprintf(p, sizeof p, "%s\\Fonts\\segoeui.ttf", win);
+        TTF_Font *f = TTF_OpenFont(p, size);
+        if (!f) {
+            snprintf(p, sizeof p, "%s\\Fonts\\arial.ttf", win);
+            f = TTF_OpenFont(p, size);
+        }
+        return f;
     }
     return NULL;
 }

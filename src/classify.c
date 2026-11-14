@@ -554,7 +554,7 @@ int ts_learn(TemplateSet *ts, const char *dir, const char *code,
     if (!c)
         return -1;
 
-    if (mkdir(dir, 0755) != 0 && errno != EEXIST) {
+    if (MKDIR(dir) != 0 && errno != EEXIST) {
         fprintf(stderr, "No se puede crear %s: %s\n", dir, strerror(errno));
     } else {
         SDL_Surface *s = SDL_CreateRGBSurfaceWithFormat(0, cw + 4, ch + 4, 24, SDL_PIXELFORMAT_RGB24);
