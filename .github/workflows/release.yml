@@ -9,6 +9,12 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      etiqueta:
+        description: 'Etiqueta de la release que se crea (p. ej. v1.0.0); vacío = sólo compilar y probar'
+        required: false
+        default: ''
+
 
 jobs:
   windows:
@@ -83,7 +89,7 @@ jobs:
 
   publicar:
     name: Publicar la release
-    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'release'
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'release' || inputs.etiqueta != ''
     needs: [probar-windows, android]
     runs-on: ubuntu-latest
     permissions:
@@ -99,11 +105,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ls -la binarios
-          TAG="${{ github.event.release.tag_name || github.ref_name }}"
+          TAG="${{ github.event.release.tag_name || inputs.etiqueta || github.ref_name }}"
           if gh release view "$TAG" > /dev/null 2>&1; then
             gh release upload "$TAG" binarios/HieroOCR-windows-x64.zip binarios/HieroOCR-android.apk --clobber
           else
-            gh release create "$TAG" \
+            gh release create "$TAG" --target "$GITHUB_SHA" \
               binarios/HieroOCR-windows-x64.zip binarios/HieroOCR-android.apk \
               --title "HieroOCR $TAG" --notes-file .github/notas-release.md
           fi

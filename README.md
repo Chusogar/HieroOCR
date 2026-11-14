@@ -210,10 +210,11 @@ En [Releases](https://github.com/Chusogar/HieroOCR/releases) hay binarios listos
   falta poppler), los datos, el diccionario y el corpus de OpenGlyph y la fuente.
 - **Android 5.0+**: `HieroOCR-android.apk` (ver [Android](#android)).
 
-Las releases se generan con `.github/workflows/release.yml` al subir una etiqueta
-`v*`: compila Windows con MinGW-w64 (`windows/compilar.sh`), prueba el `.exe` en un
+Las releases se generan con `.github/workflows/release.yml`: al publicar una release
+en GitHub (o al subir una etiqueta `v*`, o desde *Actions → Release → Run workflow*
+indicando la etiqueta) compila Windows con MinGW-w64 (`windows/compilar.sh`), prueba el `.exe` en un
 Windows de GitHub con un PDF, una búsqueda y una captura de la interfaz, compila el
-APK y publica los dos.
+APK y adjunta los dos a la release.
 
 ## Compilar
 
