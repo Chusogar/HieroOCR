@@ -1,0 +1,18 @@
+HieroOCR para macOS (11 Big Sur o posterior; Apple silicon e Intel)
+=====================================================================
+
+Instalar: arrastra HieroOCR.app a Aplicaciones.
+
+La primera vez: la aplicación no está notarizada por Apple, así que macOS
+dirá que «no se puede verificar el desarrollador». Haz clic derecho (o
+Control+clic) sobre HieroOCR.app > Abrir > Abrir. Si aun así no te deja:
+Ajustes del Sistema > Privacidad y seguridad > «Abrir igualmente», o en la
+Terminal:  xattr -dr com.apple.quarantine /Applications/HieroOCR.app
+
+Uso: «Abrir» (o arrastra a la ventana, o al icono del Dock) una imagen o un
+PDF con jeroglíficos. Los PDF se rasterizan con el motor de PDF de macOS. El
+MdC y las plantillas aprendidas se guardan en Documentos/HieroOCR.
+
+Desde la Terminal funciona como en Linux:
+  /Applications/HieroOCR.app/Contents/MacOS/HieroOCR -o salida.mdc pagina.pdf
+  /Applications/HieroOCR.app/Contents/MacOS/HieroOCR --buscar "G17 D21"

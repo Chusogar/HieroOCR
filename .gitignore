@@ -8,3 +8,9 @@ datos/*.tmp
 # Conjuntos de datos de terceros y modelos derivados de ellos (no se distribuyen)
 terceros/
 datos/modelo_fotos.hmod
+apple/deps/
+apple/build*/
+apple/*.zip
+apple/*.ipa
+apple/*.dmg
+apple/HieroOCR.app/

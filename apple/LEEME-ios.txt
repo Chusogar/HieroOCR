@@ -1,0 +1,22 @@
+HieroOCR para iPhone y iPad (iOS / iPadOS 14 o posterior)
+==========================================================
+
+HieroOCR-ios.ipa está SIN FIRMAR: iOS sólo instala aplicaciones firmadas, así
+que hay que firmarla con tu cuenta de Apple (una gratuita vale: la firma dura
+7 días y luego se renueva):
+
+  - Sideloadly (Windows o macOS): conecta el iPhone, arrastra el .ipa,
+    escribe tu Apple ID y pulsa Start.
+  - AltStore (altstore.io): «My Apps» > + > elige el .ipa.
+  - Con un Mac y Xcode: compílala tú mismo (sh apple/compilar-ios.sh) o
+    abre el .ipa con Xcode > Devices.
+
+En el iPhone: Ajustes > General > VPN y gestión de dispositivos > confía en
+tu Apple ID; en iOS 16 o posterior activa también Ajustes > Privacidad y
+seguridad > Modo desarrollador.
+
+Uso: «Abrir» ofrece la Fototeca o Archivos (imagen, PDF o un modelo .hmod);
+«Cámara» fotografía la página. Un PDF de varias páginas pregunta cuáles
+reconocer (7, 71-92, 71- o 3,5,7-9). Desde otras apps, «Compartir > HieroOCR»
+también abre el archivo. «Compartir MdC» manda el texto donde quieras; el
+último MdC y el registro quedan en Archivos > En mi iPhone > HieroOCR.

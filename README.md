@@ -420,6 +420,47 @@ El workflow `.github/workflows/android.yml` además instala el APK en un emulado
 (Pixel 6, Android 11), abre un PDF y una foto girada, toca un signo y guarda capturas
 de pantalla (artefacto *capturas-emulador*).
 
+## macOS, iPhone y iPad
+
+El mismo código C con SDL2, más `src/apple.m` (Objective-C) para lo que necesita
+AppKit o UIKit. Los PDF se rasterizan con el motor de PDF del sistema (CoreGraphics),
+sin PDFium ni Poppler, y la interfaz se dibuja a la resolución Retina.
+
+**macOS 11 o posterior** (universal: Apple silicon e Intel): `HieroOCR-macos.dmg` o
+`HieroOCR-macos.zip`. Arrastra `HieroOCR.app` a Aplicaciones; como no está
+notarizada, la primera vez hay que abrirla con clic derecho → *Abrir*. **Abrir**
+usa el diálogo de macOS, y también se puede arrastrar un archivo a la ventana o al
+icono del Dock. Lanzada desde el Finder trabaja en `Documentos/HieroOCR`; el
+ejecutable `HieroOCR.app/Contents/MacOS/HieroOCR` acepta las mismas opciones que en
+Linux.
+
+**iOS / iPadOS 14 o posterior**: `HieroOCR-ios.ipa`, **sin firmar**; para instalarla
+hay que firmarla con un Apple ID (Sideloadly, AltStore, o compilarla con Xcode; ver
+`apple/LEEME-ios.txt`). Funciona como en Android:
+
+- **Abrir** ofrece la Fototeca o Archivos (imagen, PDF —pregunta qué páginas— o un
+  modelo `.hmod`); **Cámara** fotografía la página (pide permiso de cámara).
+- **Compartir MdC** abre el menú de compartir de iOS; el último MdC y el registro
+  quedan además en *Archivos → En mi iPhone → HieroOCR*.
+- *Compartir → HieroOCR* desde otras apps abre la imagen o el PDF.
+- Los gestos son los de Android; la interfaz respeta la muesca y la barra de inicio.
+
+### Compilar
+
+Hace falta un Mac con Xcode y CMake (`brew install cmake`):
+
+```sh
+sh apple/preparar.sh         # descarga SDL2, SDL2_image, SDL2_ttf y reúne los datos
+sh apple/compilar-macos.sh   # -> apple/HieroOCR-macos.zip y .dmg
+sh apple/compilar-ios.sh     # -> apple/HieroOCR-ios.ipa (sin firmar)
+sh apple/compilar-ios.sh simulador
+```
+
+El `CMakeLists.txt` de la raíz también compila en Linux (`cmake -S . -B build`).
+Cada cambio compila y prueba las dos versiones en GitHub Actions (*Actions → Apple*):
+la de macOS reconoce `pagina72.pdf` y `foto72.jpg`, y la de iOS se abre en el
+simulador de iPhone con la foto y el PDF de prueba.
+
 ## Limitaciones
 
 - Solo texto en renglones horizontales. Las columnas verticales no están soportadas;

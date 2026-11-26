@@ -246,11 +246,27 @@ int  doc_open(Doc *d, const char *input, const Options *o);
 void doc_free(Doc *d);
 int  doc_to_mdc(Doc *d, const Options *o, const TemplateSet *ts, Str *out);
 
-/* Servicios de la plataforma (main.c en escritorio, android.c en Android) */
-int  platform_is_mobile(void);          /* 1: hay selector de archivos y cámara */
+/* Servicios de la plataforma (main.c en escritorio, android.c en Android,
+ * apple.m en macOS e iOS) */
+int  platform_is_mobile(void);          /* 1: pantalla táctil, selector de archivos y cámara */
+int  platform_can_open(void);           /* 1: hay selector de archivos (botón «Abrir») */
+void platform_insets(int *top, int *bottom);   /* zona segura (muesca, barra de inicio), en puntos */
 void platform_pick_file(void);
 void platform_take_photo(void);
 void platform_share(const char *path, const char *text);
 const char *platform_mdc_path(const Options *o);
+
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#if TARGET_OS_IPHONE
+#define HIERO_IOS 1
+#endif
+/* apple.m: PDF con CoreGraphics (macOS e iOS) y arranque en macOS */
+int  apple_pdf_render(const char *pdf, int dpi, int (*ranges)[2], int nr, const char *tmpdir);
+void apple_startup(void);
+#endif
+#ifndef HIERO_IOS
+#define HIERO_IOS 0
+#endif
 
 #endif

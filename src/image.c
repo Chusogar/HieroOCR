@@ -370,6 +370,8 @@ static int pdfium_load(void)
     pf.tried = 1;
 #ifdef _WIN32
     const char *names[] = {"pdfium.dll", NULL};
+#elif defined(__APPLE__)
+    const char *names[] = {"libpdfium.dylib", NULL};
 #else
     const char *names[] = {"libpdfium.so", NULL};
 #endif
@@ -576,6 +578,11 @@ int pdf_render(const char *pdf, int dpi, const char *pages, char tmpdir[512], ch
     }
 
     int ok = 0;
+#ifdef __APPLE__
+    if (apple_pdf_render(pdf, dpi, ranges, nr, tmpdir) == 0)   /* CoreGraphics, sin programas aparte */
+        ok = 1;
+    else
+#endif
     if (pdfium_load()) {
         ok = pdfium_render(pdf, dpi, ranges, nr, tmpdir) == 0;
     } else {
@@ -605,7 +612,11 @@ int pdf_render(const char *pdf, int dpi, const char *pages, char tmpdir[512], ch
 #else
             snprintf(cmd, sizeof cmd, "%s -r %d %s-png %s %s", prog, dpi, fl, qpdf, qprefix);
 #endif
+#if HIERO_IOS
+            if (0)   /* en iOS no hay procesos: sólo CoreGraphics */
+#else
             if (system(cmd) == 0)
+#endif
                 ok++;
             else
                 fprintf(stderr, "Aviso: pdftoppm ha fallado con el rango %d-%d "

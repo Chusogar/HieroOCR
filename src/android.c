@@ -47,6 +47,8 @@ static void call_java(const char *method, const char *sig, ...)
 }
 
 int platform_is_mobile(void) { return 1; }
+int platform_can_open(void) { return 1; }
+void platform_insets(int *top, int *bottom) { *top = *bottom = 0; }
 void platform_pick_file(void) { call_java("pickFile", "()V"); }
 void platform_take_photo(void) { call_java("takePhoto", "()V"); }
 const char *platform_mdc_path(const Options *o) { (void)o; return mdc_path; }
