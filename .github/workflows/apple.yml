@@ -11,7 +11,7 @@ on:
 jobs:
   macos:
     name: macOS (universal)
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Preparar (SDL2, SDL2_image, SDL2_ttf, datos)
@@ -39,7 +39,7 @@ jobs:
 
   ios:
     name: iOS (iPhone / iPad y simulador)
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Preparar (SDL2, SDL2_image, SDL2_ttf, datos)
@@ -52,7 +52,7 @@ jobs:
         run: |
           set -x
           mkdir -p salida
-          DEV=$(xcrun simctl list devices available | grep -m1 -E 'iPhone 1[4-6]' | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+          DEV=$(xcrun simctl list devices available | grep -m1 -E 'iPhone [0-9]+' | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
           echo "dispositivo: $DEV"
           xcrun simctl boot "$DEV"
           xcrun simctl bootstatus "$DEV" -b
