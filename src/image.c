@@ -612,7 +612,11 @@ int pdf_render(const char *pdf, int dpi, const char *pages, char tmpdir[512], ch
 #else
             snprintf(cmd, sizeof cmd, "%s -r %d %s-png %s %s", prog, dpi, fl, qpdf, qprefix);
 #endif
+#if HIERO_IOS
+            if (0)   /* en iOS no hay procesos: sólo CoreGraphics */
+#else
             if (system(cmd) == 0)
+#endif
                 ok++;
             else
                 fprintf(stderr, "Aviso: pdftoppm ha fallado con el rango %d-%d "
