@@ -28,8 +28,9 @@ android {
     // secretos ANDROID_KEYSTORE_BASE64 / _PASSWORD / ANDROID_KEY_ALIAS). Sin ella, el
     // APK de release se firma con la clave de depuración para poder instalarlo.
     def ks = System.getenv('ANDROID_KEYSTORE_FILE')
+    def conClave = ks && file(ks).exists()
     signingConfigs {
-        if (ks && file(ks).exists()) {
+        if (conClave) {
             subida {
                 storeFile file(ks)
                 storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
@@ -42,7 +43,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig (ks && file(ks).exists()) ? signingConfigs.subida : signingConfigs.debug
+            signingConfig = conClave ? signingConfigs.subida : signingConfigs.debug
             ndk {
                 debugSymbolLevel 'SYMBOL_TABLE'   // símbolos nativos para los informes de fallos de Play
             }
