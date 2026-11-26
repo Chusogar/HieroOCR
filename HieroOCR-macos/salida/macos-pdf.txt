@@ -1,0 +1,8 @@
+OpenGlyph: 12317 entradas de diccionario, 11374 renglones de corpus
+Lista de Gardiner datos/gardiner.tsv: 1072 signos
+Modelo datos/modelo.hmod: 10725 plantillas (11 variantes por signo)
+android/pruebas/pagina72.pdf: 1 páginas (CoreGraphics)
+Rasterizando la página 1 a 300 ppp...
+1 página(s) preparadas.
+Página 1: el corpus ha cambiado 265 signos
+Página 1: 16 renglones, 570 signos

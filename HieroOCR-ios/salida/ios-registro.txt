@@ -1,0 +1,10 @@
+OpenGlyph: 12317 entradas de diccionario, 11374 renglones de corpus
+Lista de Gardiner datos/gardiner.tsv: 1072 signos
+Modelo datos/modelo.hmod: 10725 plantillas (11 variantes por signo)
+Modelo datos/modelo.hmod: 10725 plantillas
+2026-11-26 18:48:13.258 HieroOCR[22997:54369] Unbalanced calls to begin/end appearance transitions for <SDL_uikitviewcontroller: 0x1029bfa00>.
+2026-11-26 18:48:13.258 HieroOCR[22997:54369] Unbalanced calls to begin/end appearance transitions for <SDL_uikitviewcontroller: 0x1029bfa00>.
+/Users/runner/Library/Developer/CoreSimulator/Devices/EED6FB0A-E273-43C6-B5DE-3DF739543042/data/Containers/Data/Application/6E096E37-F029-4CAF-AD42-9B56C235E76D/Library/Caches/entrada/documento.pdf: 1 páginas (CoreGraphics)
+Rasterizando la página 1 a 300 ppp...
+Página 1: el corpus ha cambiado 265 signos
+Página 1: 16 renglones, 570 signos

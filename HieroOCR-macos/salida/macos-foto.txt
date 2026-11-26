@@ -1,0 +1,6 @@
+OpenGlyph: 12317 entradas de diccionario, 11374 renglones de corpus
+Lista de Gardiner datos/gardiner.tsv: 1072 signos
+Modelo datos/modelo.hmod: 10725 plantillas (11 variantes por signo)
+IOServiceMatchingfailed for: AppleM2ScalerParavirtDriver
+Página 1: el corpus ha cambiado 259 signos
+Página 1: 16 renglones, 584 signos
