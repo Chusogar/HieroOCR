@@ -26,7 +26,7 @@ jobs:
           $B -B -o salida/pagina72.mdc android/pruebas/pagina72.pdf 2>&1 | tee salida/macos-pdf.txt
           $B -B -o salida/foto72.mdc android/pruebas/foto72.jpg 2>&1 | tee salida/macos-foto.txt
           test -s salida/pagina72.mdc && test -s salida/foto72.mdc
-          SDL_VIDEODRIVER=offscreen $B -B -g --captura salida/macos-interfaz.png android/pruebas/foto72.jpg 2>&1 | tail -5 || true
+          perl -e "alarm 90; exec @ARGV" $B -B -g --captura salida/macos-interfaz.png android/pruebas/foto72.jpg 2>&1 | tail -5 || true
           ls -la salida
       - uses: actions/upload-artifact@v4
         if: always()
