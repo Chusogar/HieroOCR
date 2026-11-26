@@ -13,7 +13,7 @@
 #include <strings.h>
 #include <unistd.h>
 
-#ifndef __ANDROID__   /* en Android el programa empieza en android.c */
+#if !defined(__ANDROID__) && !HIERO_IOS   /* en Android (android.c) e iOS (apple.m) el programa empieza allí */
 
 #ifdef _WIN32
 #include <windows.h>
@@ -100,14 +100,21 @@ static void usage(const char *prog)
 
 /* Servicios de la plataforma en escritorio: no hay selector propio (se puede
  * soltar un archivo en la ventana) y el MdC se guarda en el fichero de -o. */
+#ifndef __APPLE__   /* (en macOS están en apple.m: selector de archivos propio) */
 int platform_is_mobile(void) { return getenv("HIEROOCR_SIMULAR_MOVIL") != NULL; }
+int platform_can_open(void) { return platform_is_mobile(); }
+void platform_insets(int *top, int *bottom) { *top = *bottom = 0; }
 void platform_pick_file(void) { fprintf(stderr, "Arrastra una imagen o un PDF a la ventana.\n"); }
 void platform_take_photo(void) { fprintf(stderr, "No hay cámara en la versión de escritorio.\n"); }
 void platform_share(const char *path, const char *text) { (void)path; (void)text; }
 const char *platform_mdc_path(const Options *o) { return o->output ? o->output : "salida.mdc"; }
+#endif
 
 int main(int argc, char **argv)
 {
+#ifdef __APPLE__
+    apple_startup();   /* abierta desde el Finder: se trabaja en Documentos/HieroOCR */
+#endif
     Options o = {
         .dpi = 300, .uncertain_thr = 0.11f, .tmpl_dir = "plantillas",
     };

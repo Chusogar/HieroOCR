@@ -1,0 +1,111 @@
+name: Apple
+
+on:
+  push:
+    branches: [main, apple]
+    paths: ['src/**', 'apple/**', 'CMakeLists.txt', 'datos/**', '.github/workflows/apple.yml']
+  pull_request:
+    paths: ['src/**', 'apple/**', 'CMakeLists.txt', 'datos/**', '.github/workflows/apple.yml']
+  workflow_dispatch:
+
+jobs:
+  macos:
+    name: macOS (universal)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preparar (SDL2, SDL2_image, SDL2_ttf, datos)
+        run: sh apple/preparar.sh
+      - name: Compilar y empaquetar
+        run: sh apple/compilar-macos.sh
+      - name: Probar (PDF con CoreGraphics, foto e interfaz)
+        run: |
+          mkdir -p salida
+          B=apple/HieroOCR.app/Contents/MacOS/HieroOCR
+          lipo -info $B
+          $B -B -o salida/pagina72.mdc android/pruebas/pagina72.pdf 2>&1 | tee salida/macos-pdf.txt
+          $B -B -o salida/foto72.mdc android/pruebas/foto72.jpg 2>&1 | tee salida/macos-foto.txt
+          test -s salida/pagina72.mdc && test -s salida/foto72.mdc
+          SDL_VIDEODRIVER=offscreen $B -B -g --captura salida/macos-interfaz.png android/pruebas/foto72.jpg 2>&1 | tail -5 || true
+          ls -la salida
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: HieroOCR-macos
+          path: |
+            apple/HieroOCR-macos.zip
+            apple/HieroOCR-macos.dmg
+            salida/
+
+  ios:
+    name: iOS (iPhone / iPad y simulador)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preparar (SDL2, SDL2_image, SDL2_ttf, datos)
+        run: sh apple/preparar.sh
+      - name: Compilar para iPhone / iPad (.ipa sin firmar)
+        run: sh apple/compilar-ios.sh
+      - name: Compilar para el simulador
+        run: sh apple/compilar-ios.sh simulador
+      - name: Probar en el simulador
+        run: |
+          set -x
+          mkdir -p salida
+          DEV=$(xcrun simctl list devices available | grep -m1 -E 'iPhone 1[4-6]' | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+          echo "dispositivo: $DEV"
+          xcrun simctl boot "$DEV"
+          xcrun simctl bootstatus "$DEV" -b
+          xcrun simctl install "$DEV" apple/build-ios-simulador/HieroOCR.app
+          xcrun simctl io "$DEV" screenshot salida/ios-0-inicio-sistema.png || true
+          # 1) arranque sin nada
+          xcrun simctl launch "$DEV" org.hieroocr.app
+          sleep 8
+          xcrun simctl io "$DEV" screenshot salida/ios-1-vacio.png
+          xcrun simctl terminate "$DEV" org.hieroocr.app || true
+          # 2) abrir la foto de prueba (HIEROOCR_ABRIR la importa como si viniera de Archivos)
+          cp android/pruebas/foto72.jpg /tmp/foto72.jpg
+          SIMCTL_CHILD_HIEROOCR_ABRIR=/tmp/foto72.jpg xcrun simctl launch "$DEV" org.hieroocr.app
+          sleep 25
+          xcrun simctl io "$DEV" screenshot salida/ios-2-foto.png
+          xcrun simctl terminate "$DEV" org.hieroocr.app || true
+          # 3) abrir el PDF: pregunta qué páginas
+          cp android/pruebas/pagina72.pdf /tmp/pagina72.pdf
+          SIMCTL_CHILD_HIEROOCR_ABRIR=/tmp/pagina72.pdf xcrun simctl launch "$DEV" org.hieroocr.app
+          sleep 10
+          xcrun simctl io "$DEV" screenshot salida/ios-3-pdf.png
+          xcrun simctl terminate "$DEV" org.hieroocr.app || true
+          C=$(xcrun simctl get_app_container "$DEV" org.hieroocr.app data)
+          cp "$C/Documents/registro.txt" salida/ios-registro.txt 2>/dev/null || true
+          cp "$C/Documents/salida.mdc" salida/ios-salida.mdc 2>/dev/null || true
+          ls -la salida "$C/Documents" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: HieroOCR-ios
+          path: |
+            apple/HieroOCR-ios.ipa
+            apple/HieroOCR-ios-simulador.zip
+            salida/
+
+  publicar:
+    name: Publicar en la rama apple-ci
+    needs: [macos, ios]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: pub
+      - name: Subir
+        run: |
+          cd pub
+          ls -laR
+          git init -q -b apple-ci
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Binarios y capturas de Apple (${GITHUB_SHA::7})"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" apple-ci

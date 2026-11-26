@@ -47,7 +47,9 @@ typedef struct {
     Options      *o;
     TemplateSet  *ts;
     float         u;                      /* escala de la interfaz (1 = 96 ppp) */
-    int           mobile;
+    int           mobile, can_open;
+    float         ratio;                  /* píxeles por punto (Retina) */
+    int           inset_top, inset_bot;   /* zona segura, en píxeles */
     float         scale, offx, offy;
     int           sel, editing, dragging, learn, running;
     int           top_h, panel_h;         /* alto de la barra superior y del panel inferior */
@@ -107,6 +109,7 @@ static const char *ui_font_paths[] = {
     "/System/Library/Fonts/Supplemental/Arial.ttf",
     "C:/Windows/Fonts/segoeui.ttf",
     "C:/Windows/Fonts/arial.ttf",
+    "datos/DejaVuSans.ttf",                       /* iOS: la lleva la aplicación */
     NULL
 };
 
@@ -375,10 +378,10 @@ static int toolbar(Gui *g, int ww, int draw)
     BtnSpec b[14];
     int n = 0;
     char pg[48];
-    if (g->mobile) {
+    if (g->can_open)
         b[n++] = (BtnSpec){"Abrir", A_OPEN, B_PRIMARY};
+    if (g->mobile)
         b[n++] = (BtnSpec){"Cámara", A_CAMERA, B_PRIMARY};
-    }
     if (dict_loaded())
         b[n++] = (BtnSpec){"Diccionario", g->overlay ? A_DICT_CLOSE : A_DICT, g->overlay ? B_ON : B_NORMAL};
     if (has_doc(g)) {
@@ -393,15 +396,15 @@ static int toolbar(Gui *g, int ww, int draw)
         b[n++] = (BtnSpec){"Reclasificar", A_RECLASS, B_NORMAL};
         b[n++] = (BtnSpec){g->mobile ? "Compartir MdC" : "Guardar MdC", A_SAVE, B_NORMAL};
     }
-    int pad = U(6);
-    int h = n ? flow_buttons(g, pad, pad, ww - 2 * pad, b, n, 0) + 2 * pad : 0;
+    int pad = U(6), top = g->inset_top;
+    int h = n ? flow_buttons(g, pad, pad + top, ww - 2 * pad, b, n, 0) + 2 * pad + top : top;
     if (draw && n) {
         SDL_Rect bar = {0, 0, ww, h};
         set_rgb(g, 236, 234, 228);
         SDL_RenderFillRect(g->ren, &bar);
         set_rgb(g, 150, 150, 150);
         SDL_RenderDrawLine(g->ren, 0, h - 1, ww, h - 1);
-        flow_buttons(g, pad, pad, ww - 2 * pad, b, n, 1);
+        flow_buttons(g, pad, pad + top, ww - 2 * pad, b, n, 1);
     }
     return h;
 }
@@ -530,8 +533,14 @@ static int panel(Gui *g, int ww, int y0, int draw)
 static void measure(Gui *g, int *ww, int *wh)
 {
     SDL_GetRendererOutputSize(g->ren, ww, wh);
+    int it = 0, ib = 0;
+    platform_insets(&it, &ib);
+    g->inset_top = (int)(it * g->ratio);
+    g->inset_bot = (int)(ib * g->ratio);
     g->top_h = toolbar(g, *ww, 0);
     g->panel_h = g->overlay ? 0 : panel(g, *ww, 0, 0);
+    if (g->panel_h > 0 || g->inset_bot)
+        g->panel_h += g->inset_bot;
     if (g->panel_h > *wh / 2)
         g->panel_h = *wh / 2;
 }
@@ -1058,7 +1067,7 @@ static void handle_key(Gui *g, SDL_Keysym ks)
     case SDLK_s: do_action(g, A_SAVE); break;
     case SDLK_f: do_action(g, A_FIT); break;
     case SDLK_l: do_action(g, A_LEARN); break;
-    case SDLK_o: if (g->mobile) do_action(g, A_OPEN); break;
+    case SDLK_o: if (g->can_open) do_action(g, A_OPEN); break;
     case SDLK_PAGEDOWN: do_action(g, A_NEXT_PAGE); break;
     case SDLK_PAGEUP: do_action(g, A_PREV_PAGE); break;
     case SDLK_LEFT:  g->offx += U(80); break;
@@ -1150,8 +1159,27 @@ static void handle_finger(Gui *g, SDL_Event *e)
     }
 }
 
+/* El ratón llega en puntos de la ventana y se dibuja en píxeles (Retina):
+ * todo se pasa a píxeles. */
+static void to_pixels(Gui *g, SDL_Event *e)
+{
+    float k = g->ratio;
+    if (k == 1.0f)
+        return;
+    if (e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP) {
+        e->button.x = (Sint32)(e->button.x * k);
+        e->button.y = (Sint32)(e->button.y * k);
+    } else if (e->type == SDL_MOUSEMOTION) {
+        e->motion.x = (Sint32)(e->motion.x * k);
+        e->motion.y = (Sint32)(e->motion.y * k);
+        e->motion.xrel = (Sint32)(e->motion.xrel * k);
+        e->motion.yrel = (Sint32)(e->motion.yrel * k);
+    }
+}
+
 static void handle_event(Gui *g, SDL_Event *e)
 {
+    to_pixels(g, e);
     if (e->type == g_event_type) {
         Request *r = e->user.data1;
         if (r)
@@ -1167,7 +1195,7 @@ static void handle_event(Gui *g, SDL_Event *e)
         if (e->window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
             fit_page(g);
         break;
-#ifndef __ANDROID__   /* en Android los archivos llegan como Request desde HieroActivity */
+#if !defined(__ANDROID__) && !HIERO_IOS   /* en Android e iOS los archivos llegan como Request */
     case SDL_DROPFILE: {   /* escritorio: soltar un archivo en la ventana */
         Doc nd;
         char msg[160];
@@ -1184,6 +1212,8 @@ static void handle_event(Gui *g, SDL_Event *e)
     case SDL_MOUSEWHEEL: {
         int mx, my;
         SDL_GetMouseState(&mx, &my);
+        mx = (int)(mx * g->ratio);
+        my = (int)(my * g->ratio);
         if (g->overlay)
             g->ov_scroll -= e->wheel.y * U(60);
         else
@@ -1327,7 +1357,8 @@ static void draw_empty(Gui *g, int ww, int y0, int y1)
     const char *t1 = "HieroOCR · jeroglíficos egipcios a MdC";
     const char *t2 = g->mobile
         ? "Abre una imagen o un PDF, o haz una foto de la página con la cámara."
-        : "Arrastra a esta ventana una imagen o un PDF (o pásalo como argumento).";
+        : g->can_open ? "Abre una imagen o un PDF, o arrástralo a esta ventana."
+                      : "Arrastra a esta ventana una imagen o un PDF (o pásalo como argumento).";
     int h = line_h(g->ui) * 2 + U(16) + draw_wrapped(g, g->ui, 0, 0, t2, white, maxw, 4, 0);
     int y = y0 + (y1 - y0 - h) / 2 - (g->mobile ? U(40) : 0);
     int tw = text_w(g->ui, t1);
@@ -1335,13 +1366,15 @@ static void draw_empty(Gui *g, int ww, int y0, int y1)
     y += line_h(g->ui) * 2;
     draw_wrapped(g, g->ui, U(20), y, t2, white, maxw, 4, 1);
     y += draw_wrapped(g, g->ui, U(20), y, t2, white, maxw, 4, 0) + U(24);
-    if (g->mobile) {
+    if (g->can_open) {
         int bw = ww - U(80) < U(360) ? ww - U(80) : U(360), bh = U(52);
         SDL_Rect r1 = {(ww - bw) / 2, y, bw, bh}, r2 = {(ww - bw) / 2, y + bh + U(14), bw, bh};
         draw_button(g, r1, "Abrir imagen o PDF", B_PRIMARY);
         add_button(g, r1, A_OPEN);
-        draw_button(g, r2, "Hacer una foto", B_PRIMARY);
-        add_button(g, r2, A_CAMERA);
+        if (g->mobile) {
+            draw_button(g, r2, "Hacer una foto", B_PRIMARY);
+            add_button(g, r2, A_CAMERA);
+        }
     }
 }
 
@@ -1569,6 +1602,8 @@ int gui_run(Doc *doc, Options *o, TemplateSet *ts)
     g->sel = -1;
     g->running = 1;
     g->mobile = platform_is_mobile();
+    g->can_open = platform_can_open();
+    g->ratio = 1.0f;
     gui_event_type();
 
     int W = 1280, H = 920;
@@ -1578,7 +1613,11 @@ int gui_run(Doc *doc, Options *o, TemplateSet *ts)
     SDL_SetHint(SDL_HINT_ORIENTATIONS, "Portrait PortraitUpsideDown LandscapeLeft LandscapeRight");
     SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
     g->win = SDL_CreateWindow("hieroocr — OCR de jeroglíficos a MdC", SDL_WINDOWPOS_CENTERED,
-                             SDL_WINDOWPOS_CENTERED, W, H, SDL_WINDOW_RESIZABLE);
+                             SDL_WINDOWPOS_CENTERED, W, H, SDL_WINDOW_RESIZABLE
+#ifdef __APPLE__
+                             | SDL_WINDOW_ALLOW_HIGHDPI   /* Retina: se dibuja en píxeles */
+#endif
+                             );
     if (!g->win) {
         fprintf(stderr, "No se puede crear la ventana: %s\n", SDL_GetError());
         return 1;
@@ -1594,7 +1633,14 @@ int gui_run(Doc *doc, Options *o, TemplateSet *ts)
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     SDL_StopTextInput();
 
-    g->u = ui_scale();
+    {
+        int pw, ph, lw, lh;
+        SDL_GetRendererOutputSize(g->ren, &pw, &ph);
+        SDL_GetWindowSize(g->win, &lw, &lh);
+        if (lw > 0 && pw > lw)
+            g->ratio = (float)pw / lw;
+    }
+    g->u = ui_scale() * g->ratio;
     g->ui = open_ui_font(U(16));
     g->small = open_ui_font(U(13));
     if (!g->ui || !g->small)
