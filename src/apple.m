@@ -16,6 +16,27 @@
  */
 #ifdef __APPLE__
 
+/* Las cabeceras de Apple van primero: MacTypes.h ya define Rect, y los tipos de
+ * hieroocr.h se renombran para que no choquen con los del sistema. */
+#include <TargetConditionals.h>
+#import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
+#import <ImageIO/ImageIO.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
+#import <PhotosUI/PhotosUI.h>
+#else
+#import <AppKit/AppKit.h>
+#endif
+#define Rect HieroRect
+#define Page HieroPage
+#define Glyph HieroGlyph
+#define Template HieroTemplate
+#define Band HieroBand
+#define Str HieroStr
+#define Gray HieroGray
+#define Bin HieroBin
 #include "hieroocr.h"
 
 #include <SDL.h>
@@ -27,9 +48,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#import <Foundation/Foundation.h>
-#import <CoreGraphics/CoreGraphics.h>
-#import <ImageIO/ImageIO.h>
 
 /* ---------- PDF con CoreGraphics (macOS e iOS) ---------- */
 
@@ -141,8 +159,6 @@ int apple_pdf_render(const char *pdf, int dpi, int (*ranges)[2], int nr, const c
 /* =====================================================================
  * macOS
  * ===================================================================== */
-#import <AppKit/AppKit.h>
-#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 void apple_startup(void)
 {
@@ -206,9 +222,6 @@ void platform_pick_file(void)
 /* =====================================================================
  * iOS
  * ===================================================================== */
-#import <UIKit/UIKit.h>
-#import <PhotosUI/PhotosUI.h>
-#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #define MAX_SIDE 3600   /* píxeles: como en Android */
 
