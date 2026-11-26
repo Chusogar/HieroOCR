@@ -58,14 +58,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
         XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED NO)
     target_link_libraries(hieroocr PRIVATE SDL2::SDL2main)
     target_link_libraries(hieroocr PRIVATE "-framework UIKit" "-framework PhotosUI"
-                          "-framework UniformTypeIdentifiers" "-framework ImageIO" "-framework CoreGraphics")
+                          "-framework UniformTypeIdentifiers" "-framework ImageIO" "-framework CoreGraphics" "-framework MobileCoreServices")
 elseif(APPLE)
     add_executable(hieroocr MACOSX_BUNDLE ${SRC})
     set_target_properties(hieroocr PROPERTIES
         OUTPUT_NAME HieroOCR
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/apple/Info-macos.plist.in)
     target_link_libraries(hieroocr PRIVATE "-framework AppKit" "-framework UniformTypeIdentifiers"
-                          "-framework ImageIO" "-framework CoreGraphics")
+                          "-framework ImageIO" "-framework CoreGraphics" "-framework CoreServices")
 else()
     add_executable(hieroocr ${SRC})
     target_link_libraries(hieroocr PRIVATE m)
