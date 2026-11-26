@@ -4,19 +4,37 @@ plugins {
 
 android {
     namespace 'org.hieroocr.app'
-    compileSdk 35
+    compileSdk 36
     ndkVersion '27.3.13750724'
 
     defaultConfig {
         applicationId 'org.hieroocr.app'
         minSdk 21
-        targetSdk 34
-        versionCode 1
-        versionName '1.0'
+        targetSdk 36
+        // Google Play exige que cada subida tenga un versionCode mayor: en CI se usa
+        // el número de ejecución (VERSION_CODE); a mano, el valor por defecto.
+        versionCode((System.getenv('VERSION_CODE') ?: '2') as int)
+        versionName '1.1'
         externalNativeBuild {
             ndkBuild {
-                arguments 'APP_PLATFORM=android-21', '-j' + Runtime.runtime.availableProcessors()
+                // páginas de 16 KB: obligatorio en Google Play para apps con código nativo
+                arguments 'APP_PLATFORM=android-21', 'APP_SUPPORT_FLEXIBLE_PAGE_SIZES=true', '-j' + Runtime.runtime.availableProcessors()
                 abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            }
+        }
+    }
+
+    // Clave de subida a Google Play: se lee del entorno (en GitHub Actions, de los
+    // secretos ANDROID_KEYSTORE_BASE64 / _PASSWORD / ANDROID_KEY_ALIAS). Sin ella, el
+    // APK de release se firma con la clave de depuración para poder instalarlo.
+    def ks = System.getenv('ANDROID_KEYSTORE_FILE')
+    signingConfigs {
+        if (ks && file(ks).exists()) {
+            subida {
+                storeFile file(ks)
+                storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('ANDROID_KEY_ALIAS') ?: 'hieroocr'
+                keyPassword System.getenv('ANDROID_KEY_PASSWORD') ?: System.getenv('ANDROID_KEYSTORE_PASSWORD')
             }
         }
     }
@@ -24,8 +42,10 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            // Sin claves propias se firma con la de depuración para poder instalarla.
-            signingConfig signingConfigs.debug
+            signingConfig (ks && file(ks).exists()) ? signingConfigs.subida : signingConfigs.debug
+            ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'   // símbolos nativos para los informes de fallos de Play
+            }
         }
     }
 

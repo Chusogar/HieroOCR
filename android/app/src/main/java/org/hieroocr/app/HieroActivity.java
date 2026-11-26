@@ -22,10 +22,15 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.InputType;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.libsdl.app.SDLActivity;
 
@@ -73,6 +78,7 @@ public class HieroActivity extends SDLActivity {
         if (state != null && state.getString("foto") != null)
             photoFile = new File(state.getString("foto"));
         super.onCreate(state);
+        keepClearOfSystemBars();
         handleIntent(getIntent());
     }
 
@@ -87,6 +93,25 @@ public class HieroActivity extends SDLActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         handleIntent(intent);
+    }
+
+    /* Desde Android 15 (targetSdk 35+) la ventana ocupa toda la pantalla, también bajo
+     * la barra de estado, la de navegación y la muesca. Se hace igual en todas las
+     * versiones y se deja un margen alrededor de la superficie de SDL, para que la
+     * barra de botones y el panel inferior no queden tapados. */
+    private void keepClearOfSystemBars() {
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().getDecorView().setBackgroundColor(Color.BLACK);
+        View content = findViewById(android.R.id.content);
+        if (content == null)
+            return;
+        ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
+            Insets b = insets.getInsets(WindowInsetsCompat.Type.systemBars()
+                                        | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(b.left, b.top, b.right, b.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
+        ViewCompat.requestApplyInsets(content);
     }
 
     /* "Abrir con..." o "Compartir" desde otra aplicación. Para pruebas: --es archivo RUTA. */

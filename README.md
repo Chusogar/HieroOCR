@@ -358,6 +358,14 @@ Cada cambio en `src/` o `android/` compila el APK en GitHub Actions
 (*Actions → Android → HieroOCR-apk*). Descarga `HieroOCR.apk` en el móvil y ábrelo;
 Android pedirá permitir la instalación de aplicaciones de origen desconocido.
 
+
+### Google Play
+
+`android/play/` tiene la ficha de la tienda (textos en español e inglés, icono, gráfico,
+capturas y política de privacidad) y `android/play/LEEME.md` los pasos para publicarla.
+El workflow *Actions → Google Play* compila el `.aab` firmado con la clave de subida
+guardada en los secretos del repositorio y lo sube a la pista que elijas.
+
 ### Diccionario y corpus de OpenGlyph
 
 La carpeta [`OpenGlyph/`](OpenGlyph/) contiene el proyecto OpenGlyph (LGPL): un

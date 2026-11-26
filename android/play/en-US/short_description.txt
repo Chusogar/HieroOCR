@@ -1,0 +1,1 @@
+Recognizes Egyptian hieroglyphs in photos and PDFs and transcribes them to MdC.

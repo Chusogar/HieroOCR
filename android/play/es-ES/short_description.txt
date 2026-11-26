@@ -1,0 +1,1 @@
+Reconoce jeroglíficos egipcios en fotos y PDF y los pasa a Manuel de Codage.

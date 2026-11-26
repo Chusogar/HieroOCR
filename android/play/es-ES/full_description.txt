@@ -1,0 +1,13 @@
+HieroOCR lee una página con texto jeroglífico egipcio impreso —una foto hecha con la cámara, una imagen o un PDF— y la transcribe a Manuel de Codage (MdC), lista para pegar en JSesh u otro editor.
+
+• Abre imágenes (JPG, PNG, WebP, HEIC…) y PDF del móvil, de la tarjeta o de Drive. En un PDF de varias páginas eliges cuáles reconocer (7, 71-92, 3,5,7-9…).
+• Fotografía la página con la cámara: la foto se endereza y se corrige la iluminación antes de reconocerla.
+• Cada signo aparece marcado con su código de la lista de Gardiner y coloreado según la seguridad del reconocimiento. Toca un signo para ver los cinco candidatos más probables, con su valor fonético, y corrígelo con un toque.
+• HieroOCR aprende de tus correcciones: las siguientes páginas del mismo libro se reconocen mejor.
+• Diccionario y corpus de OpenGlyph integrados: busca un signo o una combinación de signos, mira la palabra a la que pertenece cada signo y la lectura de cada renglón. El corpus ayuda además a elegir entre signos parecidos.
+• Comparte el MdC de todo el documento por correo, Drive, Telegram… o cópialo al portapapeles.
+• Funciona sin conexión. No hay anuncios, no hace falta cuenta y no recoge ningún dato: todo se procesa en el propio dispositivo.
+
+Pensado para texto jeroglífico impreso en renglones horizontales (gramáticas, ediciones de textos, diccionarios). Las inscripciones talladas o pintadas y la escritura en columnas se reconocen peor.
+
+HieroOCR usa SDL2, el diccionario y el corpus de OpenGlyph y la fuente Noto Sans Egyptian Hieroglyphs.
