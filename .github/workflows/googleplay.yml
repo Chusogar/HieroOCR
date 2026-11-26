@@ -1,0 +1,98 @@
+name: Google Play
+
+# Compila el Android App Bundle firmado con la clave de subida y, si está el
+# secreto PLAY_SERVICE_ACCOUNT_JSON, lo sube a Google Play.
+#   Actions → Google Play → Run workflow → pista (internal / alpha / beta / production)
+# Secretos (Settings → Secrets and variables → Actions):
+#   ANDROID_KEYSTORE_BASE64    hieroocr-subida.jks en base64
+#   ANDROID_KEYSTORE_PASSWORD  su contraseña
+#   ANDROID_KEY_ALIAS          hieroocr
+#   PLAY_SERVICE_ACCOUNT_JSON  la clave JSON de la cuenta de servicio con acceso a Play Console
+# La PRIMERA subida tiene que hacerse a mano en Play Console con el .aab de esta
+# ejecución (artefacto HieroOCR-aab); las siguientes ya las hace este workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pista:
+        description: 'Pista de Google Play'
+        type: choice
+        options: [internal, alpha, beta, production]
+        default: internal
+      estado:
+        description: 'Estado de la versión (draft: la revisas y la publicas tú en Play Console)'
+        type: choice
+        options: [completed, draft]
+        default: completed
+  push:
+    branches: [googleplay]
+  pull_request:
+    paths: ['android/**', '.github/workflows/googleplay.yml']
+
+jobs:
+  aab:
+    name: Android App Bundle
+    runs-on: ubuntu-latest
+    env:
+      HAY_CLAVE: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+      HAY_PLAY: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Preparar (SDL2, SDL2_image, SDL2_ttf, datos)
+        run: sh android/preparar.sh
+      - name: Clave de subida
+        if: env.HAY_CLAVE == 'true'
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/subida.jks"
+          echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/subida.jks" >> "$GITHUB_ENV"
+      - name: Compilar el .aab
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: ./gradlew --no-daemon bundleRelease
+      - name: Comprobar firma y páginas de 16 KB
+        run: |
+          A=android/app/build/outputs/bundle/release/app-release.aab
+          mkdir -p aab && cp $A aab/HieroOCR.aab
+          keytool -printcert -jarfile aab/HieroOCR.aab | grep -E "Owner|Propietario|SHA256" | head -3
+          if [ "$HAY_CLAVE" != true ]; then
+            echo "::warning::Sin el secreto ANDROID_KEYSTORE_BASE64 el .aab va firmado con la clave de depuración: Google Play lo rechazará."
+          fi
+          RE=$(ls $ANDROID_HOME/ndk/*/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf | head -1)
+          rm -rf so && mkdir so && unzip -q -o aab/HieroOCR.aab 'base/lib/*' -d so
+          mal=0
+          for f in so/base/lib/arm64-v8a/*.so so/base/lib/x86_64/*.so; do
+            al=$($RE -lW "$f" | awk '$1=="LOAD"{print $NF}' | sort -u | tr '\n' ' ')
+            echo "$f: $al"
+            echo "$al" | grep -qv "0x4000" && mal=1 || true
+          done
+          [ $mal = 0 ] || { echo "::error::hay bibliotecas sin alinear a 16 KB"; exit 1; }
+          SYM=android/app/build/outputs/native-debug-symbols/release/native-debug-symbols.zip
+          [ -f $SYM ] && cp $SYM aab/ || true
+          ls -la aab
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HieroOCR-aab
+          path: aab/
+      - name: Subir a Google Play
+        if: github.event_name == 'workflow_dispatch' && env.HAY_PLAY == 'true' && env.HAY_CLAVE == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: org.hieroocr.app
+          releaseFiles: aab/HieroOCR.aab
+          debugSymbols: aab/native-debug-symbols.zip
+          track: ${{ inputs.pista }}
+          status: ${{ inputs.estado }}
+          whatsNewDirectory: android/play/novedades
+      - name: Aviso
+        if: github.event_name == 'workflow_dispatch' && (env.HAY_PLAY != 'true' || env.HAY_CLAVE != 'true')
+        run: |
+          echo "::warning::Faltan secretos (ANDROID_KEYSTORE_BASE64 y PLAY_SERVICE_ACCOUNT_JSON): el .aab está en el artefacto HieroOCR-aab, pero no se ha subido a Google Play."

@@ -1,0 +1,1 @@
+HieroOCR: hieroglyphs to MdC
