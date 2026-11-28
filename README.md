@@ -208,7 +208,7 @@ En [Releases](https://github.com/Chusogar/HieroOCR/releases) hay binarios listos
   `hieroocr.exe` con doble clic (interfaz; se le arrastra una imagen o un PDF) o desde
   la consola con las opciones de [Uso](#uso). Lleva SDL2, PDFium (para los PDF; no hace
   falta poppler), los datos, el diccionario y el corpus de OpenGlyph y la fuente.
-- **Android 5.0+**: `HieroOCR-android.apk` (ver [Android](#android)).
+- **Android 7.0+**: `HieroOCR-android.apk` (ver [Android](#android)).
 
 Las releases se generan con `.github/workflows/release.yml`: al publicar una release
 en GitHub (o al subir una etiqueta `v*`, o desde *Actions → Release → Run workflow*
@@ -320,7 +320,7 @@ Colores de los recuadros: **verde** = seguro, **ámbar** = dudoso, **rojo** = mu
 
 <img src="android_interfaz.png" alt="HieroOCR en Android: página de Moldenke reconocida, un signo seleccionado con sus cinco candidatos y el MdC del renglón" width="300" align="right">
 
-La misma aplicación (el mismo código C con SDL2) compilada para Android 5.0 o
+La misma aplicación (el mismo código C con SDL2) compilada para Android 7.0 o
 posterior, con una pequeña actividad Java para lo que sólo se puede hacer con la API
 de Android.
 
