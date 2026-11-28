@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId 'org.hieroocr.app'
-        minSdk 21
+        minSdk 24
         targetSdk 36
         // Google Play exige que cada subida tenga un versionCode mayor: en CI se usa
         // el número de ejecución (VERSION_CODE); a mano, el valor por defecto.
@@ -18,7 +18,7 @@ android {
         externalNativeBuild {
             ndkBuild {
                 // páginas de 16 KB: obligatorio en Google Play para apps con código nativo
-                arguments 'APP_PLATFORM=android-21', 'APP_SUPPORT_FLEXIBLE_PAGE_SIZES=true', '-j' + Runtime.runtime.availableProcessors()
+                arguments 'APP_PLATFORM=android-24', 'APP_SUPPORT_FLEXIBLE_PAGE_SIZES=true', '-j' + Runtime.runtime.availableProcessors()
                 abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
             }
         }
