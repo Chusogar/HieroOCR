@@ -1,0 +1,6 @@
+OpenGlyph: 12317 entradas de diccionario, 11374 renglones de corpus
+Lista de Gardiner datos/gardiner.tsv: 1072 signos
+Modelo datos/modelo.hmod: 10725 plantillas (11 variantes por signo)
+INFO: pixel format wanted SDL_PIXELFORMAT_RGBX8888 (2), got SDL_PIXELFORMAT_RGBX8888 (2)
+Página 1: el corpus ha cambiado 257 signos
+Página 1: 16 renglones, 583 signos
